@@ -17,11 +17,11 @@ Backbones are frozen; training updates only the named head. The matched V-JEPA/D
 
 \subsection{MDE Benchmarking Results}
 
-Table~\ref{tab:mde_comparison} compares depth models on the standard OccuFly test split. We distinguish final test metrics from validation RMSE throughout. The historical plain-DPT row (11.471~m) was anomalous and its raw checkpoint is no longer auditable; we therefore replace it with the reproducible matched rerun (6.730~m). This correction reverses the earlier, implausible ordering: four-level DPT now improves over the last-layer linear probe. Under the matched FiLM-DPT protocol, DINOv3 reaches 4.358~m RMSE versus 4.770~m for V-JEPA~2.1, an 8.6\% reduction. DINOv3 also improves AbsRel, MAE, SILog, and $\delta_1$. The DINOv3 linear probe reaches 6.097~m RMSE, between the V-JEPA linear probe and the V-JEPA four-level DPT head, confirming that decoder capacity remains an important factor even with stronger frozen features. Overall, these results show that the decoder and camera conditioning transfer across large frozen ViTs and that the strongest MDE result is not specific to V-JEPA~2.1.
+Table~\ref{tab:mde_comparison} compares depth models on the standard OccuFly test split. We distinguish final test metrics from validation RMSE throughout. The historical plain-DPT row (11.471~m) was anomalous and its raw checkpoint is no longer auditable; we therefore replace it with the reproducible matched rerun (6.730~m). This correction reverses the earlier, implausible ordering: four-level DPT now improves over the last-layer linear probe. Under the matched FiLM-DPT protocol, DINOv3 reaches 4.358~m RMSE versus 4.770~m for V-JEPA~2.1, an 8.6\% reduction. DINOv3 also improves AbsRel, MAE, SILog, and $\delta_1$. The DINOv3 linear probe reaches 6.097~m RMSE, between the V-JEPA linear probe and the V-JEPA four-level DPT head, confirming that decoder capacity remains an important factor even with stronger frozen features. The pose-aware video checkpoint evaluated here is DTA-FiLM-MVS, not plain DTA-MVS: its multiview cost-volume output is FiLM-conditioned by altitude and intrinsics. It is evaluated on the 3,830 context-valid test frames, excluding the first and last frame of each scene--altitude sequence; the single-frame rows use all 3,842 test frames. We therefore report it as a diagnostic row and leave the unconditioned DTA-MVS ablation pending. Overall, these results show that the decoder and camera conditioning transfer across large frozen ViTs and that the strongest MDE result is not specific to V-JEPA~2.1.
 
 \begin{table}[t]
 \centering
-\caption{OccuFly standard-test MDE. In-house rows use frozen backbones at $384^2$ resolution and the official scene split. DINOv3 rows match the V-JEPA training protocol for the corresponding head type. Published DepthAnything2-OccuFly values follow OccuFly~\cite{gross2026occufly}. Best values are bolded per metric among completed rows.}
+\caption{OccuFly test MDE. In-house single-frame rows use frozen backbones at $384^2$ resolution and the official 3,842-frame scene split. DINOv3 rows match the V-JEPA training protocol for the corresponding head type. $\ddagger$ denotes the 3,830-frame context-valid subset used by the video MVS evaluator. Published DepthAnything2-OccuFly values follow OccuFly~\cite{gross2026occufly}. Dashes denote planned but unfinished runs. Best values are bolded per metric among completed rows.}
 \label{tab:mde_comparison}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lrrrrrrr}
@@ -31,8 +31,10 @@ Method & $\delta_1 \uparrow$ & $\delta_2 \uparrow$ & $\delta_3 \uparrow$ & AbsRe
 V-JEPA 2.1 linear probe & 0.651 & 0.959 & 0.997 & 0.188 & 7.795 & 6.447 & 0.225 \\
 V-JEPA 2.1 four-level DPT & 0.747 & 0.970 & 0.997 & 0.162 & 6.730 & 5.411 & 0.200 \\
 V-JEPA 2.1 FiLM-DPT & 0.816 & 0.970 & 0.998 & 0.131 & 4.770 & 3.457 & 0.166 \\
-DINOv3 linear probe & 0.782 & 0.980 & 0.998 & 0.156 & 6.097 & 5.066 & 0.187 \\
+DINOv3 linear probe & 0.782 & 0.980 & 0.998 & 0.156 & 6.097 & 5.066 & 0.186 \\
 DINOv3 FiLM-DPT & \textbf{0.848} & 0.968 & 0.998 & \textbf{0.121} & \textbf{4.358} & \textbf{3.209} & 0.161 \\
+V-JEPA 2.1 DTA-MVS (pending) & -- & -- & -- & -- & -- & -- & -- \\
+V-JEPA 2.1 DTA-FiLM-MVS$^\ddagger$ & 0.768 & 0.930 & 0.987 & 0.175 & 6.406 & 4.811 & 0.211 \\
 \midrule
 DepthAnything2-OccuFly~\cite{gross2026occufly} & \textbf{0.834} & \textbf{0.976} & \textbf{0.999} & 0.134 & 4.844 & 4.193 & \textbf{0.112} \\
 \bottomrule
@@ -49,11 +51,11 @@ Appendix Table~\ref{tab:mde_comparison_by_altitude} shows that the video FiLM-DP
 \paragraph{RQ4: Is low SSC accuracy primarily a geometry or taxonomy problem?}
 OccuFly is extremely imbalanced: empty voxels dominate the grid, building is the largest occupied class, and several safety-relevant classes have only negligible support. Consequently, aggregate voxel accuracy can remain high while macro semantic IoU is low. Similar-looking structures further fragment supervision across fine labels (e.g., road/walkway/parking surfaces, or building/roof/construction), so errors can reflect semantic ambiguity in addition to lifting error. We therefore report SC IoU, GT-present SSC mIoU, fixed-denominator mIoU, frequency-weighted IoU, and per-class support rather than interpreting one headline number alone.
 
-Table~\ref{tab:ssc_overall_comparison} restores the complete earlier comparison alongside the newly verified VoxDet ablations. Superscript $\dagger$ identifies ACCV26-era results produced by the earlier evaluator; the unmarked VoxDet block is the canonical re-evaluation on one 3,842-frame manifest. We keep the protocols visibly separated rather than treating their absolute values as directly comparable. Pose-MVS is evaluated separately because its earlier checkpoint was unavailable. Because absolute SSC mIoU remains low and several margins are small, we interpret these experiments as diagnostics of geometry, lifting, and taxonomy rather than as a state-of-the-art claim.
+Table~\ref{tab:ssc_overall_comparison} restores the complete earlier comparison alongside the newly verified VoxDet ablations. Superscript $\dagger$ identifies ACCV26-era results produced by the earlier evaluator; the canonical VoxDet block is re-evaluated on one 3,842-frame manifest, with $\ddagger$ flagging checkpoints from interrupted training jobs. We keep the protocols visibly separated rather than treating their absolute values as directly comparable. Pose-MVS is evaluated separately because its earlier checkpoint was unavailable. Because absolute SSC mIoU remains low and several margins are small, we interpret these experiments as diagnostics of geometry, lifting, and taxonomy rather than as a state-of-the-art claim.
 
 \begin{table}[t]
 \centering
-\caption{OccuFly test SSC comparison. $\dagger$ denotes results retained from the earlier ACCV26 evaluator; unmarked VoxDet rows use the canonical 3,842-frame re-evaluation, one global confusion matrix, GT-present non-empty-class mIoU, and ignore label 255 excluded. Architecture names expose the changed context, geometry, and optimization components.}
+\caption{OccuFly test SSC comparison. $\dagger$ denotes results retained from the earlier ACCV26 evaluator. The canonical VoxDet rows use the same 3,842-frame test re-evaluation, one global confusion matrix, GT-present non-empty-class mIoU, and ignore label 255 excluded. $\ddagger$ marks a canonical test evaluation of a validation-selected checkpoint from a training job that stopped before its configured 20 epochs. Architecture names expose the changed context, geometry, and optimization components.}
 \label{tab:ssc_overall_comparison}
 \resizebox{\linewidth}{!}{%
 \begin{tabular}{lrr}
@@ -77,14 +79,15 @@ CGFormer + DAV2 depth prior & 9.93 & 1.37 \\
 FSSC: RGB-DPT context + FiLM-DPT depth & 34.42 & 3.48 \\
 VoxDet: ResNet context + FiLM-DPT depth & 38.85 & 2.85 \\
 VoxDet: RGB-DPT context + FiLM-DPT depth & 38.87 & 3.47 \\
-VoxDet: RGB-DPT context + FiLM-DPT depth + full-res VoxNT + long-tail loss + scheduled depth gradients & \textbf{44.82} & \textbf{4.35} \\
+VoxDet V5-V2: RGB-DPT context + FiLM-DPT depth + full-res VoxNT + long-tail loss + scheduled depth gradients$^\ddagger$ & \textbf{45.77} & \textbf{4.62} \\
+VoxDet V5-V2: RGB-DPT context + DAV2 geometry + full-res VoxNT + long-tail loss$^\ddagger$ & 44.82 & 4.35 \\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
 
 \paragraph{VoxDet/VoxNT finding.}
-VoxNT predicts six-direction offsets toward local semantic structure and supplies a geometry-aware auxiliary signal before the final 3D decoding. The strongest verified configuration---\emph{VoxDet + V-JEPA 2.1 FiLM-DPT depth + full-res VoxNT + long-tail loss + scheduled depth gradients}---also uses cosine optimization. Relative to the plain FSSC RGB-DPT/FiLM-DPT system, it raises SC IoU from 34.42 to 44.82 and SSC mIoU from 3.48 to 4.35. The larger completion gain than semantic gain is consistent with VoxNT improving local occupied structure while rare-class recognition remains limited by supervision.
+VoxNT predicts six-direction offsets toward local semantic structure and supplies a geometry-aware auxiliary signal before the final 3D decoding. Among the available canonical test artifacts, the strongest configuration is \emph{VoxDet V5-V2 + V-JEPA 2.1 RGB-DPT context + FiLM-DPT depth + full-resolution VoxNT + long-tail loss + scheduled depth gradients}, at 45.77 SC IoU and 4.62 SSC mIoU. The serialized checkpoint confirms the V-JEPA DPT context encoder and the RGB FiLM-DPT depth checkpoint; its validation-mIoU-selected epoch is 2. The matched DAV2-geometry configuration reaches 44.82/4.35 from validation-selected epoch~5. Its checkpoint explicitly records \texttt{geometry\_depth\_source=dav2\_teacher}, \texttt{depth\_lr=0}, and zero SSC-to-depth gradients, so this result is not attributed to FiLM-DPT geometry or scheduled depth gradients. Both test artifacts use the same 3,842-frame protocol, but both training jobs are incomplete relative to their configured 20 epochs: the FiLM-DPT history ends at epoch~8 and the DAV2 history at epoch~6. Their checkpoint-level test measurements are valid, while claims about the final 20-epoch training recipe require resuming or rerunning both jobs to completion. The larger completion gain than semantic gain remains consistent with VoxNT improving occupied structure while rare-class recognition is limited by supervision.
 
 \paragraph{UAV11 remapping diagnostic.}
 We additionally merge the 21 occupied labels into ten UAV-oriented semantic groups plus empty (UAV11): constructed structure, transport surface, natural ground, low vegetation, tree, ground/construction obstacle, vulnerable road user, vehicle, thin infrastructure, and water. With the full-res VoxNT, long-tail-loss, scheduled-depth-gradient architecture trained from scratch, the best validation SSC mIoU increases from 5.64 on the original fine taxonomy to 9.32 on UAV11; validation SC IoU is 29.42. This is not a like-for-like benchmark improvement because the label space changes. It instead demonstrates that part of the low fine-class mIoU comes from sparse support and visually overlapping subclasses. Rare merged groups can remain unresolved---the UAV11 vehicle group has only 53 validation voxels---so remapping reduces, but does not remove, the long-tail problem. Full mappings, supports, and per-class scores are provided in the supplement.
