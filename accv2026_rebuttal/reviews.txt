@@ -1,0 +1,65 @@
+Poor Presentation and Insufficient Evidence for the Central Claims
+Official Reviewby Reviewer LD5V26 Aug 2026, 09:36 (modified: 27 Aug 2026, 14:03)Program Chairs, Area Chairs, Reviewer LD5V, AuthorsRevisions
+Summary:
+This paper studies frozen V-JEPA 2.1 image and video features for aerial monocular depth estimation (MDE) and semantic scene completion (SSC) on OccuFly. It evaluates linear probes, DPT-style decoders, altitude/intrinsics-conditioned FiLM, Dense Temporal Attention (DTA), and a pose-aware MVS module. The best depth result is achieved by RGB FiLM-DPT, while the video and Pose-MVS variants do not outperform the simpler RGB pathway.
+
+Strengths:
+The extensive comparisons and evaluations provide empirical insights for future work on aerial 3D perception with image and video foundation models.
+
+Major Weaknesses:
+The poor presentation clarity substantially hinders the evaluation of this paper. The paper lacks a clear end-to-end architecture diagram. Figure 1 resembles an experiment-tracking table and does not clearly communicate the data flow; Figures 4–5 are too abstract to explain how DTA, FiLM-DPT, Pose-MVS, lifting, and SSC fusion are connected. The tables also contain serious presentation issues: Table 3 highlights only RMSE despite reporting multiple metrics and mentions baselines that are absent, while Table 4 contains only one method and therefore provides no meaningful comparison. Moreover, multiple references to “Appendix Table ??” and “Appendix Figs. ??–??” cannot be resolved. These issues make the methodology and empirical evidence unnecessarily difficult to understand and assess.
+
+Several central conclusions are not supported by sufficient evidence. The contribution of FiLM is not properly isolated: unconditioned DPT performs substantially worse than the linear probe, while FiLM-DPT produces a very large improvement, but this gap is not explained through controlled ablations. The altitude-interpolation claim is supported by only one result in Table 4, without a non-FiLM baseline, and the reported scene split is inconsistent. The video experiments do not account for spatial misalignment caused by UAV camera motion, while Pose-MVS is evaluated only through downstream SSC without direct depth results. Finally, the SSC mIoU remains very low, and the paper provides no accessible per-class, oracle-depth, or statistical analysis to determine whether the reported differences are robust.
+
+Minor Weaknesses:
+The caption of Table 3 does not match its contents. It states that published results for MapAnythingV1.1, Metric3Dv2, Depth Anything 2, and Depth Anything 3 are included, whereas the table contains only a single Depth Anything 2 baseline. It is unclear whether the other baseline rows were accidentally omitted. This inconsistency makes it difficult to assess the proposed method against the full set of claimed baselines.
+
+Rating: 2: Weak Reject
+Justification For Rating And Suggestions For Rebuttal:
+The paper currently lacks clear presentation and sufficient evidence for several central claims. The FiLM ablation is not controlled, the altitude-interpolation result lacks comparisons, Pose-MVS is not directly evaluated, and the SSC results remain very low.
+
+Confidence: 3: Moderate Confidence: The reviewer is reasonably knowledgeable about the topic. They understand the paper's methodology and results.
+Good ideas, poorly executed and what seems like an unfinished manuscript
+Official Reviewby Reviewer CWVJ19 Aug 2026, 11:17 (modified: 27 Aug 2026, 14:03)Program Chairs, Area Chairs, Reviewer CWVJ, AuthorsRevisions
+Summary:
+The paper presents a method that uses a frozen V-JEPA 2.1 backbone and asks whether its image and video features are any good for two aerial tasks on the new OccuFly benchmark - metric depth from a single view (MDE) and semantic scene completion (SSC). The authors add increasingly capable heads to the frozen backbone such as linear probe, pyramid adapter, DPT decoder, DPT conditioned on altitude and camera intrinsics (FiLM), a temporal adapter for video tokens, and a small multi-view stereo branch using neighboring calibrated views. The takeaways are that: (1) depth is in the features but you need a proper decoder to get it out, (2) the FiLM-conditioned decoder ends up roughly on par with a fine-tuned version of DepthAnything2 and (3) video features only help at the lowest altitude.
+
+Strengths:
+Timely problem since aerial scene completion barely exists yet and the question of "do video foundation models understand altitude-dependent geometry" is something the field hasn't answered.
+The result worth remembering is that a completely frozen video backbone with a conditioned decoder is matching a fine-tuned depth specialist.
+Honesty about several caveats/limitations - the leaky altitude split, the wash between depth priors and the non-existent end-to-end fine-tuning experiment.
+Major Weaknesses:
+There is no second backbone. The whole study claims to be about V-JEPA 2.1, but without running even one alternative frozen encoder through the same protocol, nothing can be attributed to V-JEPA specifically. I think every conclusion might hold for any big frozen ViT, until I'm proven wrong. For a paper whose only contribution is the study, this is the difference between a finding and an observation. DINOv3 was built for exactly this kind of aerial transfer, why not use it?
+Swapping V-JEPA in or out of the SSC pipeline barely moves the needle.
+The plain DPT baseline is broken since it yields worse performance than a linear probe, while two variants containing the same components behave fine, which smells like a training failure, and it happens to be the very baseline against which the FiLM gain is measured.
+The manuscript seems unfinished. There are several "Appendix Table ??" references that sit exactly where the evidence for the claims should be.
+The model beats DepthAnything2 on two metrics but loses on the scale-invariant ones, and the altitude-interpolation experiment has train/test scene overlap the authors themselves admit, so it can't separate "conditioning works" from "the model memorized the scenes." On top of that, Table 4 contains exactly one method and nothing to compare it against, so it's unclear what the table is supposed to establish.
+Everything is a single run, several key margins are small enough to be seed noise, and the UAV size/weight/power motivation sits awkwardly next to a giant backbone evaluated on eight H100s with no cost figures anywhere.
+Missing related work in three directions: (1) the frozen-probing methodology already exists as a multi-backbone protocol (probe3d at CVPR 2024, Lexicon3D at NeurIPS 2024) (2) intrinsics conditioned depth decoding goes back to CAM-Convs (CVPR 2019) and Metric3D's canonical-camera trick (3) the aerial field the paper treats as vacant has its own datasets — WildUAV, UseGeo, MidAir, AerialMetric for depth, plus real-flight video benchmarks the paper never mentions: RuralScapes, Dronescapes (which even provides metric depth from real flights, directly usable here), and MESSI (multi-elevation, which is exactly the altitude axis the paper studies).
+Minor Weaknesses:
+Figure 1 and Figure 5 is an unreadable screenshot-like table (it should have been an actual figure)
+"We're not proposing a new SSC architecture" vs. a contribution bullet claiming a new SSC variant, pick one.
+Rating: 2: Weak Reject
+Justification For Rating And Suggestions For Rebuttal:
+One result is genuinely interesting, but the study can't support its own conclusions, since there is no comparison backbone, a confounded key baseline, an SSC claim that traces to architecture choice rather than the studied features and a manuscript with holes in it (with broken references (??), sub-publishable figures, a comparison table with one row and a single benchmark when real-flight alternatives with metric depth exist). In its current from I opt to reject the submission, but the ideas have potential, not well executed. I suggest completing the study and resubmitting.
+
+Confidence: 4: High Confidence: The reviewer has strong expertise in the area. They are highly familiar with the relevant literature and can critically evaluate the paper.
+A clean frozen-backbone transfer study whose depth advantage is marginal (RMSE-only) and whose SSC pathways underperform a simple baseline.
+Official Reviewby Reviewer y7qY23 Jul 2026, 11:12 (modified: 27 Aug 2026, 14:03)Program Chairs, Area Chairs, Reviewer y7qY, AuthorsRevisions
+Summary:
+This paper presents a systematic study of the transferability of frozen V-JEPA 2.1 image/video features to monocular depth estimation (MDE) and semantic scene completion (SSC), conducted on the OccuFly dataset. The authors vary only the downstream architecture—progressing from a linear probe to DPT, SFP-DPT, FiLM-DPT with altitude/intrinsics conditioning, video temporal attention, and pose-aware MVS—and inject the V-JEPA depth prior into a CGFormer/FoundationSSC-style SSC pipeline, thereby disentangling the contribution of each component to aerial 3D perception.
+
+Strengths:
+1.Freezing the backbone and swapping only one component at a time allows improvements to be attributed unambiguously to the downstream architecture. 2.A frozen V-JEPA 2.1 with FiLM-DPT-RGB attains 4.621 m RMSE, matching or slightly surpassing the specialized baseline DepthAnything2 under OccuFly's own protocol (Table 3), which is a meaningful result for a frozen general-purpose backbone. 3.The paper proactively notes the scene-overlap risk in altitude interpolation, faithfully reports the comparatively low SSC figures, and clearly enumerates its limitations. 4.The presentation is clear, the formatting compliant, and the citations clean.
+
+Major Weaknesses:
+1.Table 3 claims that the method is "slightly improving RMSE over DepthAnything2-OccuFly." However, the δ metrics are all marginally worse than DepthAnything2-OccuFly, and the gap on SILog is substantial, yet neither is explained. 2.The best SSC mIoU result is relatively weak, and the video/MVS geometry prior is a negative contribution relative to the comparatively simple RGB-context depth prior.
+
+Minor Weaknesses:
+1.There are numerous broken cross-references in the text, e.g., "Table ??", "Appendix Figs. ??–??", and "Appendix Table ??". 2.The figures are never referenced in the main text. 3.Please verify that the text within the figures complies with the minimum font-size requirements. 4.Equation (19) refers to using scenes 1–8, whereas Table 4 states 1–9; please clarify whether this is an error.
+
+Rating: 5: Weak Accept
+Justification For Rating And Suggestions For Rebuttal:
+1.As presented, the Semantic Scene Completion (SSC) study neither demonstrates a clear improvement from the paper's new components nor provides verifiable numbers; please restore the in-text citations and re-explain the SSC concept accordingly. 2.Please provide an explanation for the results in Table 3, where the method underperforms DepthAnything2-OccFly. 3.Please correct the in-text citation errors. Although these count as minor weaknesses under the guidelines, the errors already impair the paper's readability.
+
+Confidence: 4: High Confidence: The reviewer has strong expertise in the area. They are highly familiar with the relevant literature and can critically evaluate the paper.

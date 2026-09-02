@@ -1,0 +1,75 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+% Official ACCV 2026 rebuttal formatting. Keep these settings unchanged.
+\usepackage[rebuttal]{cvpr}
+\usepackage{accvabbrv}
+\usepackage{graphicx}
+\usepackage{booktabs}
+% Optional in the official template; incompatible with the local Tectonic engine.
+% Re-enable when compiling with the conference-recommended pdflatex toolchain.
+% \usepackage[accsupp]{axessibility}
+\definecolor{accvblue}{rgb}{0.12,0.49,0.85}
+\usepackage[pagebackref,breaklinks,colorlinks,citecolor=accvblue]{hyperref}
+
+\def\paperID{1107}
+\def\confName{ACCV}
+\def\confYear{2026}
+
+\begin{document}
+\title{Exploring RGB and Video V-JEPA 2.1 Features for Aerial Depth Estimation and Semantic Scene Completion}
+\maketitle
+\thispagestyle{empty}
+\appendix
+
+% Response strategy: (1) repair trust/presentation, (2) state the exact positive result,
+% (3) narrow unsupported causal claims, and (4) explain the negative SSC/video findings.
+\noindent\textbf{We thank LD5V, CWVJ, and y7qY for their detailed feedback.}
+We agree that unresolved appendix references and several presentation errors obscured the
+submitted evidence. We clarify the main result and appropriately narrow our conclusions
+below; no unrequested new result is introduced.
+
+\paragraph{Presentation and protocol corrections (all reviewers).}
+The appendix tables/figures were not packaged with resolvable references; we apologize
+because this made supporting evidence inaccessible. Table~3's caption incorrectly names
+baselines absent from its body and highlights only RMSE; it should name only the included
+DepthAnything2-OccuFly baseline and compare every metric. Table~4 is a stress-test result,
+not a comparative ablation. Equation~19 is correct: training uses 30/50\,m, while 40\,m
+validation uses scenes 01--04 and testing uses 05--08; ``1--9'' in Table~4 is an error.
+Because these scene identities occur at other training altitudes, this holds out altitude,
+not scene identity. We therefore retract the scene-generalization interpretation. We will
+repair all references, cite every figure, verify figure text size, and replace the
+screenshot-like overview with an end-to-end data-flow diagram distinguishing frozen and
+trainable components.
+
+\paragraph{What the depth comparison establishes (CWVJ, y7qY).}
+FiLM-DPT-RGB versus DepthAnything2-OccuFly improves RMSE (4.621 vs.~4.844\,m), MAE
+(3.523 vs.~4.193\,m), and AbsRel (0.129 vs.~0.134), is essentially tied but slightly worse
+on $\delta_1$ (0.833 vs.~0.834), and is worse on SILog (0.164 vs.~0.112). RMSE/MAE measure
+absolute metric error (with RMSE emphasizing large errors), whereas $\delta$ and SILog
+measure multiplicative/log-space consistency. Thus the supported conclusion is
+\emph{competitive absolute metric accuracy from a frozen general-purpose backbone}, not
+overall superiority. The metric pattern is an observation; without error-distribution
+analysis we do not assert its mechanism.
+
+\paragraph{FiLM, backbone, and uncertainty scope (LD5V, CWVJ).}
+We agree that the unexpectedly weak plain-DPT row prevents a clean causal attribution to
+FiLM. We consequently restrict the claim to the \emph{configured FiLM-DPT system} being
+the strongest tested V-JEPA head; Table~4 alone does not isolate conditioning. Likewise,
+one frozen encoder cannot demonstrate V-JEPA-specific superiority, so conclusions are
+limited to V-JEPA~2.1 under this OccuFly protocol. Matched DPT/FiLM conditioning ablations,
+a second frozen backbone, and multi-seed uncertainty are the correct requested controls;
+we do not present unavailable results as established evidence.
+
+\paragraph{Video, MVS, and SSC interpretation (LD5V, CWVJ, y7qY).}
+The strongest submitted SSC result is 37.68 SC IoU / 3.46 SSC mIoU; the strongest
+Pose-MVS result is 32.55 / 2.36. Hence video/MVS does not improve the simpler RGB-context
+configuration, and we retract any implication of a new superior SSC architecture. DTA
+does not explicitly warp temporal features into the target camera frame, so UAV ego-motion
+can cause spatial mixing. Pose-MVS was evaluated only through downstream SSC, not direct
+depth; it is therefore an exploratory negative result, not evidence that MVS depth itself
+fails. Direct depth, pose-aligned temporal aggregation, oracle lifting, per-class analysis,
+and repeated seeds are needed to localize the bottleneck. Finally, eight H100s describe
+experimental infrastructure, not demonstrated onboard deployment; we will remove that
+implication and report efficiency before making it.
+
+\end{document}

@@ -1,0 +1,73 @@
+\documentclass[10pt]{article}
+
+% This file intentionally does not summarize, correct, or paraphrase the reviews.
+% The complete contents are read directly from reviews.txt and typeset verbatim.
+\usepackage[margin=1in]{geometry}
+\usepackage{fontspec}
+\setmonofont{DejaVu Sans Mono}
+\usepackage{microtype}
+\usepackage{fvextra}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{headingbg}{RGB}{220,235,250}
+\definecolor{reviewone}{RGB}{45,105,165}
+\definecolor{reviewtwo}{RGB}{140,75,145}
+\definecolor{reviewthree}{RGB}{35,125,90}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\begin{document}
+
+% Reviewer LD5V: source lines 1--21, reproduced exactly once.
+\VerbatimInput[
+  firstline=1,
+  lastline=21,
+  breaklines=true,
+  breakanywhere=true,
+  fontsize=\small,
+  frame=single,
+  framesep=3mm,
+  rulecolor=\color{reviewone},
+  highlightlines={1,3,6,9,14,17,18,21},
+  highlightcolor=headingbg
+]{reviews.txt}
+
+\vspace{1em}
+\noindent\textcolor{reviewtwo}{\rule{\linewidth}{1.2pt}}
+\vspace{0.5em}
+
+% Reviewer CWVJ: source lines 22--46, reproduced exactly once.
+\VerbatimInput[
+  firstline=22,
+  lastline=46,
+  breaklines=true,
+  breakanywhere=true,
+  fontsize=\small,
+  frame=single,
+  framesep=3mm,
+  rulecolor=\color{reviewtwo},
+  highlightlines={22,24,27,31,39,42,43,46},
+  highlightcolor=headingbg
+]{reviews.txt}
+
+\vspace{1em}
+\noindent\textcolor{reviewthree}{\rule{\linewidth}{1.2pt}}
+\vspace{0.5em}
+
+% Reviewer y7qY: source lines 47--65, reproduced exactly once.
+\VerbatimInput[
+  firstline=47,
+  lastline=65,
+  breaklines=true,
+  breakanywhere=true,
+  fontsize=\small,
+  frame=single,
+  framesep=3mm,
+  rulecolor=\color{reviewthree},
+  highlightlines={47,49,52,55,58,61,62,65},
+  highlightcolor=headingbg
+]{reviews.txt}
+
+\end{document}

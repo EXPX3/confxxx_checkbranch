@@ -239,6 +239,15 @@ pythontex-files-*/
 # xcolor
 *.xcp
 
+# Local ACCV rebuttal build products and working copies
+/accv2026_rebuttal/build/
+/accv2026_rebuttal/* copy*.tex
+/accv2026_rebuttal/* copy*.pdf
+/accv2026_rebuttal/rebuttal_evidence_tables_revised.tex
+/accv2026_rebuttal/rebuttal_evidence_tables_revised.pdf
+/accv2026_rebuttal/test.tex
+/accv2026_rebuttal/test.pdf
+
 # xmpincl
 *.xmpi
 
