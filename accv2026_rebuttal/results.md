@@ -46,6 +46,16 @@ checkpoint. SC IoU and SSC mIoU are reported as percentages.
 | DINOv3 DPT context + DINOv3 MVS depth | 11 | **43.36698** | **4.47280** | 5.046839 | 0.125280 |
 | V-JEPA 2.1 DPT context + V-JEPA 2.1 MVS depth | 4 | 35.02234 | 3.28268 | 8.355440 | 0.208831 |
 
+### DINOv3 MVSFormer++ with VoxDet V5-V2
+
+Adding full-resolution VoxNT, long-tail loss, and scheduled depth gradients to
+the DINOv3 MVSFormer++ configuration selects epoch 13 by validation
+union-present SSC mIoU. On the canonical test split it obtains **48.0635% SC
+IoU**, **4.8426% union-present SSC mIoU**, and **5.1116% GT-present SSC mIoU**.
+The union-present score is used for direct comparison with the 43.36698/4.47280
+control. The complete test artifact is stored at
+`data/checkpoints/my_checkpoints/07b_dinov3_mvsformerpp_voxdet_v5v2_seed0_20260929/test_best_epoch13/test_metrics.json`.
+
 The embedded depth values above are those produced by the FSSC calibrated
 dataset join/evaluator and therefore should not be substituted for the
 standalone 3,842-reference MDE results in Section 1. The join excludes the

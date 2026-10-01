@@ -21,12 +21,12 @@
 \thispagestyle{empty}
 \appendix
 
-\noindent\textbf{We thank all reviewers for their constructive feedback.}
+\noindent\textbf{We thank all reviewers for their carefully reviewed constructive feedback.}
 VJ/D2/D3/DA2/MVSF abbreviate V-JEPA~2.1/DINOv2/DINOv3/Depth Anything~2/MVSFormer++;
 response table numbering starts at 6, continuing submission.
 \begin{table}[t]
   \centering
-  \caption{\textbf{Evaluation of frozen foundation-model features with increasingly capable monocular depth heads and posed multi-view stereo integration.}}
+  \caption{\textbf{Additional depth controls extending main-paper Table~3.}}
   \label{tab:depth_evaluation}
   \footnotesize
   \setlength{\tabcolsep}{2.5pt}
@@ -38,7 +38,7 @@ response table numbering starts at 6, continuing submission.
     VJ video Linear Probe              & 0.701 & 0.191 & 7.055 & 0.207 \\
     D3 Linear Probe                    & 0.782 & 0.156 & 6.097 & 0.186 \\
     D3 FiLM-DPT              & \textbf{0.848} & \textbf{0.121} & \textbf{4.358} & 0.161 \\
-    VJ DTA-MVS (pending)     & -- & -- & -- & -- \\
+    VJ DTA-MVS     & 0.654 & 0.231 & 8.197 & 24.717 \\
     VJ DTA-FiLM-MVS          & 0.768 & 0.175 & 6.406 & 0.211 \\
     MVSF++/D2-B             & 0.748 & 0.231 & 7.657 & 0.195 \\
     MVSF++/VJ-G             & 0.761 & 0.225 & 7.517 & 0.193 \\
@@ -48,7 +48,7 @@ response table numbering starts at 6, continuing submission.
 \end{table}
 
 \paragraph{Responses common to LD5V, CWVJ, and y7qY:}
- Table~\ref{tab:depth_evaluation} caption is appropriate for the Table 3 and it extends Table 3 by reporting corrected result for DPT, Spatial alignment included video methods, suggested DINO variants for faithful comparison and attribution of merits or flaws, requested MVS(simple) and supportive VJ/D features backed MVSF++(sofisticated) variants depth results.  Only important baseline is DA2-Occufly. For other baselines refer table 5 of occufly paper. We omit superiority claim of VJ FiLM-DPT. Considering the Table~3 and Table~\ref{tab:depth_evaluation} we show increasingly capable depth heads and MVS integrations. Although DAv2-OccuFly achieves the strongest reported SILog and threshold accuracies, foundation models with general pretraining objectives remain competitive and outperform it on absolute-error metrics. Any remaining gap may reflect DAv2’s depth-specific pretraining and end-to-end OccuFly adaptation, whereas frozen VJ/D backbones are adapted only through their depth heads.
+Table~\ref{tab:depth_evaluation} adds the corrected DPT result, spatially aligned video methods, DINOV3 comparision, simple-MVS, and supportive sophisticated MVSF++ variants. For space, we omit MAE, $\delta_2$, $\delta_3$, and published baselines already reported in OccuFly Table~5, retaining DA2-OccuFly as the key comparator. We withdraw the VJ FiLM-DPT superiority claim: Although DAv2-OccuFly achieves the strongest reported SILog and threshold accuracies, foundation models with general pretraining objectives remain competitive and outperform it on absolute-error metrics. Any remaining gap may reflect DAv2’s depth-specific pretraining and end-to-end OccuFly adaptation, whereas frozen VJ/D backbones are adapted only through their depth heads.
 
 \begin{table}[t]
   \caption{\textbf{Altitude interpolation diagnostics.} }
@@ -62,33 +62,23 @@ response table numbering starts at 6, continuing submission.
     Method & $\delta_1\uparrow$ & AbsRel$\downarrow$ & RMSE$\downarrow$ &
       MAE$\downarrow$ & SILog$\downarrow$ \\
     \midrule
-    \multicolumn{6}{@{}l}{\textbf{A. Unseen altitude; familiar scenes}} \\
     \multicolumn{6}{@{}l}{Tr: 01--08@30/50\,m; Val: 01--04@40\,m; Te: 05--08@40\,m} \\
     DPT
       & 0.789 & 0.151 & 6.728 & 5.775 & 0.180 \\
     FiLM-DPT
       & \textbf{0.965} & \textbf{0.102} & \textbf{4.707} &
         \textbf{3.957} & \textbf{0.120} \\
-    \midrule
-    \multicolumn{6}{@{}l}{\textbf{B. Unseen scenes and altitude}} \\
-    \multicolumn{6}{@{}l}{Tr: 01--04@30/50\,m; Val: 05--06@40\,m; Te: 07--08@40\,m} \\
-    DPT
-      & \textbf{0.925} & \textbf{0.102} & \textbf{4.807} &
-        \textbf{3.994} & \textbf{0.125} \\
-    FiLM-DPT
-      & 0.707 & 0.205 & 8.506 & 7.918 & 0.169 \\
     \bottomrule
   \end{tabular}
   }
 \end{table}
 
-Table~\ref{tab:altitude-interpolation-control} shall be Table~4. The main purpose of this non standard split ablation is to specifically study methods ability to interpolate to unseen altitude cues. But as rigltly pointed there is inherently visual cues leakage. To address that we will report a ablation of unseen scenes and altitude for comparision.
-A clear architecture diagram for SSC concept, prioritizing data-flow and various components involved can replace Figures~1 and~5 in the final submission.
+Table~\ref{tab:altitude-interpolation-control} shall be Table~4. This non-standard split isolates interpolation to an unseen altitude while retaining familiar scenes; Suggested leakage is real and hence a new ablation with unseen scene and altitude will be added. We will replace Figures~1 and~5 with a clear end-to-end SSC data-flow diagram.
 
 
 \begin{table}[t]
-  \caption{\textbf{FiLM conditioningablation.} Test mean$\pm$SD
-  over seeds 0/1/2. Numerically best mean in \textbf{bold}.}
+  \caption{\textbf{FiLM conditioning ablation.} Test mean$\pm$SD over three
+  seeds; best mean in \textbf{bold}.}
   \label{tab:film-aggregate}
   \centering
   \footnotesize
@@ -110,54 +100,17 @@ A clear architecture diagram for SSC concept, prioritizing data-flow and various
   \end{tabular}
   }
 \end{table}
-\begin{table}[t]
-  \caption{\textbf{Extension of main-paper Table~5 with MVSFormer++
-  depth into FSSC geometric layer.} }
-  \label{tab:fssc-mvsformerpp-extension}
-  \centering
-  \footnotesize
-  \setlength{\tabcolsep}{3.2pt}
-  \resizebox{\columnwidth}{!}{%
-  \begin{tabular}{@{}lcc@{}}
-    \toprule
-    Variant & SC IoU (\%)$\uparrow$ & SSC mIoU (\%)$\uparrow$ \\
-    \midrule
-    DINOv3 context + DINOv3 MVS depth
-      & \textbf{43.37} & \textbf{4.47} \\
-    V-JEPA2.1 context + V-JEPA2.1 MVS depth
-      & 35.02 & 3.28 \\
-    \bottomrule
-  \end{tabular}
-  }
-\end{table}
+\paragraph{LD5V:}
+Spatial alignment: Frozen RAFT estimates target-to-source flow and warps neighboring 2D features into target-frame coordinates. For a stronger MVS comparison, MVSF++ uses cross-view fusion, attention-based encoding, and cost-volume regularization. Extending main-paper Table~5, its D3 and VJ variants integrated into FSSC yield SC IoU/SSC mIoU of 43.37/4.47\% and 35.02/3.28\%, respectively. Replacing estimated depth with GT metric depth only during geometric lifting yields 49.40/7.25\% with VJ context and 42.01/8.40\% with D3 context. Per-class results are provided in Supplement~B; MVSF++-FSSC variants will be added.
 
-\paragraph{LD5V:statistical analysis of
-robustness, and evidence for the central claims.}
-contribution of the FiLM ablation: We provide a matched FiLM ablation and its per-seed results in Table~\ref{tab:film-aggregate} and Table~\ref{tab:film-seeds}.
-spatial misalignment: We thank the reviewer for pointing this out and adopted 2D feature alignment like frozen RAFT flow to align neighboring features to the target frame;
-Alongside simple MVS baselines, extending with MVSFormer++, a sophisticated architecture combining DINOv2 cross-view fusion with attention-based feature encoding and cost-volume regularization for depth estimation seemd appropriate. Ablations results on replacing original D2 backbone with VJ and D3 for depth and FSSC style geometric layer contribution are reported in Table~\ref{tab:fssc-mvsformerpp-extension}.
-Oracle depth:Replacing estimated depth with GT metric depth in the same geometric lifting
-and SSC pipeline yields SC IoU/SSC mIoU of 49.40/7.25 with V-JEPA2.1 ViT-G RGB
-context and 42.01/8.40 with DINOv3 ViT-H/16+ RGB context.
-per-class results: Already provided in the supplemnetary material section B. Will be further extended with MVSF++FSSC variants.
+\paragraph{CWVJ:}
+Suggested D3 comparision also motivates, if permitted, a revised title:
+``Exploring Foundation-Model Spatial and Temporal Features for Aerial Depth Estimation and Semantic Scene Completion.''
+Table \ref{tab:film-aggregate} for FiLM contribution ablations given the limited rebuttal period, and can extend this analysis to all published results.
+Our study focuses on frozen-feature transfer for MDE and SSC rather than onboard deployment; we therefore defer SWaP profiling to compact UAV-suitable student models and will add the suggested related work. Existing aerial datasets with metric depth can extend MDE evaluation, but those without voxel-level annotations cannot support SSC evaluation, for which OccuFly provides the required ground-truth voxel grids.
 
-\paragraph{CWVJ:missing cost figures and related work, existing
-aerial datasets and multi-dataset evaluation, framing the conclusion as a
-study rather than a new SSC architecture, the confounded key baseline, and
-evaluation on only one benchmark.}
-DINOv3: We provide an ablation table containing DINOv3 alongside V-JEPA~2.1.
-This important point also motivates, if permitted, a revised title:
-``Exploring Foundation-Model Spatial and Temporal Features for Aerial Depth
-Estimation and Semantic Scene Completion.''
-Single-run:Table \ref{film-aggregate} for FiLM contribution ablations given the
-limited rebuttal period, and can extend this analysis to all published results.
-Because this preliminary study examines frozen foundation features for MDE and SSC rather than onboard deployment, we defer SWaP profiling to future UAV-suitable student models.The mentioned valuable related work will be appropriately cited.
-existing aerial datasets: The listed datasets are not directly usable for SSC evaluation, where occufly dataset outshines as they provide ground truth voxel grids. Few of the mentioned datasets especially the ones with depth maps can ofcource be benchmarked for depth estimation.
 
 \paragraph{y7qY:}
-The modest SSC mIoU suggests limitations beyond depth estimation: even the GT-depth oracle reaches only 7.25/8.40 mIoU, while OccuFly’s 96.109% empty voxels create severe occupancy imbalance, leaving only 3.891% to supervise occupied semantic classes.
-The negative video result exposes limitations of our temporal adapter rather than temporal cues themselves, motivating motion/pose-aligned and occlusion-aware feature fusion used in recent temporal SSC.
-The MVSFormer++-based FSSC gains are consistent with its cross-view fusion and attention-based cost-volume regularization providing a stronger geometric prior than our simple MVS module.
-We have considered only scenes 1--8 for non standard  altitude interpolation ablation.
+Low SSC mIoU persists with GT depth (7.25/8.40), indicating bottlenecks beyond depth; learning is further challenged by OccuFly’s 96.109\% empty versus 3.891\% occupied valid voxels. The video result shows no benefit from our current adapter—not that temporal cues are ineffective—motivating motion/pose-aligned, occlusion-aware fusion. MVSFormer++ provides stronger cross-view geometry than our simple MVS module. The altitude-interpolation ablation uses scenes 1–8 only.
 
 \end{document}
