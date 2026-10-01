@@ -48,9 +48,11 @@ checkpoint. SC IoU and SSC mIoU are reported as percentages.
 
 ### DINOv3 MVSFormer++ with VoxDet V5-V2
 
-Adding full-resolution VoxNT, long-tail loss, and scheduled depth gradients to
-the DINOv3 MVSFormer++ configuration selects epoch 13 by validation
-union-present SSC mIoU. On the canonical test split it obtains **48.0635% SC
+Replacing the control's FoundationSSC decoder/objective with the corrected
+VoxDet V5-V2 decoder, long-tail loss, and full-resolution class-balanced VoxNT
+selects epoch 13 by validation union-present SSC mIoU. The native MVS posterior
+remains frozen and does not receive scheduled SSC-to-depth gradients. On the
+canonical test split the treatment obtains **48.0635% SC
 IoU**, **4.8426% union-present SSC mIoU**, and **5.1116% GT-present SSC mIoU**.
 The union-present score is used for direct comparison with the 43.36698/4.47280
 control. The complete test artifact is stored at
