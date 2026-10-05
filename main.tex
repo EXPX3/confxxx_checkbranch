@@ -1,49 +1,45 @@
-\documentclass[runningheads]{llncs}
+% IEEE conference manuscript entry point.
+% Adapted from IEEE's official conference-LaTeX template (June 2024).
+% Keep the existing content/ hierarchy; write the paper in content/chapters/
+% and place figures, tables, and bibliography records in their existing paths.
+\documentclass[conference]{IEEEtran}
 
-% ---------------------------------------------------------------
-% ACCV/ECCV-style package setup.
-%
-% Keep organizer-provided template files unchanged unless a specific
-% conference version requires an official update.
-%
-% TODO REVIEW: Set the conference year and submission ID for the target venue.
-\usepackage[review,year=2026,ID=*****]{accv}
-% TODO FINAL: Use the non-review style for camera-ready versions.
-%\usepackage{accv}
+% Uncomment only when a funding acknowledgement is required in the first
+% footnote. This command is part of the official IEEE template.
+% \IEEEoverridecommandlockouts
 
-% Commonly used abbreviations (\eg, \ie, \etc, \cf, \etal, etc.).
-\usepackage{accvabbrv}
-
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
 \usepackage{graphicx}
-\graphicspath{{content/images/}}
+\usepackage{textcomp}
+\usepackage{xcolor}
 \usepackage{booktabs}
-
-% It is strongly recommended to use hyperref for review versions.
-\usepackage[pagebackref,breaklinks,colorlinks,citecolor=accvblue]{hyperref}
-
-% Support for ORCID icons in camera-ready author lists.
-\usepackage{orcidlink}
+\usepackage{hyperref}
+\graphicspath{{content/images/}}
 
 \begin{document}
 
 \title{Paper Title}
 
-% TODO FINAL: Replace with the camera-ready author list and affiliations.
-\author{First Author\inst{1}\orcidlink{0000-0000-0000-0000} \and
-Second Author\inst{1}\orcidlink{0000-0000-0000-0000}}
-
-\authorrunning{F.~Author et al.}
-
-\institute{Institution Name\\
-\email{contact@example.com}}
+% Replace the placeholder blocks with the final author and affiliation list.
+% Keep the IEEEauthorblockN/IEEEauthorblockA structure from the official
+% conference template; do not use the LNCS \author/\institute commands.
+\author{\IEEEauthorblockN{First Author}
+\IEEEauthorblockA{\textit{Department or Organization} \\
+\textit{Institution} \\
+City, Country \\
+contact@example.com}}
 
 \maketitle
 
 \begin{abstract}
-Write a concise abstract for the target conference.
-
-\keywords{Keyword One \and Keyword Two \and Keyword Three}
+Write a concise abstract for the target IEEE conference paper.
 \end{abstract}
+
+\begin{IEEEkeywords}
+keyword one, keyword two, keyword three
+\end{IEEEkeywords}
 
 \input{content/chapters/1_introduction}
 \input{content/chapters/2_related_work}
@@ -51,8 +47,7 @@ Write a concise abstract for the target conference.
 \input{content/chapters/4_experiments}
 \input{content/chapters/5_conclusion}
 
-\clearpage
-\bibliographystyle{splncs04}
+\bibliographystyle{IEEEtran}
 \bibliography{content/references}
 
 \end{document}

@@ -1,44 +1,50 @@
-# Conference Paper Scaffold
+# IEEE RCC 2027 Paper Scaffold
 
-This repository is the reusable conference-paper scaffold for the
-`ws_jepa_occufly_test` workspace. The `main` branch is intentionally minimal and
-should remain a clean starting point for future conference papers.
+This checkout is the IEEE RCC 2027 adaptation of the reusable conference-paper
+scaffold. It was created from `main` of `EXPX3/confxxx_checkbranch` on the local
+branch `ieeercc2027`. The existing `content/` layout is deliberately retained.
 
-Conference-specific paper state belongs on support branches:
-
-```text
-main              reusable paper scaffold
-accv26-support    preserved ACCV26 paper state
-wacv27-support    fresh WACV27 starting branch
-```
+The root `main.tex` now uses the official IEEE conference class and bibliography
+style. The unmodified official source files from the supplied IEEE archives are
+included locally so the manuscript can be compiled reproducibly without relying
+on a system-installed version.
 
 ## Structure
 
 ```text
-main.tex                 paper entry point
+main.tex                 IEEE conference paper entry point
 content/chapters/        section files included by main.tex
 content/images/          paper figures
 content/tables/          paper tables
 content/references.bib   bibliography database
-docs/                    organizer/LNCS reference documentation
-accv.sty                 organizer style file
-accvabbrv.sty            organizer abbreviation helpers
-llncs.cls                LNCS class file
-splncs04.bst             LNCS bibliography style
+IEEEtran.cls             official IEEE conference document class
+IEEEtran.bst             official unsorted IEEE bibliography style
+IEEEtranS.bst            official sorted IEEE bibliography style
+IEEEabrv.bib             official abbreviated IEEE journal-name strings
+IEEEfull.bib             official full journal-name strings
+docs/                    IEEE template/BST documentation and example assets
 ```
 
-Keep organizer-provided template files, class files, and bibliography styles in
-the repository. Conference organizers are strict about formatting, margins,
-fonts, and bibliography behavior; do not replace these files with generic
-LaTeX scaffolding unless the target venue provides an official update.
+The prior LNCS/ACCV files remain in place for historical scaffold provenance,
+but `main.tex` does not load them. Do not mix LNCS commands such as `\inst`,
+`\institute`, `\authorrunning`, or `\keywords` into this IEEE manuscript.
+Use IEEE's `\IEEEauthorblockN`, `\IEEEauthorblockA`, and
+`\begin{IEEEkeywords}...\end{IEEEkeywords}` constructs instead.
+
+## Official IEEE template provenance
+
+- `IEEEtran.cls`, `docs/IEEEtran_HOWTO.pdf`,
+  `docs/IEEE-conference-template-062824.tex`,
+  `docs/IEEE-conference-template-062824.pdf`, and `docs/fig1.png` came
+  unmodified from IEEE's conference-LaTeX template archive.
+- `IEEEtran.bst`, `IEEEtranS.bst`, `IEEEabrv.bib`, `IEEEfull.bib`,
+  `docs/IEEEexample.bib`, `docs/IEEEtranBST2_README.txt`, and
+  `docs/IEEEtran_bst_HOWTO.pdf` came unmodified from IEEEtranBST2.
+- `main.tex` is the intentional adaptation: it preserves this repository's
+  chapter/image/table/reference structure while using the official IEEE
+  conference document and bibliography format.
 
 ## Compile
-
-With Tectonic:
-
-```bash
-tectonic -X compile main.tex
-```
 
 With pdfLaTeX/BibTeX:
 
@@ -49,4 +55,4 @@ pdflatex main
 pdflatex main
 ```
 
-Generated PDFs and auxiliary files should not be committed on `main`.
+Generated PDFs and auxiliary files should not be committed.
