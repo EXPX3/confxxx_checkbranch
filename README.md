@@ -28,8 +28,11 @@ docs/                    IEEE template/BST documentation and example assets
 The prior LNCS/ACCV files remain in place for historical scaffold provenance,
 but `main.tex` does not load them. Do not mix LNCS commands such as `\inst`,
 `\institute`, `\authorrunning`, or `\keywords` into this IEEE manuscript.
-Use IEEE's `\IEEEauthorblockN`, `\IEEEauthorblockA`, and
-`\begin{IEEEkeywords}...\end{IEEEkeywords}` constructs instead.
+IEEE RCC 2027 is double-blind: the review entry point intentionally uses an
+empty `\author{}` block. Do not add author names, affiliations, email addresses,
+ORCIDs, acknowledgements, identifying funding text, or identifying external
+links before review. Restore IEEE's `\IEEEauthorblockN` and
+`\IEEEauthorblockA` structure only for the camera-ready version.
 
 ## Official IEEE template provenance
 
