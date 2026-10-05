@@ -47,7 +47,15 @@ keyword one, keyword two, keyword three
 \input{content/chapters/4_experiments}
 \input{content/chapters/5_conclusion}
 
+% The starter bibliography file is intentionally empty. Keep this false until
+% at least one cited entry has been added to content/references.bib; IEEEtran's
+% BibTeX style does not accept an empty bibliography environment.
+% Set \includereferencestrue before a manuscript build with citations.
+\newif\ifincludereferences
+\includereferencesfalse
+\ifincludereferences
 \bibliographystyle{IEEEtran}
 \bibliography{content/references}
+\fi
 
 \end{document}

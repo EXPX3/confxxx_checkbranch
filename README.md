@@ -55,4 +55,11 @@ pdflatex main
 pdflatex main
 ```
 
+The starter `content/references.bib` is deliberately empty. The initial
+scaffold therefore compiles without a bibliography. Once at least one cited
+record has been added, change `\includereferencesfalse` to
+`\includereferencestrue` in `main.tex` and use the four-pass command above.
+IEEEtran intentionally rejects an empty bibliography, so do not enable it
+before adding cited records.
+
 Generated PDFs and auxiliary files should not be committed.
