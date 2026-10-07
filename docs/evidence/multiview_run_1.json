@@ -1,0 +1,38 @@
+{
+  "source_path": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/07b_dinov3_mvsformerpp_voxdet_v5v2_seed1_replication_20261006/test_metrics.json",
+  "source_sha256": "470826b505ed4aa828501e5722830445aab2706825811b5692df684ccc777b8d",
+  "checkpoint_path": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/07b_dinov3_mvsformerpp_voxdet_v5v2_seed1_replication_20261006/best_val_miou.pt",
+  "checkpoint_epoch": 12,
+  "seed": 1,
+  "variant_tag": "variant_a_dinov3_mvsformerpp_voxdet_v5v2",
+  "training_contract_version": 2,
+  "sc_precision": 0.6363628480628921,
+  "sc_recall": 0.6910834875751153,
+  "sc_iou": 0.49543366420832996,
+  "ssc_miou_gt_present": 0.05838017457303526,
+  "ssc_miou_all_21_zero_filled": 0.05004014963403022,
+  "ssc_miou_legacy_union_present": 0.055307533806033406,
+  "ssc_num_gt_present_classes": 18,
+  "ssc_num_union_present_classes": 19,
+  "per_class_iou": [
+    0.8834283996939266, 0.05861595202484636, 0.04530884630131263,
+    0.01836893050953368, 0.029167317379119387, 0.0001901212733703891,
+    0.06993688266454293, 0.035136374195175936, 0.1066684022657234,
+    0.02033934127578694, 0.0, 0.0, 0.09394240054259512, 0.0,
+    0.47239530143834607, 0.021466880408343252, 0.0, null,
+    0.0747791351977098, 0.0041617032772021285, null,
+    0.00036555356102664085
+  ],
+  "per_class_gt_support": [
+    4517581164, 10544769, 13095470, 2388765, 2657293, 148455,
+    14826498, 5404763, 6429748, 15318089, 863, 39028, 2906439, 0,
+    679808594, 18763526, 19866, 0, 14342761, 1626184, 0, 256829
+  ],
+  "per_class_prediction_support": [
+    4449771597, 33980023, 26989719, 1723035, 3491180, 1435046,
+    49928436, 9104462, 14646018, 60505161, 0, 84, 6822599, 6656,
+    576905373, 43254234, 0, 0, 26346594, 1169117, 0, 79770
+  ],
+  "audit_note": "Compact snapshot of the external seed-1 test artifact. The selected checkpoint is validation epoch 12. Integer TP/FP/FN marginals are reconstructed from GT support, prediction support and full-precision IoU. The GT-support vector exactly matches the canonical test vector; the source does not record a test-manifest hash or sample count."
+}
+

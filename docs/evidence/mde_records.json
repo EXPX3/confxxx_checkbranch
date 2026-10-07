@@ -1,0 +1,102 @@
+[
+  {
+    "method": "V-JEPA 2.1 + linear depth probe",
+    "test_rmse_m": 7.795,
+    "test_mae_m": 6.447,
+    "test_abs_rel": 0.188,
+    "test_delta1": 0.651,
+    "evaluation_targets": 3842,
+    "source_repository": "EXPX3/confxxx_checkbranch",
+    "source_ref": "968a1317bd1e63a906bf59574bb481c67cf57b56",
+    "source_path": "content/chapters/4_experiments.tex",
+    "source_table_label": "tab:mde_comparison",
+    "evidence_level": "corrected manuscript record; primary pixel metric file unavailable"
+  },
+  {
+    "method": "V-JEPA 2.1 + four-level DPT",
+    "test_rmse_m": 6.73,
+    "test_mae_m": 5.411,
+    "test_abs_rel": 0.162,
+    "test_delta1": 0.747,
+    "evaluation_targets": 3842,
+    "source_repository": "EXPX3/confxxx_checkbranch",
+    "source_ref": "968a1317bd1e63a906bf59574bb481c67cf57b56",
+    "source_path": "content/chapters/4_experiments.tex",
+    "source_table_label": "tab:mde_comparison",
+    "evidence_level": "corrected manuscript record; primary pixel metric file unavailable"
+  },
+  {
+    "method": "V-JEPA 2.1 + FiLM-DPT",
+    "test_rmse_m": 4.77,
+    "test_mae_m": 3.457,
+    "test_abs_rel": 0.131,
+    "test_delta1": 0.816,
+    "evaluation_targets": 3842,
+    "source_repository": "EXPX3/confxxx_checkbranch",
+    "source_ref": "968a1317bd1e63a906bf59574bb481c67cf57b56",
+    "source_path": "content/chapters/4_experiments.tex",
+    "source_table_label": "tab:mde_comparison",
+    "evidence_level": "corrected manuscript record; primary pixel metric file unavailable"
+  },
+  {
+    "method": "DINOv3 + linear depth probe",
+    "test_rmse_m": 6.097,
+    "test_mae_m": 5.066,
+    "test_abs_rel": 0.156,
+    "test_delta1": 0.782,
+    "evaluation_targets": 3842,
+    "source_repository": "EXPX3/confxxx_checkbranch",
+    "source_ref": "968a1317bd1e63a906bf59574bb481c67cf57b56",
+    "source_path": "content/chapters/4_experiments.tex",
+    "source_table_label": "tab:mde_comparison",
+    "evidence_level": "corrected manuscript record; primary pixel metric file unavailable"
+  },
+  {
+    "method": "DINOv3 + FiLM-DPT",
+    "test_rmse_m": 4.358,
+    "test_mae_m": 3.209,
+    "test_abs_rel": 0.121,
+    "test_delta1": 0.848,
+    "evaluation_targets": 3842,
+    "source_repository": "EXPX3/confxxx_checkbranch",
+    "source_ref": "968a1317bd1e63a906bf59574bb481c67cf57b56",
+    "source_path": "content/chapters/4_experiments.tex",
+    "source_table_label": "tab:mde_comparison",
+    "evidence_level": "corrected manuscript record; primary pixel metric file unavailable",
+    "additional_source": {
+      "source_repository": "EXPX3/ws_jepa_occufly_test",
+      "source_ref": "voxDet_NeurIPS_25",
+      "source_path": "experiments_wacv27/ssc/code/voxDet/v5v2dinov3/TRAINING_CONTRACT.md",
+      "recorded_test_rmse_m": 4.35818,
+      "recorded_abs_rel": 0.12062,
+      "recorded_delta1": 0.847647
+    }
+  },
+  {
+    "method": "V-JEPA 2.1 + temporal attention + FiLM-MVS",
+    "test_rmse_m": 6.406,
+    "test_mae_m": 4.811,
+    "test_abs_rel": 0.175,
+    "test_delta1": 0.768,
+    "evaluation_targets": 3830,
+    "source_repository": "EXPX3/confxxx_checkbranch",
+    "source_ref": "968a1317bd1e63a906bf59574bb481c67cf57b56",
+    "source_path": "content/chapters/4_experiments.tex",
+    "source_table_label": "tab:mde_comparison",
+    "evidence_level": "corrected manuscript record; primary pixel metric file unavailable"
+  },
+  {
+    "method": "DepthAnything2--OccuFly",
+    "test_rmse_m": 4.844,
+    "test_mae_m": 4.193,
+    "test_abs_rel": 0.134,
+    "test_delta1": 0.834,
+    "evaluation_targets": 3842,
+    "source_repository": "EXPX3/confxxx_checkbranch",
+    "source_ref": "968a1317bd1e63a906bf59574bb481c67cf57b56",
+    "source_path": "content/chapters/4_experiments.tex",
+    "source_table_label": "tab:mde_comparison",
+    "evidence_level": "corrected manuscript record; primary pixel metric file unavailable",
+    "original_published_source": "https://arxiv.org/abs/2512.20770"
+  }
+]

@@ -11,6 +11,19 @@ style. The unmodified official source files from the supplied IEEE archives are
 included locally so the manuscript can be compiled reproducibly without relying
 on a system-installed version.
 
+## Current expanded working draft
+
+The user requested a **12-page total working version**, with references on no
+more than one page, for manual reduction to the venue limit. This overrides the
+earlier eight-page deliverable target for this revision. The only semantic
+average reported in the paper is **standard 21-class mIoU**.
+
+Build and verify it with `python3 scripts/compile_paper.py` (requires
+pdfLaTeX, BibTeX, PyMuPDF, NumPy, and Matplotlib). The builder regenerates the
+audited vector figures, uses a clean temporary auxiliary directory, and writes
+the ignored `main.pdf`. Numerical sources, unresolved evidence gaps, and the
+validation-selection contracts are documented in `docs/MANUSCRIPT_AUDIT.md`.
+
 ## Structure
 
 ```text
@@ -85,12 +98,9 @@ pdflatex main
 pdflatex main
 ```
 
-The starter `content/references.bib` is deliberately empty. The initial
-scaffold therefore compiles without a bibliography. Once at least one cited
-record has been added, change `\includereferencesfalse` to
-`\includereferencestrue` in `main.tex` and use the four-pass command above.
-IEEEtran intentionally rejects an empty bibliography, so do not enable it
-before adding cited records.
+The working manuscript enables the bibliography and retains seventeen cited
+records in `content/references.bib`. The supported IEEE BST author control
+abbreviates long author lists without changing the official bibliography style.
 
 Generated PDFs and auxiliary files should not be committed. Rebuild `main.pdf`
 locally after every manuscript change and inspect the complete rendered output.

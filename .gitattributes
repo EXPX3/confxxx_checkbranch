@@ -1,0 +1,3 @@
+# Primary evidence snapshots retain their exact recovered bytes, including EOF.
+docs/evidence/canonical_class_counts.csv whitespace=-blank-at-eof
+docs/evidence/multiview_run_*.json whitespace=-blank-at-eof

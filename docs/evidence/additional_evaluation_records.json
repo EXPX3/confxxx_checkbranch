@@ -1,0 +1,50 @@
+[
+  {
+    "model": "V5-v2 DINOv3 monocular",
+    "split": "canonical test",
+    "sc_iou_percent": 46.96867081348647,
+    "gt_present_miou_percent": 4.460459790759473,
+    "union_present_miou_percent": 4.225698749140554,
+    "fixed_21_miou_percent": 3.823251249222406,
+    "epoch": 9,
+    "checkpoint_path": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/v5v2dinov3_seed42_20261006/best_val_miou.pt",
+    "checkpoint_sha256": "d5260ede870fd9436649d6116ac893269b1c569eb0f9157089c3b50242ba0b7e",
+    "evaluated_samples": 3842,
+    "sample_uid_manifest_sha256": "a605e7b74df890970476fd5e1591af41c8fd29d420c5f066c5b8da11c0481848",
+    "evidence": "fresh canonical test evaluation with full confusion matrix and exact UID manifest"
+  },
+  {
+    "model": "DINOv3 MVS FSSC control",
+    "split": "test; calibrated dataset join",
+    "sc_iou_percent": 43.36698,
+    "gt_present_miou_percent": null,
+    "fixed_21_miou_percent": null,
+    "union_present_miou_percent": 4.4728,
+    "epoch": 11,
+    "checkpoint_path": "/datatank/giridhar.vb/data/checkpoints/posed_mvs_depth/fssc_mvsformerpp_native/dinov3_dpt_context__dinov3_mvsformerpp_native_depth/seed_0/ssc_epoch_011.pt",
+    "checkpoint_sha256": "3c3f291bf9ec5eba196406e3ff7862acc789b76768a7e5e1a057bf7430b71c52",
+    "evidence": "historical repository metrics report; epoch-11 checkpoint retained, but its historical sufficient marginals are unavailable"
+  },
+  {
+    "model": "07b DINOv3 MVS VoxDet V5-v2 seed 0 (historical row)",
+    "split": "test; calibrated dataset join",
+    "sc_iou_percent": 48.0635,
+    "gt_present_miou_percent": 5.1116,
+    "fixed_21_miou_percent": 4.381372452614018,
+    "union_present_miou_percent": 4.8426,
+    "epoch": 13,
+    "gt_class_count": 18,
+    "union_class_count": 19,
+    "evidence": "saved test artifact verified from sufficient class marginals; inference not rerun"
+  },
+  {
+    "model": "V-JEPA 2.1 MVS FSSC control",
+    "split": "test; calibrated dataset join",
+    "sc_iou_percent": 35.02234,
+    "gt_present_miou_percent": null,
+    "fixed_21_miou_percent": null,
+    "union_present_miou_percent": 3.28268,
+    "epoch": 4,
+    "evidence": "repository-reported only; raw counts unavailable"
+  }
+]

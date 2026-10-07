@@ -1,3 +1,136 @@
 \section{Method}
+\label{sec:method}
 
-Write the method for the target conference paper.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{architecture.pdf}
+\caption{Study architecture. Top: frozen image representations feed trainable depth heads; FiLM supplies altitude and intrinsics. Bottom: the final SSC treatment uses trainable DINOv3 DPT context, frozen native five-view MVSFormer++ geometry, frozen lifting/fusion, and a trainable VoxDet decoder. Blue denotes frozen modules, orange trainable modules, and gray inputs/outputs. The geometry posterior is projected onto the lifting depth grid; its dense expectation is a diagnostic rather than a replacement for the distribution.}
+\label{fig:architecture}
+\end{figure*}
+
+\subsection{Tasks and Information Pathways}
+Each target observation has image $I_t$, intrinsics $K_t$, altitude $h_t$, and pose $T_t^{w\rightarrow c}$. Supervised training additionally uses depth $D_t$, its validity mask $M_t$, and semantic voxel labels $Y_t$. MDE predicts camera-axis depth $\hat D_t$ in meters. SSC predicts a categorical label $\hat Y_t(v)$ for each voxel $v$, with label zero representing empty space and labels 1--21 representing occupied semantic categories. Ground-truth (GT) depth and semantic labels supply supervision and evaluation; they are not inputs to the evaluated camera-based inference pathways.
+
+The pipeline separates context, geometry, and decoding. A frozen encoder supplies visual features. A context head maps those features to a semantic representation, while a geometry head or frozen MVS provider supplies depth information. A hybrid view transformer lifts context into a common voxel volume and fuses the resulting features. A voxel decoder then predicts occupancy and semantics. Figure~\ref{fig:architecture} shows these boundaries for depth transfer and the final multiview treatment. The division makes it possible to describe what changes across configurations without suggesting that every comparison isolates one factor.
+
+For a target with neighboring views, define
+\begin{equation}
+\mathcal V_t=\{(I_i,K_i,T_i^{w\rightarrow c})\}_{i\in\{t\}\cup\mathcal S_t},
+\end{equation}
+where $\mathcal S_t$ contains source views. The monocular path uses only the target image and the metadata supplied to its head. The final multiview path uses one target and four calibrated sources. The temporal depth diagnostic uses a shorter target-centered neighborhood; it is a separate experiment and does not define the final SSC provider.
+
+\subsection{Frozen Image Features}
+The V-JEPA~2.1 ViT-Gigantic image encoder takes $384\times384$ inputs with patch size 16. It exposes $24\times24$ maps with 1664 channels. The four-level decoder reads zero-indexed blocks $\{11,23,37,47\}$; the last-layer probe reads block 47 alone. DINOv3 ViT-H+/16 uses the same target resolution and patch grid, with 1280-channel maps from blocks $\{7,15,23,31\}$. These levels roughly match relative transformer depth, but the feature widths and backbone capacities differ. No additional projection is introduced solely to make the backbones appear identical.
+
+Let $F_t^{(l)}=E^{(l)}(I_t)$ denote the selected frozen map. Encoder parameters receive no task gradients. Each head learns how to read the fixed feature channels, including its input projection when the source width changes. This is important for interpreting linear probes: their results measure accessibility through the stated readout, not the total geometric information that any conceivable downstream model could recover. Freezing also does not eliminate the encoder's inference cost; it reduces trainable parameters and stabilizes the representation during task optimization.
+
+\subsection{Depth Heads and Metric Readout}
+\subsubsection{Linear and four-level decoding}
+The linear probe applies batch normalization and a $1\times1$ prediction layer to the final feature map. The head produces 256 depth-channel responses and a dense metric readout after spatial resizing. Its small capacity provides a baseline for geometry that can be extracted with limited adaptation.
+
+The four-level DPT head projects selected maps into a common decoder representation and reassembles them at different spatial scales. Convolutional refinement progressively combines coarse and fine maps before depth prediction \cite{ranftl2021dpt}. Although all selected transformer maps have the same patch-grid size, their encoder depth differs; reassembly supplies the spatial pyramid needed by the dense decoder. The head therefore changes both the feature levels available and the reconstruction capacity relative to a final-layer linear probe.
+
+The final-layer SFP head instead constructs maps at relative scales $\{4,2,1,1/2\}$ from $F_t^{(47)}$. For a $24\times24$ map, these are $96\times96$, $48\times48$, $24\times24$, and $12\times12$, each with 256 projected channels. The pyramid then enters DPT-style fusion. This design follows the principle of a simple pyramid for a plain vision transformer \cite{li2022vitdet}; it does not introduce new intermediate encoder observations. Its numerical result remains outside the principal table because the connected evidence lacks its primary completed test record.
+
+\subsubsection{Distribution and expectation}
+For depth-channel responses $z_{t,k}(u)$ and metric support values $d_k$, the readout is
+\begin{equation}
+p_{t,k}(u)=\frac{a(z_{t,k}(u))}{\sum_j a(z_{t,j}(u))},\qquad
+\hat D_t(u)=\sum_k p_{t,k}(u)d_k,
+\label{eq:depth}
+\end{equation}
+where $a$ denotes the nonnegative activation defined by the specific depth head. We do not assume that every archived image head uses the same softmax conversion; the image-depth implementation supports different normalization strategies. The completed image protocol uses 256 metric channels over its configured depth range. In the multiview provider, a categorical posterior is returned explicitly and handled by the adapter described below.
+
+\subsubsection{Camera-conditioned FiLM}
+The metadata vector uses altitude and resized intrinsics:
+\begin{equation}
+m_t=\left[\frac{h_t-40}{10},\frac{f_x}{W},\frac{f_y}{H},
+\frac{c_x}{W}-\frac12,\frac{c_y}{H}-\frac12\right].
+\label{eq:metadata}
+\end{equation}
+A multilayer perceptron embeds $m_t$ into 128 dimensions. At each DPT level, channel-wise projections produce scale and shift vectors, giving
+\begin{equation}
+\widetilde R_l=R_l\odot(1+\gamma_l(m_t))+\beta_l(m_t).
+\label{eq:film}
+\end{equation}
+The affine projections start near zero so the initial path remains close to the unconditioned decoder. Metadata thus modulates the interpretation of visual features while leaving the frozen encoder untouched. Camera conditioning enters only methods named FiLM-DPT; it is not silently supplied to the linear probe.
+
+\subsection{Temporal Aggregation and Pose-Aware Diagnostic}
+Video mode uses a four-frame clip with offsets $[-1,0,0,+1]$. The duplicated target yields an even length compatible with tubelet size two. Frame offsets are defined by sequence index, because measured capture timestamps are not available in the audited preprocessing records. The frozen video encoder returns two temporal tubelet positions at each spatial patch location.
+
+A video linear adapter folds the tubelet dimension into channels. Dense Temporal Attention (DTA) instead learns a temporal readout separately at each spatial cell and each selected encoder level. With temporal tokens $G_{l,\tau}(u)$, the adapter has the form
+\begin{equation}
+\bar F_l(u)=\mu_l(u)+\alpha_l\bigl(A_l(G_l(u))-\mu_l(u)\bigr),
+\label{eq:dta}
+\end{equation}
+where $\mu_l$ is temporal mean pooling, $A_l$ is learned-query attention, and the residual gate starts near mean pooling. The attention module uses a 512-dimensional adapter with eight heads. Its output has the same two-dimensional spatial form as an image feature map and can feed FiLM-DPT.
+
+Local temporal attention does not itself align the scene as the camera moves. A feature at the same patch coordinate in two views may correspond to different physical surfaces. The pose-aware diagnostic therefore retains target/source identity and forms a depth-indexed matching volume. For homogeneous target pixel $u$ and hypothesized camera-axis depth $d_k$,
+\begin{equation}
+q_{i,k}=\pi\!\left(K_i(R_{it}d_kK_t^{-1}u+t_{it})\right),
+\label{eq:projection}
+\end{equation}
+where $T_{t\rightarrow i}=T_i^{w\rightarrow c}(T_t^{w\rightarrow c})^{-1}$ with rotation $R_{it}$ and translation $t_{it}$, and $\pi$ performs perspective division. Source features sampled at $q_{i,k}$ are compared with target features, combined across two sources, and regularized by a three-dimensional convolutional head. FiLM conditions its depth responses in the completed diagnostic.
+
+This mechanism differs from the five-view native MVSFormer++ provider used for final SSC. We keep its result as a diagnostic because the available test population comprises 3,830 context-valid frames rather than all 3,842 standard test targets. Neither temporal adjacency nor this reduced population alone demonstrates a benefit of video pretraining.
+
+\subsection{Frozen Native Multiview Geometry}
+The lifting grid has 256 centers at 0.25~m spacing over $[0,64]$~m, from 0.125 to 63.875~m; this differs from the image-depth evaluation range. The final SSC treatment uses a DINOv3-backed MVSFormer++ provider with one target and four calibrated source images at $768\times1024$. Its foundation-feature input is resized separately to $336\times448$ inside the provider. A strict retained geometry checkpoint initializes its non-backbone parameters, and the provider runs in inference mode throughout SSC training. Neither the image foundation encoder nor the geometry provider receives SSC gradients.
+
+The provider returns native depth hypotheses $z_j(u)$ and categorical masses $p_j(u)$ from its final stage. Because these adaptive hypotheses differ from the lifting grid's support, the adapter projects probability mass onto the fixed lifting centers $b_k$. For an in-range hypothesis between neighboring centers, its mass is divided between them in proportion to the hypothesis position. Let $w_k(z)$ denote these two nonzero linear weights. The retained mass and projected distribution are
+\begin{align}
+r(u)&=\sum_{j:\,z_j(u)\in[b_1,b_K]}p_j(u),\\
+P_k(u)&=\frac{\sum_{j:\,z_j(u)\in[b_1,b_K]}p_j(u)w_k(z_j(u))}{r(u)}.
+\label{eq:posterior}
+\end{align}
+The projection conserves the retained mass before normalization. Hypotheses outside the supported interval are excluded rather than accumulated at an edge. When no mass remains, the ray is marked invalid. A finite uniform numerical fallback prevents invalid arithmetic, but the validity mask prevents that fallback from contributing geometric evidence.
+
+The target image used for context is resized from the same canonical MVS crop, and its intrinsics are scaled accordingly. This alignment ensures that the context map and posterior refer to the same image coordinates. Spatial resizing of probabilities is followed by channel normalization before projection. The adapter also retains native expected depth and photometric confidence as diagnostics; they do not replace the projected distribution passed into lifting.
+
+\subsection{Probability-Aware Lifting and Voxel Fusion}
+The semantic context head consumes the target's frozen image features and produces a trainable DPT context map $C_t(u)$. For each image coordinate and lifting depth center, a camera ray maps context to a three-dimensional location. Schematically, the lift--splat contribution to voxel $v$ is
+\begin{equation}
+V(v)=\sum_{u,k}\mathbf1[\nu(x_{t,k}(u))=v]P_k(u)C_t(u),
+\label{eq:lift}
+\end{equation}
+where $x_{t,k}(u)=b_kK_t^{-1}u$ and $\nu$ assigns a position to the configured voxel grid. Equation~\eqref{eq:lift} describes probability-weighted accumulation; the implemented hybrid view transformer additionally combines this dense pathway with proposal-guided voxel features and axis-aware fusion from the retained FoundationSSC modules.
+
+The fused representation has 128 channels at $96\times64\times64$, corresponding to a reduced grid before full-resolution prediction. In the final multiview treatment, the retained view transformer and fusion pathway are frozen. Context and VoxDet decoding are trained while geometry and the lifting modules remain fixed. Context trains through the dense lift--splat and fusion path. Inputs to the frozen sparse voxel-attention branch are detached, preserving its forward features without backpropagating through that branch.
+
+\subsection{VoxDet Decoding and VoxNT Targets}
+VoxDet processes the fused volume with a shared three-dimensional encoder and task-specific branches. One branch predicts semantic features and logits, while another predicts six nonnegative directional offsets. Predicted offsets guide sampling and aggregation of semantic features along the voxel axes before final classification \cite{li2025voxdet}. The scored output remains a semantic occupancy grid. Directional predictions do not establish instance detection accuracy, and no instance average precision is claimed.
+
+VoxNT generates supervision from semantic labels without learning additional parameters. For a voxel coordinate $i$ along an axis, the inclusive positive-direction run length is
+\begin{equation}
+r_+(i)=1+\mathbf1[Y(i)=Y(i+1)]r_+(i+1),
+\label{eq:run}
+\end{equation}
+with terminal run length one. Applying the recurrence in both directions along three axes yields six targets. Each is normalized by its corresponding full-grid axis length. This is an axial same-label run, not Euclidean distance to the nearest object boundary or a connected-component box. A gap or class change ends the run, while touching same-label objects can remain indistinguishable.
+
+Our implemented supervision enlarges predicted reduced-grid offsets to the full target grid and uses class-balanced Smooth-L1 loss with transition parameter 0.1. Eligible categories are tree, ground obstacle, person, bicycle, vehicle, building, cable, construction, crane, and truck. Losses are averaged within each present eligible class and then across those classes, reducing domination by large regions. All categories still receive semantic occupancy supervision. Target normalization uses the full-grid axis lengths before any resolution change.
+
+Feature sampling uses the center-aligned coordinate
+\begin{equation}
+g(i;L)=2\frac{i+1/2}{L}-1
+\label{eq:sample}
+\end{equation}
+for an axis of length $L$. This keeps voxel-center indexing consistent with the sampler's alignment convention. Tensor storage order is respected when coordinates are passed to the three-dimensional sampler. The treatment combines correct target scaling, consistent sampling, full-resolution supervision, and a long-tail objective; the available completed comparisons cannot assign its overall gain to one of these corrections alone.
+
+Ground-truth VoxNT targets are used only during training. At inference, offsets are predicted from features, and no semantic target tensor is supplied. The phrase instance-aware describes the intended structural aggregation, with the semantic-label limitation above; it should not be read as verified separation of every physical instance.
+
+\subsection{Occupancy and Long-Tail Semantic Objective}
+Let $\ell_c(v)$ be the 22-class logit vector. Binary occupancy is trained from the stable occupied-versus-empty logit
+\begin{equation}
+\ell_{\rm occ}(v)=\log\sum_{c=1}^{21}\exp\ell_c(v)-\ell_0(v).
+\end{equation}
+A weighted binary cross-entropy (BCE) term supervises every valid voxel. Its positive weight is $\min(25,n_0/\sum_{c>0}n_c)$ from training counts. Conditional semantic focal cross-entropy is computed only at ground-truth occupied voxels, with focal exponent two. Semantic weights use square-root inverse training frequency, clipped to $[0.25,8]$ and then normalized to mean one over represented occupied classes. Empty voxels consequently supervise occupancy without overwhelming conditional category recognition.
+
+A macro soft Dice term averages over semantic classes present in each batch. The main objective is
+\begin{equation}
+\mathcal L_{\rm main}=\mathcal L_{\rm occ}
++\mathcal L_{\rm focal}+0.5\mathcal L_{\rm Dice}.
+\label{eq:mainloss}
+\end{equation}
+The auxiliary head uses corresponding weights $0.25$, $0.25$, and $0.10$, and full-resolution VoxNT has weight one. These weights are implementation settings rather than conclusions of a hyperparameter ablation.
+
+The monocular VoxDet treatment additionally uses a metric-depth teacher term with weight 0.1 and a weak scheduled SSC-to-depth gradient. That gradient is zero in epoch zero, ramps over three epochs, and is capped at 0.1. Its purpose is to let the voxel decoder stabilize before limited adaptation of the pretrained depth head. The frozen multiview treatment has no depth loss and no such gradient schedule: its provider is run without gradients. All semantic, geometric, and offset masks exclude ignored labels. The distinction between these gradient paths is part of the method definition and limits direct architectural attribution from the final scores.

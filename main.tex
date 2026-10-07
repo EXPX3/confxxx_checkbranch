@@ -10,7 +10,6 @@
 
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
@@ -18,7 +17,10 @@
 \usepackage{hyperref}
 \graphicspath{{content/images/}}
 
+\hypersetup{hidelinks,pdftitle={Frozen Image and Video Foundation Models for Aerial Depth and Semantic Scene Completion},pdfauthor={},pdfsubject={Aerial robotic perception working manuscript},pdfkeywords={aerial depth, semantic scene completion, frozen visual representations}}
+
 \begin{document}
+\bstctlcite{IEEEcompactauthors}
 
 \title{Frozen Image and Video Foundation Models for Aerial Depth and Semantic Scene Completion}
 
@@ -30,7 +32,7 @@
 \maketitle
 
 \begin{abstract}
-Aerial 3D perception must recover metric geometry and semantic occupancy despite altitude-dependent scale, oblique viewpoints, and limited onboard sensing. We study the transfer of frozen V-JEPA~2.1 image--video representations and DINOv3 image representations to monocular depth estimation (MDE) and semantic scene completion (SSC) on OccuFly. Controlled heads range from linear probes to multiscale DPT decoding, camera-conditioned FiLM, temporal aggregation, and calibrated multiview geometry. The strongest completed MDE model, DINOv3 with FiLM-DPT, attains 4.358~m test RMSE. For SSC, combining frozen DINOv3 context, frozen MVSFormer++ geometry, and VoxDet decoding yields $49.33\pm1.17\%$ scene-completion IoU and $4.80\pm0.36\%$ fixed-21 semantic mIoU across three independent runs. Class-wise analysis shows that the remaining error is concentrated in sparsely represented categories, separating gains in occupied-space recovery from unresolved long-tail semantics.\end{abstract}
+Aerial 3D perception must recover metric geometry and semantic occupancy despite altitude-dependent scale, oblique viewpoints, and limited onboard sensing. We study the transfer of frozen V-JEPA~2.1 image--video representations and DINOv3 image representations to monocular depth estimation (MDE) and semantic scene completion (SSC) on OccuFly. Controlled heads range from linear probes to multiscale DPT decoding, camera-conditioned FiLM, temporal aggregation, and calibrated multiview geometry. The strongest completed MDE model, DINOv3 with FiLM-DPT, attains 4.358~m test RMSE. For SSC, combining frozen DINOv3 context, frozen MVSFormer++ geometry, and VoxDet decoding yields $49.33\pm1.17\%$ scene-completion IoU and $4.80\pm0.36\%$ 21-class semantic mIoU across three independent runs. Class-wise analysis shows that the remaining error is concentrated in sparsely represented categories, separating gains in occupied-space recovery from unresolved long-tail semantics.\end{abstract}
 
 \begin{IEEEkeywords}
 aerial scene understanding, monocular depth estimation, multi-view stereo, semantic scene completion, vision foundation models
@@ -47,6 +49,7 @@ aerial scene understanding, monocular depth estimation, multi-view stereo, seman
 \newif\ifincludereferences
 \includereferencestrue
 \ifincludereferences
+\clearpage
 \bibliographystyle{IEEEtran}
 \bibliography{content/references}
 \fi

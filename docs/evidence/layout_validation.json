@@ -1,0 +1,19 @@
+{
+  "page_count": 12,
+  "reference_pages": [
+    12
+  ],
+  "page_size_points": [
+    612,
+    792
+  ],
+  "semantic_average": "standard fixed 21 occupied classes",
+  "other_semantic_averages_in_paper": false,
+  "undefined_citations_or_overfull_boxes": false,
+  "prohibited_paper_labels_found": false,
+  "author_metadata": "",
+  "ieeetran_cls_sha256": "c972aca108fda004c3514d63658e02816da2e54d9a1451e870b9bd970e003f55",
+  "ieeetran_bst_sha256": "d83aa3c9b47fc120bb3d9d8e476216cb889c738f72ec950beeac3661c45ded24",
+  "visual_review_all_12_pages": true,
+  "visual_review_findings": "No clipping, overlaps, malformed citations, or illegible figures/tables observed."
+}

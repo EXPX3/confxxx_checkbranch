@@ -1,0 +1,19 @@
+{
+  "target_base_sha": "3eaebb63a614ab7990888ef8f75d5a2ea4f17fcc",
+  "accv_branch_sha_before": "784e44ffc98bd682587622c010912c009ffe0aee",
+  "wacv_source_sha": "968a1317bd1e63a906bf59574bb481c67cf57b56",
+  "evidence_files_sha256": {
+    "recomputed_statistics.json": "8649621b5066b3dabe2eccd5305aafaf05e2a030a0678aebdb814ef29ce0bc5b",
+    "mde_records.json": "9e448a4f28f89f014182d74829f5c5b7bd0e5f231c382fa641f2b852d2616027",
+    "multiview_run_2.json": "dbd7e8f91a18f14f29a1557d776a6d221c083ec4a521a6e805852bdfba54095e",
+    "additional_evaluation_records.json": "5c9bbf939e90563a3ed6b8131b7d50dab14d4425eeac0ca8415aa8f9b2d2519a",
+    "classwise_comparison.csv": "76a83fe1370dc9d27870a2e4e69ec87fdf5b37f5f375ce7c44a1c12a18b2befc",
+    "canonical_class_counts.csv": "47683aee315e243519653032a9742afee3ed228a295a1ea939f999e4ae1e103d",
+    "multiview_run_1.json": "79576821f417441b2e68b2b05b4901748e3176ad5ca9ba82d33d0d74b94770c6",
+    "multiview_run_0.json": "763d51198596e8dbbf429491fc59fc5205fca79e0e0003aa98f56040357b0126"
+  },
+  "recovered_canonical_copy_sha256": "47683aee315e243519653032a9742afee3ed228a295a1ea939f999e4ae1e103d",
+  "source_recovery_paths": {
+    "canonical_class_counts.csv": "reports/voxdet_foundationssc_comparison_20261005/data/corrected_class_metrics.csv"
+  }
+}
