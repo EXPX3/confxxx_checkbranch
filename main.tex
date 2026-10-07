@@ -27,6 +27,15 @@
 \usepackage{booktabs}
 \usepackage{wrapfig}
 \usepackage{placeins}
+% Shared table highlights are used by both the main results section and the
+% appendix. Define them in the preamble so appendix-only builds also compile.
+\definecolor{bestmiou}{RGB}{255,229,236}
+\definecolor{bestiou}{RGB}{246,238,214}
+% Shared method labels appear in both the results chapter and appendix tables.
+\newcommand{\fsscrgbdirect}{FSSC RGB ctx DPT, depth FiLM-DPT}
+\newcommand{\fsscrgbfilm}{FSSC RGB ctx FiLM-DPT, depth FiLM-DPT}
+\newcommand{\fsscvidmvs}{FSSC video ctx DTA-DPT, depth DTA-MVS}
+\newcommand{\fsscvidfilmmvs}{FSSC video ctx DTA-DPT, depth DTA-FiLM-MVS}
 
 % The "axessiblity" package can be found at: https://ctan.org/pkg/axessibility?lang=en
 % Its accsupp mode uses pdfTeX primitives that are unavailable under Tectonic's
@@ -89,25 +98,18 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 \maketitle
 
 
-% \begin{abstract}
-% Aerial 3D scene understanding is essential for autonomous UAV operations such as cargo delivery, search-and-rescue, and human-UAV collaboration. Camera-based perception is attractive for these settings given its light weight, low cost, availability, and compatibility with UAV size, weight, and power constraints. This motivates methods that can infer geometry, semantics, and free space from visual observations, making Monocular Depth Estimation (MDE) and Semantic Scene Completion (SSC) key components of UAV 3D perception that enable 3D scene understanding. Aerial imagery introduces altitude-dependent scale variation, oblique viewpoints, weak texture, and different occlusion patterns, demanding domain-specific solutions. Using OccuFly, a real-world aerial dataset with RGB images, metric depth maps, and semantic occupancy grids, we study whether V-JEPA 2.1 foundation features transfer to aerial MDE and SSC. Our ablations progress from V-JEPA 2.1 image-spatial \& video-spatiotemporal feature handling, from linear probing to DPT (Dense Prediction Transformer)-style multiscale decoding, FiLM (Feature-wise Linear Modulation)-based altitude \& intrinsics conditioning for MDE, followed by injecting conditioned depth-estimation priors, deploying a learnable UAV pose-aware multi-view stereo depth-estimation module, and transferring spatiotemporal features for SSC. Through this staged analysis, we separate the contributions of representation transfer, altitude conditioning, and depth-estimation variants to improving aerial SSC.
+\begin{abstract}
+Aerial 3D scene understanding is essential for autonomous UAV operations such as cargo delivery, search-and-rescue, and human-UAV collaboration. Camera-based perception is attractive for these settings given its light weight, low cost, availability, and compatibility with UAV size, weight, and power constraints. This motivates methods that can infer geometry, semantics, and free space from visual observations, making Monocular Depth Estimation (MDE) and Semantic Scene Completion (SSC) key components of UAV 3D perception that enable 3D scene understanding. Aerial imagery introduces altitude-dependent scale variation, oblique viewpoints, weak texture, and different occlusion patterns, demanding domain-specific solutions. Using OccuFly, a real-world aerial dataset with RGB images, metric depth maps, and semantic occupancy grids, we study whether V-JEPA 2.1 foundation features transfer to aerial MDE and SSC. Our ablations progress from V-JEPA 2.1 image-spatial \& video-spatiotemporal feature handling, from linear probing to DPT (Dense Prediction Transformer)-style multiscale decoding, FiLM (Feature-wise Linear Modulation)-based altitude \& intrinsics conditioning for MDE, followed by injecting conditioned depth-estimation priors, deploying a learnable UAV pose-aware multi-view stereo depth-estimation module, and transferring spatiotemporal features for SSC. Through this staged analysis, we separate the contributions of representation transfer, altitude conditioning, and depth-estimation variants to improving aerial SSC.
 
-%   \keywords{ Aerial \and 3D Scene Understanding \and UAV Perception \and Monocular Depth Estimation \and Semantic Scene Completion \and Semantic Occupancy Prediction \and V-JEPA 2.1 \and Video Foundation models \and 2D-3D lifting \and Pose-aware multi-view stereo depth \and OccuFly }
-% \end{abstract}
+  \keywords{ Aerial \and 3D Scene Understanding \and UAV Perception \and Monocular Depth Estimation \and Semantic Scene Completion \and Semantic Occupancy Prediction \and V-JEPA 2.1 \and Video Foundation models \and 2D-3D lifting \and Pose-aware multi-view stereo depth \and OccuFly }
+\end{abstract}
 
+\input{content/chapters/1_introduction}
+\input{content/chapters/2_related_work}
+\input{content/chapters/3_method}
+\input{content/chapters/4_experimental_setup_and_results}
+\input{content/chapters/5_discussion_and_conclusion}
 
-% \input{content/chapters/1_introduction}
-% \input{content/chapters/2_related_work}
-% \input{content/chapters/3_method}
-% \input{content/chapters/4_experimental_setup_and_results}
-% \input{content/chapters/5_discussion_and_conclusion}
-
-\clearpage
-\appendix
-\input{content/appendix/mde_scene_occufly_table}
-\input{content/appendix/ssc_detailed_results}
-
-\clearpage
 % ---- Bibliography ----
 %
 % BibTeX users should specify bibliography style 'splncs04'.
