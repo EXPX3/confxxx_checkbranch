@@ -1,8 +1,8 @@
 \section{Experiments}
 
-\subsection{V07b Repeated-Seed Protocol}
+\subsection{Repeated-Run Evaluation of Multiview SSC}
 
-We test whether the DINOv3--MVSFormer++ VoxDet result persists across
+We test whether the DINOv3--MVSFormer++--VoxDet result persists across
 initialization and sampling randomness while holding the geometry provider
 fixed.  Seeds 0, 1, and 2 use the same dataset split, frozen native
 MVSFormer++ checkpoint, five-view input construction, optimizer, learning-rate
@@ -11,7 +11,7 @@ and sampler seeds are aligned within each run.  The selected epochs are 13,
 12, and 11, respectively.  We report the arithmetic mean and sample standard
 deviation with Bessel's correction ($n-1$, $n=3$).
 
-Table~\ref{tab:v07b-seeds} reports binary scene-completion (SC) IoU and three
+Table~\ref{tab:multiview-ssc-seeds} reports binary scene-completion (SC) IoU and three
 semantic averaging conventions.  GT-present mIoU averages the 18 occupied
 classes represented in test ground truth.  Fixed-21 mIoU zero-fills the three
 GT-absent occupied classes and always divides by 21; we use it as the primary
@@ -21,9 +21,9 @@ control, and uses 19, 19, and 20 classes for seeds 0, 1, and 2.
 
 \begin{table*}[t]
 \centering
-\caption{V07b test performance across three seeds (\%). The final row is mean
+\caption{DINOv3--MVSFormer++--VoxDet test performance across three independent runs (\%). The final row is mean
 $\pm$ sample standard deviation. Checkpoints are selected on validation only.}
-\label{tab:v07b-seeds}
+\label{tab:multiview-ssc-seeds}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{cccccccc}
@@ -41,16 +41,16 @@ $69.5109\pm2.3409$ \\
 \end{tabular}
 \end{table*}
 
-All three V07b runs exceed the single historical DINOv3--MVSFormer++ FSSC
+All three runs exceed the single historical DINOv3--MVSFormer++ FoundationSSC
 control in the two directly comparable fields: the control reports 43.3670\%
 SC IoU and 4.4728\% union-present mIoU.  Thus, the observed direction persists
-over the three tested V07b seeds.  This is not a paired significance result:
+over the three tested runs. This is not a paired significance result:
 the control lacks repeated seeds and its historical artifact does not retain
 sufficient marginals for a fixed-21 rescore.
 
 \subsection{Class-Wise Stability}
 
-Table~\ref{tab:v07b-classes} gives all occupied-class IoUs.  Person, bicycle,
+Table~\ref{tab:multiview-ssc-classes} gives all occupied-class IoUs. Person, bicycle,
 and cable are GT-present failures with zero IoU for every seed.  Water, cable
 tower, and crane have no test GT support, so their IoUs are undefined for a
 GT-conditioned class analysis and are shown as dashes rather than semantic
@@ -60,9 +60,9 @@ remain unresolved.
 
 \begin{table*}[t]
 \centering
-\caption{V07b occupied-class IoU across seeds (\%). SD denotes sample standard
+\caption{DINOv3--MVSFormer++--VoxDet occupied-class IoU across runs (\%). SD denotes sample standard
 deviation. ``Absent'' means the class has zero support in test ground truth.}
-\label{tab:v07b-classes}
+\label{tab:multiview-ssc-classes}
 \small
 \setlength{\tabcolsep}{7pt}
 \begin{tabular}{llrrrr}
