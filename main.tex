@@ -31,11 +31,10 @@
 \maketitle
 
 \begin{abstract}
-Write a concise abstract for the target IEEE conference paper.
-\end{abstract}
+Aerial 3D scene understanding is essential for autonomous UAV operations such as cargo delivery, search-and-rescue, and human-UAV collaboration. Camera-based perception is attractive for these settings given its light weight, low cost, availability, and compatibility with UAV size, weight, and power constraints. This motivates methods that can infer geometry, semantics, and free space from visual observations, making Monocular Depth Estimation (MDE) and Semantic Scene Completion (SSC) key components of UAV 3D perception that enable 3D scene understanding. Aerial imagery introduces altitude-dependent scale variation, oblique viewpoints, weak texture, and different occlusion patterns, demanding domain-specific solutions. Using OccuFly, a real-world aerial dataset with RGB images, metric depth maps, and semantic occupancy grids, we study whether vision foundation features from models such as DINOv3 (D3) and V-JEPA 2.1 (VJ) transfer to aerial MDE and SSC. Our ablations progress from image-spatial and video-spatiotemporal feature handling, from linear probing to DPT (Dense Prediction Transformer)-style multiscale decoding, FiLM (Feature-wise Linear Modulation)-based altitude and intrinsics conditioning for MDE, followed by injecting conditioned monocular and Multi-View Stereo (MVS) depth-estimation priors, and transferring spatiotemporal features for SSC. Through this staged analysis, we characterize the effects of representation transfer, altitude-intrinsics conditioning, and depth-estimation variants using onboard monocular camera to improving aerial SSC. The DINOv3--MVSFormer++ VoxDet variant achieves $49.33\pm1.17\%$ scene-completion IoU and $4.80\pm0.36\%$ fixed-21 semantic mIoU over three seeds (mean $\pm$ sample standard deviation). Through this staged analysis, we separate the contributions.\end{abstract}
 
 \begin{IEEEkeywords}
-keyword one, keyword two, keyword three
+aerial scene understanding, monocular depth estimation, multi-view stereo, semantic scene completion, vision foundation models
 \end{IEEEkeywords}
 
 \input{content/chapters/1_introduction}
@@ -44,12 +43,10 @@ keyword one, keyword two, keyword three
 \input{content/chapters/4_experiments}
 \input{content/chapters/5_conclusion}
 
-% The starter bibliography file is intentionally empty. Keep this false until
-% at least one cited entry has been added to content/references.bib; IEEEtran's
-% BibTeX style does not accept an empty bibliography environment.
-% Set \includereferencestrue before a manuscript build with citations.
+% Bibliography entries for the currently cited introduction are maintained in
+% content/references.bib and rendered with IEEEtran's BibTeX style.
 \newif\ifincludereferences
-\includereferencesfalse
+\includereferencestrue
 \ifincludereferences
 \bibliographystyle{IEEEtran}
 \bibliography{content/references}
