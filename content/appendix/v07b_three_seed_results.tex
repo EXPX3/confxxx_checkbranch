@@ -1,0 +1,63 @@
+\section{V07b Repeated-Seed Results}
+\label{app:v07b-seeds}
+
+Seeds 0, 1, and 2 use the same frozen MVS checkpoint, data split, training
+contract, and validation-only selection rule. Table~\ref{tab:v07b-seed-summary}
+reports percentages and sample standard deviation ($n-1$, $n=3$). Fixed-21
+mIoU is prediction-independent; union-present uses 19/19/20 classes across the
+three seeds and is retained for the historical control comparison.
+
+\begin{table*}[t]
+\centering
+\caption{V07b test performance across seeds (\%).}
+\label{tab:v07b-seed-summary}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{cccccccc}
+\toprule
+Seed & Epoch & SC IoU & GT-present mIoU & Fixed-21 mIoU & Union mIoU & SC precision & SC recall \\
+\midrule
+0 & 13 & 48.0635 & 5.1116 & 4.3814 & 4.8426 & 62.6235 & 67.3974 \\
+1 & 12 & 49.5434 & 5.8380 & 5.0040 & 5.5308 & 63.6363 & 69.1083 \\
+2 & 11 & 50.3749 & 5.8589 & 5.0219 & 5.2730 & 62.6274 & 72.0269 \\
+\midrule
+Mean $\pm$ SD & -- & $49.3273\pm1.1708$ & $5.6028\pm0.4256$ & $4.8024\pm0.3648$ & $5.2154\pm0.3477$ & $62.9624\pm0.5836$ & $69.5109\pm2.3409$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{V07b occupied-class IoU across seeds (\%). GT-absent classes are not
+assigned a semantic mean.}
+\label{tab:v07b-class-seeds}
+\small
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{llrrrr}
+\toprule
+Class & Test GT & Seed 0 & Seed 1 & Seed 2 & Mean $\pm$ SD \\
+\midrule
+Road & Present & 4.1026 & 5.8616 & 6.0519 & $5.3387\pm1.0747$ \\
+Walkway & Present & 3.2933 & 4.5309 & 4.6426 & $4.1556\pm0.7489$ \\
+Dirt & Present & 0.9252 & 1.8369 & 1.1948 & $1.3190\pm0.4684$ \\
+Gravel & Present & 1.6976 & 2.9167 & 3.3397 & $2.6513\pm0.8526$ \\
+Rock & Present & 0.0103 & 0.0190 & 0.0125 & $0.0140\pm0.0045$ \\
+Grass & Present & 5.7403 & 6.9937 & 7.1410 & $6.6250\pm0.7697$ \\
+Vegetation & Present & 2.6840 & 3.5136 & 3.1042 & $3.1006\pm0.4148$ \\
+Tree & Present & 10.5557 & 10.6668 & 12.0986 & $11.1071\pm0.8605$ \\
+Ground obstacle & Present & 1.4844 & 2.0339 & 2.0121 & $1.8435\pm0.3112$ \\
+Person & Present & 0 & 0 & 0 & $0\pm0$ \\
+Bicycle & Present & 0 & 0 & 0 & $0\pm0$ \\
+Vehicle & Present & 8.3794 & 9.3942 & 9.4271 & $9.0669\pm0.5956$ \\
+Water & Absent & -- & -- & -- & -- \\
+Building & Present & 44.2941 & 47.2395 & 46.8691 & $46.1342\pm1.6043$ \\
+Roof & Present & 1.9902 & 2.1467 & 1.8644 & $2.0004\pm0.1414$ \\
+Cable & Present & 0 & 0 & 0 & $0\pm0$ \\
+Cable tower & Absent & -- & -- & -- & -- \\
+Parking lot & Present & 6.5386 & 7.4779 & 7.2042 & $7.0736\pm0.4831$ \\
+Construction & Present & 0.2490 & 0.4162 & 0.3141 & $0.3264\pm0.0843$ \\
+Crane & Absent & -- & -- & -- & -- \\
+Truck & Present & 0.0641 & 0.0366 & 0.1842 & $0.0949\pm0.0785$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
