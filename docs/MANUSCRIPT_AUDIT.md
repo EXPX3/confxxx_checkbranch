@@ -6,10 +6,11 @@ The editable repository is `EXPX3/confxxx_checkbranch`. The working branch is
 `paper/roboticcc27-overhaul`, based on `ieeercc2027` at
 `3eaebb63a614ab7990888ef8f75d5a2ea4f17fcc`.
 
-The user explicitly requested **12 pages total**, with references occupying no
-more than one page, to allow manual cutting to the venue limit. This overrides
-the earlier eight-page working-deliverable instruction. The resulting version
-is an expanded working draft, not an eight-page submission.
+The user explicitly requested **12 body pages, excluding references and any
+appendix**, with references occupying no more than one additional page, to
+allow manual cutting to the venue limit. This overrides the earlier eight-page
+working-deliverable instruction. The resulting 13-page PDF is an expanded
+working draft, not an eight-page submission.
 
 The subsequent instruction is to **report only standard 21-class semantic
 mIoU**. The manuscript, captions, abstract, and results obey this. Other
@@ -34,7 +35,9 @@ are byte-identical to the target base.
 - Table I: corrected image-depth records, a separate 3,830-target temporal/MVS
   diagnostic, and a published reference. No pending or anomalous run is ranked.
 - Table II: compact SSC table containing only 21-class mIoU as the semantic
-  average, plus binary SC IoU, precision, and recall where auditable.
+  average, plus binary SC IoU, precision, and recall where auditable. The two
+  monocular treatment rows and final multiview row report three-run mean and
+  sample standard deviation.
 - Exhaustive body seed/class tables are replaced by the aggregate and figure;
   exact saved records and generated class comparisons remain under `docs/evidence/`.
 
@@ -87,12 +90,23 @@ their precision/recall, test occupied total, empty fraction, building fraction,
 and plotted per-class IoUs are recomputed from these counts. No training
 frequency is inferred from them.
 
-The fresh DINOv3 monocular result and historical multiview control are retained
+The original DINOv3 monocular result and historical multiview control are retained
 in `docs/evidence/additional_evaluation_records.json`, copied from
 `reports/voxdet_foundationssc_comparison_20261005/data/additional_reported_results.json`.
 The monocular record includes all 3,842 targets and manifest/checkpoint hashes;
 the multiview historical record lacks sufficient marginals for a standard
 semantic rescore. Its semantic result is therefore omitted.
+
+The completed monocular seed-42/43/44 replication is preserved in
+`docs/evidence/monocular_three_seed_metrics.csv` and
+`monocular_paired_differences.csv`, copied from the experiment repository's
+`reports/paired_monocular_foundation_ssc_20261007/data/` directory. The six
+source paths and SHA-256 values are recorded in that report's source manifest.
+V-JEPA~2.1 reaches `44.2408 ± 1.3497` SC IoU and `3.6911 ± 0.2405` fixed-21
+mIoU; DINOv3 reaches `47.2954 ± 0.5009` and `4.2945 ± 0.4083`. Paired
+DINOv3-minus-V-JEPA differences are `+3.0546 ± 1.6150` and `+0.6033 ±
+0.6454` percentage points. These are descriptive because the retained V-JEPA
+seed-42 search stopped after epoch 8.
 
 ## Selection and gradient checks
 
@@ -103,10 +117,11 @@ historical criteria are preserved here for exact traceability without listing
 other semantic averages in the manuscript. Reporting standard 21-class test
 mIoU does not retrospectively alter how a checkpoint was selected.
 
-Selected multiview epochs are 13, 12, and 11. The V-JEPA monocular record was
-selected at epoch two in a realized search through epoch eight, whereas the
-DINOv3 monocular record selected epoch nine after a larger search budget. It
-is labeled accordingly.
+Selected multiview epochs are 13, 12, and 11. V-JEPA monocular seeds 42, 43,
+and 44 select epochs 2, 13, and 12; DINOv3 selects epochs 9, 6, and 5. All
+seed-43/44 histories and every DINOv3 history contain 20 epochs. The historical
+V-JEPA seed-42 record contains epochs 0--8, so the paper labels the resulting
+three-seed paired differences as unequal-budget descriptive evidence.
 
 The final MVS provider and view-transformer parameters are frozen. The sparse
 voxel-attention inputs are explicitly detached; context still trains through
@@ -165,14 +180,15 @@ inserted. The manuscript author block and PDF author metadata remain empty.
 ## Build and visual verification
 
 `python3 scripts/compile_paper.py` builds in a new temporary auxiliary directory,
-runs pdfLaTeX/BibTeX/pdfLaTeX/pdfLaTeX, checks letterpaper, exactly 12 pages,
-references confined to page 12, unresolved citations/overfull boxes, forbidden
-paper labels, and empty author metadata. It writes the ignored `main.pdf` and
+runs pdfLaTeX/BibTeX/pdfLaTeX/pdfLaTeX, checks letterpaper, exactly 12 body
+pages, references confined to one additional page, unresolved citations/overfull
+boxes, forbidden paper labels, and empty author metadata. It writes the ignored `main.pdf` and
 `docs/evidence/layout_validation.json`. Every page is then rendered and visually
 inspected, including both tables, vector figures, equations, and references.
 
 Unresolved evidence gaps: primary MDE metric files; train/validation class
 histograms; final multiview target manifests/sample counts; repeated historical
-controls; matched completed monocular repetitions; inference/energy/latency
-measurements; and uncertainty calibration. They are not filled with inferred
-numbers, pending values, or claims of causal/statistical significance.
+multiview controls; a full-budget rerun of historical V-JEPA monocular seed 42;
+inference/energy/latency measurements; and uncertainty calibration. They are
+not filled with inferred numbers, pending values, or claims of
+causal/statistical significance.

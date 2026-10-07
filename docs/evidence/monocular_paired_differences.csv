@@ -1,0 +1,7 @@
+metric,seed42_pct_points,seed43_pct_points,seed44_pct_points,mean_pct_points,sample_sd_pct_points
+sc_iou,1.1984,3.8283,4.1372,3.0546,1.6150
+gt_present_miou,-0.1599,1.2218,1.0496,0.7039,0.7529
+fixed21_miou,-0.1370,1.0473,0.8997,0.6033,0.6454
+union_present_miou,0.0674,1.3508,0.9944,0.8042,0.6625
+sc_precision,2.4407,-1.4148,-0.3939,0.2107,1.9976
+sc_recall,-0.6017,9.3549,8.8977,5.8836,5.6211

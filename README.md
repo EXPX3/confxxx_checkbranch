@@ -13,10 +13,11 @@ on a system-installed version.
 
 ## Current expanded working draft
 
-The user requested a **12-page total working version**, with references on no
-more than one page, for manual reduction to the venue limit. This overrides the
-earlier eight-page deliverable target for this revision. The only semantic
-average reported in the paper is **standard 21-class mIoU**.
+The user requested a **12-page body working version, excluding references and
+any appendix**, with references currently confined to one additional page, for
+manual reduction to the venue limit. This overrides the earlier eight-page
+deliverable target for this revision. The only semantic average reported in
+the paper is **standard 21-class mIoU**.
 
 Build and verify it with `python3 scripts/compile_paper.py` (requires
 pdfLaTeX, BibTeX, PyMuPDF, NumPy, and Matplotlib). The builder regenerates the
@@ -58,12 +59,12 @@ The official 2027 submission page specifies:
 - up to two extra pages are permitted at **USD 150 per page**; and
 - electronic submission is PDF-only through EasyChair.
 
-The default target for this repository is therefore an eight-page regular
-paper, including references. Do not interpret an earlier 12-page ACCV writing
-brief as applicable to this venue, and do not move excess technical material
+The submission target is therefore an eight-page regular paper including
+references. The current 12-body-page version is explicitly an expanded working
+draft, not a submission-compliant PDF. Do not move excess technical material
 into an uncounted appendix: the published limit includes all paper content.
-Treat a nine- or ten-page version only as an explicitly approved paid-overlength
-fallback.
+Treat a nine- or ten-page submission only as an explicitly approved
+paid-overlength fallback.
 
 Official sources:
 

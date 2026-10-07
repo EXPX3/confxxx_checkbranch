@@ -36,13 +36,15 @@ the target repository.
 
 - Use `\documentclass[10pt,conference,letterpaper]{IEEEtran}`.
 - Prepare a regular paper in the official IEEE double-column format.
-- The standard limit is **8 pages total, including text, figures, tables, and
-  references**.
+- The venue's standard submission limit is **8 pages total, including text,
+  figures, tables, and references**.
 - Do not use an appendix as an uncounted extension; all manuscript content
   counts toward the limit.
-- The conference permits at most two paid extra pages. Do not use them unless
-  the user explicitly approves the fee; the default deliverable is exactly
-  eight pages total.
+- The conference permits at most two paid extra pages. The requested output in
+  this task is nevertheless an **expanded working draft with exactly 12 body
+  pages, excluding references and any appendix**, plus no more than one page of
+  references. Label it clearly as non-submission-compliant and preserve enough
+  provenance for a later venue-length reduction.
 - Preserve IEEE font sizes, margins, column widths, and spacing. Never compress
   the paper through negative spacing, tiny captions, scaled body text, or
   template modifications.
@@ -50,8 +52,9 @@ the target repository.
   verified details and explicit instructions are available; never invent
   authors, affiliations, acknowledgements, funding, or conflicts.
 
-This venue rule supersedes the earlier ACCV-oriented request for 12 pages plus
-unlimited references/appendix.
+Do not add an appendix merely to evade either limit. The user's 12-body-page
+working-draft instruction controls this editing task; the eight-page venue rule
+controls the later submission reduction.
 
 ## Read-only source repositories and evidence priority
 
@@ -177,6 +180,23 @@ is mean plus sample standard deviation (`ddof=1`):
 - SC precision: `62.9624 +/- 0.5836` percent;
 - SC recall: `69.5109 +/- 2.3409` percent;
 - validation-selected epochs: `13, 12, 11`.
+
+The matched monocular seed-42/43/44 replications are also complete. Use the
+machine-readable report in
+`reports/paired_monocular_foundation_ssc_20261007/data/three_seed_metrics.csv`
+and preserve its unequal-budget caveat for historical V-JEPA seed 42:
+
+- V-JEPA 2.1 SC IoU: `44.2408 +/- 1.3497` percent;
+- V-JEPA 2.1 fixed-21 mIoU: `3.6911 +/- 0.2405` percent;
+- DINOv3 SC IoU: `47.2954 +/- 0.5009` percent;
+- DINOv3 fixed-21 mIoU: `4.2945 +/- 0.4083` percent;
+- paired DINOv3-minus-V-JEPA SC difference: `+3.0546 +/- 1.6150` points;
+- paired fixed-21 difference: `+0.6033 +/- 0.6454` points.
+
+V-JEPA selected epochs are `2, 13, 12`; DINOv3 selected epochs are `9, 6, 5`.
+The historical V-JEPA seed-42 history contains epochs 0--8, while the other
+five histories contain epochs 0--19. Do not call this a fully equal-budget
+three-pair comparison or a significance result.
 
 Recompute these values from primary artifacts before publication. Include a
 newer run only if it has a complete, auditable evaluation under the same

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Clean IEEE build and structural checks for the 12-page working manuscript."""
+"""Clean IEEE build and structural checks for the expanded working manuscript."""
 from pathlib import Path
 import argparse
 import hashlib
@@ -17,32 +17,56 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--output', type=Path, default=ROOT / 'main.pdf')
-    parser.add_argument('--expected-pages', type=int, default=12)
+    parser.add_argument('--expected-body-pages', type=int, default=12)
+    parser.add_argument('--max-reference-pages', type=int, default=1)
     args = parser.parse_args()
     subprocess.run(['python3', str(ROOT / 'scripts/build_paper_assets.py')],
                    cwd=ROOT, check=True, capture_output=True, text=True)
     with tempfile.TemporaryDirectory(prefix='roboticcc-paper-') as directory:
         build = Path(directory)
-        latex = ['pdflatex', '-interaction=nonstopmode', '-halt-on-error',
-                 f'-output-directory={build}', 'main.tex']
-        subprocess.run(latex, cwd=ROOT, check=True, capture_output=True, text=True)
-        env = dict(os.environ, BIBINPUTS=f'{ROOT}:', BSTINPUTS=f'{ROOT}:')
-        subprocess.run(['bibtex', 'main'], cwd=build, env=env, check=True,
-                       capture_output=True, text=True)
-        for _ in range(2):
+        if shutil.which('pdflatex') and shutil.which('bibtex'):
+            latex = ['pdflatex', '-interaction=nonstopmode', '-halt-on-error',
+                     f'-output-directory={build}', 'main.tex']
             subprocess.run(latex, cwd=ROOT, check=True, capture_output=True, text=True)
+            env = dict(os.environ, BIBINPUTS=f'{ROOT}:', BSTINPUTS=f'{ROOT}:')
+            subprocess.run(['bibtex', 'main'], cwd=build, env=env, check=True,
+                           capture_output=True, text=True)
+            for _ in range(2):
+                subprocess.run(latex, cwd=ROOT, check=True,
+                               capture_output=True, text=True)
+        elif shutil.which('tectonic'):
+            subprocess.run(
+                ['tectonic', '--keep-logs', '--keep-intermediates',
+                 '--outdir', str(build), 'main.tex'], cwd=ROOT, check=True,
+                capture_output=True, text=True)
+        else:
+            raise RuntimeError('Neither pdfLaTeX/BibTeX nor Tectonic is available')
         log = (build / 'main.log').read_text()
-        for token in ('Overfull', 'undefined', 'multiply defined'):
-            if token in log:
-                raise ValueError(f'Unresolved LaTeX problem: {token}')
+        problems = {
+            'overfull box': r'Overfull \\[hv]box',
+            'undefined reference or citation':
+                r'(LaTeX Warning:.*(?:Reference|Citation).*undefined|'
+                r'There were undefined references)',
+            'multiply defined label': r'multiply defined',
+        }
+        for label, pattern in problems.items():
+            if re.search(pattern, log, re.I):
+                raise ValueError(f'Unresolved LaTeX problem: {label}')
         pdf = fitz.open(build / 'main.pdf')
-        if len(pdf) != args.expected_pages:
-            raise ValueError(f'Expected {args.expected_pages} pages, found {len(pdf)}')
         text = '\n'.join(page.get_text() for page in pdf)
         references = [i + 1 for i, page in enumerate(pdf)
-                      if re.search(r'^REFERENCES$', page.get_text(), re.M)]
-        if references != [len(pdf)]:
-            raise ValueError(f'References must fit on the last page: {references}')
+                      if re.search(r'^REFERENCES$', page.get_text(), re.M | re.I)]
+        if len(references) != 1:
+            raise ValueError(f'Expected one references section, found pages {references}')
+        body_pages = references[0] - 1
+        reference_pages = len(pdf) - body_pages
+        if body_pages != args.expected_body_pages:
+            raise ValueError(
+                f'Expected {args.expected_body_pages} body pages, found {body_pages}')
+        if reference_pages > args.max_reference_pages:
+            raise ValueError(
+                f'Expected at most {args.max_reference_pages} reference pages, '
+                f'found {reference_pages}')
         if any(abs(page.rect.width - 612) > .01 or
                abs(page.rect.height - 792) > .01 for page in pdf):
             raise ValueError('PDF is not US letter')
@@ -57,7 +81,8 @@ def main():
         if pdf.metadata.get('author'):
             raise ValueError('Unexpected author metadata')
         report = {
-            'page_count': len(pdf), 'reference_pages': references,
+            'page_count': len(pdf), 'body_page_count': body_pages,
+            'reference_pages': list(range(references[0], len(pdf) + 1)),
             'page_size_points': [612, 792], 'semantic_average': 'standard fixed 21 occupied classes',
             'other_semantic_averages_in_paper': False,
             'undefined_citations_or_overfull_boxes': False,
