@@ -1,0 +1,27 @@
+{
+  "latex-workshop.latex.recipe.default": "first",
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "tectonic-absolute",
+      "tools": [
+        "tectonic-absolute"
+      ]
+    }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "tectonic-absolute",
+      "command": "/home/giridhar.vb/.local/bin/tectonic",
+      "args": [
+        "-X",
+        "compile",
+        "--synctex",
+        "--keep-intermediates",
+        "%DOC_EXT%"
+      ]
+    }
+  ],
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.view.pdf.internal.synctex.keybinding": "ctrl-click",
+  "latex-workshop.synctex.afterBuild.enabled": true
+}

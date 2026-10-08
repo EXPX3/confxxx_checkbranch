@@ -29,7 +29,7 @@ For the set $\Omega_D$ of valid depth pixels, we report
 \end{align}
 Mean absolute error (MAE) is the average absolute depth error in meters. For $d_u=\log \hat D(u)-\log D(u)$, $\mathrm{SILog}=\sqrt{\operatorname{mean}(d_u^2)-\operatorname{mean}(d_u)^2}$. The threshold accuracy $\delta_1$ is the fraction satisfying $\max(\hat D/D,D/\hat D)<1.25$. Lower RMSE, MAE, AbsRel, and SILog are better; higher $\delta_1$ is better. Errors are aggregated over valid pixels rather than averaged equally over frames with different valid support. Depth predictions are constrained to the configured evaluation range.
 
-The principal table reports every traceable metric retained for these rows. Published benchmark values remain labeled as published, and the reduced temporal population is not included in a pooled or averaged result. No metric from validation is substituted for a missing test value. The older inconsistent V-JEPA FiLM-DPT record is superseded by the corrected 4.770~m record; its corrected source and the current V-JEPA linear record do not retain a compatible SILog value, so those cells are left unavailable. The unauditable anomalous DPT run is excluded.
+The principal table reports the retained test metrics for each configuration. Published benchmark values remain labeled as references, and results with different input or evaluation contracts are not pooled. A dash denotes a metric that is not currently available; no validation metric is substituted for a missing test value.
 
 \subsection{Occupancy and Semantic Metrics}
 Binary SC collapses all occupied categories into one label. With occupied true positives $T$, false positives $F$, and false negatives $N$ over valid voxels,
@@ -65,91 +65,150 @@ This procedure verifies sufficient counts, not a new inference run or the identi
 \label{sec:results}
 
 \subsection{Representation and Decoder Effects on MDE}
-\begin{table*}[t]
+\begin{table}[t]
 \centering
-\caption{OccuFly test depth results. Image rows use all 3,842 standard test frames. $\dagger$ denotes corrected manuscript records whose primary pixel-level metric files are unavailable; DINOv3 FiLM-DPT additionally has archived checkpoint-contract support. The temporal/MVS row uses 3,830 context-valid frames and is a separate diagnostic. Published values are from OccuFly. No incomplete run is ranked.}
+\caption{Depth-estimation performance on the OccuFly test set across progressively enhanced MDE configurations. MDE IDs identify the variants visualized in Fig.~\ref{fig:mde_ssc_qualitative}. Best values are shown in bold and second-best values are underlined. A dash denotes an unavailable metric.}
 \label{tab:mde}
 \small
-\begin{tabular}{lrrrrr}
+\resizebox{\columnwidth}{!}{%
+\setlength{\tabcolsep}{3.5pt}%
+\begin{tabular}{clrrrrrrr}
 \toprule
-Method & RMSE (m) $\downarrow$ & MAE (m) $\downarrow$ & AbsRel $\downarrow$ & SILog $\downarrow$ & $\delta_1$ $\uparrow$\\
+ID & Method & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & AbsRel$\downarrow$ & RMSE$\downarrow$ & MAE$\downarrow$ & SILog$\downarrow$\\
 \midrule
-\multicolumn{6}{l}{\textit{Frozen image representations, standard test population}}\\
-V-JEPA 2.1 + linear depth probe$^\dagger$ & 7.795 & 6.447 & 0.188 & -- & 0.651\\
-V-JEPA 2.1 + four-level DPT$^\dagger$ & 6.730 & 5.411 & 0.162 & 0.200 & 0.747\\
-V-JEPA 2.1 + FiLM-DPT$^\dagger$ & 4.770 & 3.457 & 0.131 & -- & 0.816\\
-DINOv3 + linear depth probe$^\dagger$ & 6.097 & 5.066 & 0.156 & 0.186 & 0.782\\
-DINOv3 + FiLM-DPT$^\dagger$ & \textbf{4.358} & \textbf{3.209} & \textbf{0.121} & 0.161 & \textbf{0.848}\\
+\multicolumn{9}{l}{\textit{V-JEPA 2.1 backbone}}\\
+1 & Linear Probe RGB & 0.651 & 0.958 & 0.996 & 0.189 & 7.808 & 6.457 & 0.226\\
+2 & Linear Probe Video DTA & 0.701 & 0.958 & 0.995 & 0.191 & 7.055 & 5.928 & 0.207\\
+3 & Video DTA-FiLM-MVS & 0.768 & 0.930 & 0.987 & 0.175 & 6.406 & 4.811 & 0.211\\
+4 & DPT & 0.747 & 0.970 & 0.997 & 0.162 & 6.730 & 5.411 & 0.200\\
+5 & FiLM-DPT-RGB (3-seed mean) & 0.810 & 0.966 & 0.997 & 0.137 & 4.907 & 3.582 & 0.171\\
+6 & MVSFormer++/VJ-G & 0.797 & 0.896 & 0.955 & 0.176 & 6.390 & 4.465 & 0.172\\
 \midrule
-\multicolumn{6}{l}{\textit{Context-valid temporal/multiview diagnostic}}\\
-V-JEPA 2.1 + temporal attention + FiLM-MVS$^\dagger$ & 6.406 & 4.811 & 0.175 & 0.211 & 0.768\\
+\multicolumn{9}{l}{\textit{DINOv3 backbone}}\\
+7 & Linear Probe & 0.782 & \cellcolor{bestvalue!45}$\mathbf{0.980}$ & \underline{0.998} & 0.156 & 6.097 & 5.066 & 0.186\\
+8 & FiLM-DPT-RGB & \cellcolor{bestvalue!45}$\mathbf{0.848}$ & 0.968 & \underline{0.998} & \cellcolor{bestvalue!45}$\mathbf{0.121}$ & \cellcolor{bestvalue!45}$\mathbf{4.358}$ & \cellcolor{bestvalue!45}$\mathbf{3.209}$ & 0.161\\
+9 & MVSFormer++/D3-H+ & 0.828 & 0.938 & 0.982 & 0.136 & \underline{4.611} & \underline{3.314} & \underline{0.130}\\
 \midrule
-\multicolumn{6}{l}{\textit{Published benchmark reference}}\\
-DepthAnything2--OccuFly \cite{gross2026occufly} & 4.844 & 4.193 & 0.134 & \textbf{0.112} & 0.834\\
+\multicolumn{9}{l}{\textit{References}}\\
+10 & MVSFormer++/D2-B & 0.748 & 0.838 & 0.930 & 0.231 & 7.657 & 5.605 & 0.195\\
+11 & DepthAnything2--OccuFly \cite{gross2026occufly} & \underline{0.834} & \underline{0.976} & \cellcolor{bestvalue!45}$\mathbf{0.999}$ & \underline{0.134} & 4.844 & 4.193 & \cellcolor{bestvalue!45}$\mathbf{0.112}$\\
 \bottomrule
 \end{tabular}
-\end{table*}
+}
+\end{table}
 
-Table~\ref{tab:mde} shows that decoder choice changes the geometry recovered from frozen features. For V-JEPA~2.1, moving from a last-layer linear head to four-level DPT decreases reported RMSE from 7.795 to 6.730~m, a 1.065~m difference. The reported FiLM-DPT configuration reaches 4.770~m. These results support using task-specific dense reconstruction and camera metadata rather than assuming that a small linear head exhausts the representation's geometric usefulness. Because these are retained single-run results, the differences describe the completed configurations; they are not confidence intervals or controlled estimates of one isolated architectural mechanism.
+Table~\ref{tab:mde} shows that decoder and conditioning choices materially affect the geometry recovered from foundation-model features. For V-JEPA~2.1, DPT reduces RMSE from 7.808~m for the RGB linear probe to 6.730~m, while FiLM-DPT-RGB averages 4.907~m RMSE and improves $\delta_1$ from 0.651 to 0.810. The video and multiview configurations do not surpass the strongest RGB FiLM-DPT result under the reported protocols.
 
-The DINOv3 linear probe reaches 6.097~m, and DINOv3 FiLM-DPT reaches 4.358~m. The latter has lower reported error than the V-JEPA FiLM-DPT configuration by 0.412~m, or 8.6\% relative RMSE, and improves the displayed MAE, AbsRel, and $\delta_1$. Relative to the DINOv3 linear probe, it also reduces SILog from 0.186 to 0.161. Both backbone families therefore benefit from a more capable metric readout. The ordering does not establish that image-only pretraining is generally preferable to video pretraining: model capacities, source representation widths, and pretrained features differ, and the matched multi-seed depth controls are not available.
+For DINOv3, FiLM-DPT reduces RMSE from 6.097 to 4.358~m relative to the linear probe and improves $\delta_1$ from 0.782 to 0.848. Both backbone families therefore benefit from a more capable metric readout. This ordering does not establish a general backbone ranking because model capacities, representation widths, input contracts, and training procedures differ.
 
-The published DepthAnything2--OccuFly row supplies a benchmark reference at 4.844~m RMSE. DINOv3 FiLM-DPT has lower absolute and relative metric errors and higher $\delta_1$, whereas DepthAnything2--OccuFly has substantially lower SILog (0.112 versus 0.161), indicating better log-space consistency. We do not treat it as a frozen-feature head ablation, because its model and training differ. The strongest completed image-depth record therefore depends on the metric rather than supporting an overall winner; primary MDE artifact availability further limits broad ranking claims. The anomalous historical DPT record is absent, and no pending SFP value has been substituted into the table.
+DepthAnything2--OccuFly supplies a published benchmark reference at 4.844~m RMSE. DINOv3 FiLM-DPT has lower RMSE and AbsRel and higher $\delta_1$, whereas the published reference has lower SILog (0.112 versus 0.161). It is not a frozen-feature-head ablation because its model and training differ; the strongest configuration therefore depends on the metric.
 
 \subsection{Camera Metadata and Temporal Geometry}
+\begin{table}[t]
+  \caption{\textbf{FiLM conditioning ablation using the V-JEPA~2.1 backbone.} Test mean$\pm$SD over three
+  seeds; best mean in \textbf{bold}.}
+  \label{tab:film-aggregate}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{2.6pt}
+  \resizebox{\columnwidth}{!}{%
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    Conditioning & $\delta_1\uparrow$ & AbsRel$\downarrow$ & RMSE$\downarrow$ & SILog$\downarrow$ \\
+    \midrule
+    DPT
+      & $.728{\pm}.034$ & $.174{\pm}.006$ & $6.709{\pm}.385$ & $.202{\pm}.010$ \\
+    Altitude FiLM
+      & $.798{\pm}.020$ & $.145{\pm}.005$ & $5.236{\pm}.322$ & $.180{\pm}.006$ \\
+    Intrinsics FiLM
+      & $.711{\pm}.015$ & $.182{\pm}.004$ & $7.115{\pm}.243$ & $.216{\pm}.007$ \\
+    Alt.+intr. FiLM
+      & \cellcolor{bestvalue!45}$\mathbf{.810{\pm}.006}$ & \cellcolor{bestvalue!45}$\mathbf{.137{\pm}.005}$ & \cellcolor{bestvalue!45}$\mathbf{4.907{\pm}.140}$ & \cellcolor{bestvalue!45}$\mathbf{.171{\pm}.005}$ \\
+    \bottomrule
+  \end{tabular}
+  }
+\end{table}
+
 The completed temporal-attention FiLM-MVS diagnostic reaches 6.406~m RMSE on 3,830 context-valid frames. It combines video features, local temporal attention, pose-aware matching, and conditioning, so it cannot isolate temporal representation quality. Its reduced target population also prevents directly interpreting its difference from a full-test image row as a gain or loss from neighboring observations. A shared-target evaluation would be needed to quantify that effect.
 
 The available evidence consequently supports a restrained conclusion about time: the representation and geometry interfaces must preserve correspondence and declare their evaluation population. Unaligned temporal attention and calibrated MVS address different problems. The final SSC experiment uses a frozen native five-view provider, not the short-clip diagnostic in the depth table. Its completion result should therefore be explained by its own geometry posterior and downstream voxel treatment.
 
 \subsection{From Monocular Geometry to SSC}
-\begin{table*}[t]
+\begin{table}[t]
 \centering
-\caption{OccuFly SSC comparison (\%, higher is better). Repeated rows are mean $\pm$ sample SD over three retained runs. The historical V-JEPA seed-42 run has a shorter validation search than the other monocular runs. Published reference values follow the OccuFly benchmark; a dash marks an unavailable compatible score.}
+\caption{OccuFly SSC on the full test set (\%, higher is better). Best deployable values are shown in bold and second-best values are underlined. Repeated D3 rows report mean $\pm$ sample SD over three runs. Oracle rows replace estimated metric depth with GT depth only during geometric lifting and are excluded from ranking.}
 \label{tab:ssc}
-\small
-\begin{tabular}{p{7.4cm}rrrr}
+\tiny
+\setlength{\tabcolsep}{1.5pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}clrr@{}}
 \toprule
-Method & SC IoU $\uparrow$ & mIoU $\uparrow$ & Precision $\uparrow$ & Recall $\uparrow$\\
+ID & Method & SC IoU $\uparrow$ & mIoU $\uparrow$\\
 \midrule
-\multicolumn{5}{l}{\textit{Audited local monocular controls}}\\
-CGFormer + DepthAnything2 depth prior & 9.93 & 1.18 & 34.93 & 12.18\\
-FoundationSSC monocular control & 34.42 & 2.99 & 62.84 & 43.22\\
-V-JEPA 2.1 + FiLM-DPT + VoxDet (three runs) & $44.24\pm1.35$ & $3.69\pm0.24$ & $60.01\pm1.48$ & $62.91\pm4.47$\\
-DINOv3 + FiLM-DPT + VoxDet (three runs) & $47.30\pm0.50$ & $4.29\pm0.41$ & $60.22\pm0.57$ & $68.79\pm1.28$\\
+\multicolumn{4}{@{}l}{\textit{Audited local monocular controls}}\\
+1 & CGF-ctx-EfficientNet-B7-depth-DA2 & 9.93 & 1.18\\
+2 & VJ-FSSC-ctx-DPT-depth-FiLM\_DPT & 34.42 & 2.99\\
+3 & VJ-FSSC-ctx-DPT-depth-FiLM\_DPT-VoxDet & $44.24\pm1.35$ & $3.69\pm0.24$\\
+4 & D3-FSSC-ctx-DPT-depth-FiLM\_DPT-VoxDet & $\underline{47.30\pm0.50}$ & $\underline{4.29\pm0.41}$\\
 \midrule
-\multicolumn{5}{l}{\textit{Calibrated multiview treatments}}\\
-DINOv3 + MVSFormer++ + FoundationSSC (historical) & 43.37 & -- & -- & --\\
-DINOv3 + MVSFormer++ + VoxDet (three runs) & $49.33\pm1.17$ & $4.80\pm0.36$ & $62.96\pm0.58$ & $69.51\pm2.34$\\
+\multicolumn{4}{@{}l}{\textit{Calibrated multiview treatments}}\\
+5 & D3-FSSC-ctx-DPT-depth-MVSF++-VoxDet & \cellcolor{bestvalue!45}$\mathbf{49.33\pm1.17}$ & \cellcolor{bestvalue!45}$\mathbf{4.80\pm0.36}$\\
 \midrule
-\multicolumn{5}{l}{\textit{Published OccuFly references}}\\
-Symphonies \cite{gross2026occufly,jiang2024symphonies} & 13.68 & 0.58 & -- & --\\
-DISC \cite{gross2026occufly,liu2025disc} & 29.52 & 2.04 & -- & --\\
+\multicolumn{4}{@{}l}{\textit{GT-depth lifting oracle diagnostics}}\\
+O1 & VJ-FSSC-ctx-DPT-depth-GT & 49.40 & 7.25\\
+O2 & D3-FSSC-ctx-DPT-depth-GT & 42.01 & 8.40\\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Published OccuFly references}}\\
+-- & Symphonies \cite{gross2026occufly,jiang2024symphonies} & 13.68 & 0.58\\
+-- & DISC \cite{gross2026occufly,liu2025disc} & 29.52 & 2.04\\
 \bottomrule
 \end{tabular}
-\end{table*}
+}
+\end{table}
 
-Table~\ref{tab:ssc} separates binary completion from semantic performance. The audited local FoundationSSC monocular control obtains 34.42\% SC IoU and 2.99\% mIoU. Across three retained runs, the V-JEPA FiLM-DPT VoxDet treatment reaches $44.24\pm1.35\%$ SC IoU and $3.69\pm0.24\%$ fixed-21 mIoU. Relative to the single FoundationSSC control, the mean differences are 9.82 and 0.70 percentage points. They reflect the complete context, lifting, decoder, loss, and gradient treatment and do not isolate VoxNT's causal contribution.
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{table3_per_class_iou_matrix.pdf}
+\vspace{-1.0em}
+\caption{Per-class IoU for methods 1--5 in Table~\ref{tab:ssc}. Repeated treatments use their three-run per-class means; gray NA cells denote classes absent from the test ground truth.}
+\label{fig:table3_per_class_iou}
+\end{figure}
 
-The V-JEPA monocular treatment also changes the balance of occupied coverage. Mean precision is $60.01\pm1.48\%$, compared with 62.84\% for the single FoundationSSC control, while mean recall is $62.91\pm4.47\%$, compared with 43.22\%. Higher SC IoU therefore accompanies substantially greater occupied coverage and additional false occupied predictions. Reporting IoU alone would conceal this tradeoff. Its interpretation depends on the downstream task: missed obstacles and falsely occupied passages have different consequences, neither of which is quantified by a navigation benchmark here.
+Table~\ref{tab:ssc} separates binary completion from fixed-21 semantic mIoU. The D3 monocular and multiview treatments improve both measures over the audited controls, but they differ in representation, geometry, decoding, losses, and optimization; the table therefore compares complete configurations rather than isolated components. The historical V-JEPA seed-42 search is shorter than the other monocular runs.
 
-Across the same retained seeds, DINOv3 monocular VoxDet obtains $47.30\pm0.50\%$ SC IoU and $4.29\pm0.41\%$ fixed-21 mIoU. Per-seed DINOv3-minus-V-JEPA differences average $+3.05\pm1.62$ SC points and $+0.60\pm0.65$ fixed-21 points. The semantic difference is negative for seed 42 and positive for seeds 43 and 44. Moreover, the unequal seed-42 search budget and different pretrained depth heads prevent a clean backbone-only attribution. The repeated result supports a consistent completion advantage for the completed DINOv3 treatment, not a universal representation ranking.
+The O1/O2 diagnostics use GT metric depth only at geometric lifting; context features and the remaining SSC pipeline are unchanged. Their 7.25\% and 8.40\% mIoU show that semantic performance remains limited even when lifting receives oracle geometry, indicating bottlenecks beyond depth estimation. These single-run oracle diagnostics are upper-bound analyses, not deployable configurations or candidates for the ranked comparison.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig6_occufly_scene_09_30_000145.png}
+\caption{OccuFly scene 09 at 30~m (frame 000145): depth predictions and absolute errors, followed by SSC outputs. MDE IDs follow Table~\ref{tab:mde}; SSC IDs follow Table~\ref{tab:ssc}.}
+\label{fig:mde_ssc_qualitative}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{occufly_fig4_multiscene_ssc125.png}
+\caption{OccuFly multiscene qualitative SSC comparison. Rows show RGB, GT, and methods 1, 2, and 5 from Table~\ref{tab:ssc}.}
+\label{fig:ssc_multiscene_qualitative}
+\end{figure}
 
 \subsection{Repeated-Run Multiview Result}
-The final DINOv3--MVSFormer++--VoxDet treatment achieves $49.3273\pm1.1708\%$ SC IoU and $4.8024\pm0.3648\%$ mIoU. Precision is $62.9624\pm0.5836\%$ and recall $69.5109\pm2.3409\%$. Means and sample standard deviations are computed from the exact saved per-run records, not the rounded table entries. The table rounds to two decimals for readability.
+The final DINOv3--MVSFormer++--VoxDet treatment achieves $49.3273\pm1.1708\%$ SC IoU and $4.8024\pm0.3648\%$ mIoU. Means and sample standard deviations are computed from the exact saved per-run records; Table~\ref{tab:ssc} rounds them to two decimals.
 
 Per-run SC IoU is 48.0635\%, 49.5434\%, and 50.3749\%, and mIoU is 4.3814\%, 5.0040\%, and 5.0219\% for seeds 0, 1, and 2. Thus every tested initialization remains above the reported historical multiview control in the compatible binary SC measure. This establishes persistence of the observed direction across the three treatment runs. It does not establish paired statistical significance because the historical control has no repeated seeds under the same contract.
 
 The mean SC difference from the historical control is 5.96 percentage points. A semantic difference is not reported because a compatible rescore of the historical control is unavailable. Relative to the repeated V-JEPA monocular mean, the multiview mean is higher in both SC IoU and mIoU, but representation, geometry, frozen-module choices, and optimization settings also differ. The evidence supports the behavior of the complete final treatment rather than a numerical estimate of an isolated multiview contribution.
 
-The precision/recall profile suggests that the final treatment is not improving occupied IoU solely by indiscriminately labeling more space occupied. Its precision is around 63\% across runs, while recall varies more substantially. Nonetheless, precision remains imperfect, and there is no threshold sweep or calibrated obstacle-risk study. Three repetitions quantify sensitivity within this training contract; they do not measure scene variability, annotation uncertainty, or transfer to another aerial dataset.
+Three repetitions quantify sensitivity within this training contract; they do not measure scene variability, annotation uncertainty, or transfer to another aerial dataset.
 
 \subsection{Class Support, Absence, and Failure}
-\begin{figure*}[t]
+\begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{long_tail.pdf}
-\caption{Audited test support and class-wise SSC IoU. Classes share descending test-support order across panels; training/validation histograms are unavailable. The occupied test total is 788,577,940 voxels. The final treatment is mean $\pm$ sample SD over three runs; controls are single-run records with matching aggregate class support. Ground-truth-absent categories are N/A, while represented categories with zero IoU remain visible failures. Aggregate support equivalence does not establish exact multiview target identity.}
+\includegraphics[width=\columnwidth]{long_tail.pdf}
+\vspace{-1.1em}
+\caption{Class distribution based on voxel count in the OccuFly dataset and per-class SSC IoU. Classes follow the same descending-frequency order in both panels. Ground-truth-absent categories are marked N/A.}
 \label{fig:longtail}
-\end{figure*}
+\end{figure}
 
 Figure~\ref{fig:longtail} combines audited test ground-truth support with per-class scores. Empty accounts for 85.14\% of valid test voxels, and building accounts for 86.21\% of occupied support. These are test-distribution quantities; the training-loss weighting is derived from training counts and should not be interpreted through the same percentage. The large building share explains why occupied-space recovery and a class-balanced semantic macro score can tell different stories.
 

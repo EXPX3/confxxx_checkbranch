@@ -1,0 +1,88 @@
+{
+  "figure_count": 5,
+  "uids_in_occufly_figure_4_first_row_order": [
+    "scene_08_30_000299",
+    "scene_09_40_000267",
+    "scene_09_30_000145",
+    "scene_08_40_000245",
+    "scene_09_30_000233"
+  ],
+  "figures": [
+    {
+      "uid": "scene_08_30_000299",
+      "output": "/datatank/giridhar.vb/repos/ws_jepa_occufly_test/confxxx_checkbranch_ieeercc2027/content/images/fig6_occufly_scene_08_30_000299.png",
+      "ssc2": "rendered_from_exact_table_iii_checkpoint"
+    },
+    {
+      "uid": "scene_09_40_000267",
+      "output": "/datatank/giridhar.vb/repos/ws_jepa_occufly_test/confxxx_checkbranch_ieeercc2027/content/images/fig6_occufly_scene_09_40_000267.png",
+      "ssc2": "rendered_from_exact_table_iii_checkpoint"
+    },
+    {
+      "uid": "scene_09_30_000145",
+      "output": "/datatank/giridhar.vb/repos/ws_jepa_occufly_test/confxxx_checkbranch_ieeercc2027/content/images/fig6_occufly_scene_09_30_000145.png",
+      "ssc2": "rendered_from_exact_table_iii_checkpoint"
+    },
+    {
+      "uid": "scene_08_40_000245",
+      "output": "/datatank/giridhar.vb/repos/ws_jepa_occufly_test/confxxx_checkbranch_ieeercc2027/content/images/fig6_occufly_scene_08_40_000245.png",
+      "ssc2": "rendered_from_exact_table_iii_checkpoint"
+    },
+    {
+      "uid": "scene_09_30_000233",
+      "output": "/datatank/giridhar.vb/repos/ws_jepa_occufly_test/confxxx_checkbranch_ieeercc2027/content/images/fig6_occufly_scene_09_30_000233.png",
+      "ssc2": "rendered_from_exact_table_iii_checkpoint"
+    }
+  ],
+  "checkpoints": {
+    "mde_vj_linear": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/08_accv26_reviewer_vjepa21_rgb_depth_comparison_seed0_20260829/linear_probe/linearprobe_best.pt",
+    "mde_vj_dta_film_mvs": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/09a_wacv27_posemvs_depthonly_seed0_20260829/ssc_best.pt",
+    "mde_d3_film_dpt": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/02_dinov3_vith16plus_film_dpt_occufly_parity_seed0_20260829/dpt_film_best.pt",
+    "mde_mvsformer_d3hplus": "/datatank/giridhar.vb/data/checkpoints/posed_mvs_depth/official_structure_occufly/seed0_screen_5epoch_ddp8/dinov3_hplus/seed_0/best.pt",
+    "ssc1": "/datatank/giridhar.vb/repos/ws_jepa_occufly_test/CGFormer/logs/ssc/cgformer/dav2prior_train/tensorboard/version_0/checkpoints/best.ckpt",
+    "ssc2": "/datatank/giridhar.vb/repos/ws_jepa_occufly_test/experiments_wacv27/outputs/results/ssc/fssc_rgb_context_dpt_depth_film_dpt_reproduction_fixed_20260826/ssc_epoch_009.pt",
+    "ssc4": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/v5v2dinov3_seed43_20261006/best_val_miou.pt",
+    "ssc5": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/07b_dinov3_mvsformerpp_voxdet_v5v2_seed2_replication_20261006/best_val_miou.pt"
+  },
+  "ssc2": {
+    "status": "rendered",
+    "table_iii_method": "VJ-FSSC-ctx-DPT-depth-FiLM_DPT",
+    "selected_epoch": 9,
+    "checkpoint_sha256": "72f897ae7960143d83df522dbff967b455b989a15e92e58d841bab7ce4aabe0b",
+    "reported_sc_iou_percent": 34.42029733520126,
+    "reported_fixed_21_miou_percent": 2.9870438712427365,
+    "label_space": "37 raw-ID-indexed OccuFly channels"
+  },
+  "d3_film_dpt_depth_source": "Dense depth exported by the strictly loaded D3 FiLM-DPT module during the selected SSC4 inference; no non-strict or substitute model was used.",
+  "voxel_rendering": {
+    "grid_whd": [
+      192,
+      128,
+      128
+    ],
+    "voxel_size_m": 0.5,
+    "camera_grid_bounds_m": {
+      "camera_right_x": [
+        -48,
+        48
+      ],
+      "camera_down_y": [
+        -32,
+        32
+      ],
+      "camera_forward_depth": [
+        0,
+        64
+      ]
+    },
+    "display_transform": "(W,H,D) -> (x, y, -depth); aerial camera-forward is physical down",
+    "valid_frustum_mask_applied_to_gt_and_all_predictions": true,
+    "view_calibration": "common oblique aerial view calibrated against all five OccuFly Figure 4 GT panels",
+    "same_transform_camera_palette_and_canvas_for_gt_and_predictions": true,
+    "panel_size_px": [
+      489,
+      343
+    ],
+    "reference": "OccuFly paper Figure 4 layout"
+  }
+}

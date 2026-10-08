@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--output', type=Path, default=ROOT / 'main.pdf')
-    parser.add_argument('--expected-body-pages', type=int, default=12)
+    parser.add_argument('--expected-body-pages', type=int, default=11)
     parser.add_argument('--max-reference-pages', type=int, default=1)
     args = parser.parse_args()
     subprocess.run(['python3', str(ROOT / 'scripts/build_paper_assets.py')],

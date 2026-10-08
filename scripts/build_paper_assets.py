@@ -10,6 +10,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+from matplotlib.colors import PowerNorm
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / 'docs' / 'evidence'
@@ -103,43 +104,97 @@ def draw_long_tail(output, baseline, mono):
     order = np.argsort(-g, kind='stable')
     names = np.array(output['class_names'][1:])[order]
     x = np.arange(21)
-    fig, (top, bottom) = plt.subplots(2,1,figsize=(7.16,4.15),sharex=True,
-                                     gridspec_kw={'height_ratios':[1,1.65]})
+    fig, (top, bottom) = plt.subplots(2,1,figsize=(3.5,3.9),sharex=True,
+                                     gridspec_kw={'height_ratios':[1,1.55]})
     top.bar(x,g[order],color='#777777',width=.64)
     top.set_yscale('log'); top.set_ylim(300,2e9)
-    top.set_ylabel('Test GT voxels\n(log scale)',fontsize=9)
-    top.set_title('(a) Audited test support; training/validation histograms unavailable',fontsize=9,loc='left')
+    top.set_ylabel('GT voxels\n(log scale)',fontsize=7)
+    top.set_title('(a) Class distribution based on voxel count\n'
+                  'in the OccuFly dataset',fontsize=7.5,loc='left',pad=3)
     for j,index in enumerate(order):
         if g[index] == 0:
             top.text(j,500,'0',ha='center',va='bottom',fontsize=8)
     top.text(.99,.93,f'Occupied total: {int(g.sum()):,}',transform=top.transAxes,
-             ha='right',va='top',fontsize=8)
+             ha='right',va='top',fontsize=6.5)
     present = g[order] > 0
-    base = np.array([float(r['iou_percent'] or 0) for r in baseline[1:]])[order]
-    single = np.array([float(r['iou_percent'] or 0) for r in mono[1:]])[order]
-    mu = np.array(output['per_class_mean_percent'][1:])[order]
-    sd = np.array(output['per_class_sample_sd_percent'][1:])[order]
-    for values in (base, single, mu, sd): values[~present] = np.nan
-    bottom.plot(x,base,'s-',color='#0072B2',markersize=3.2,linewidth=.95,label='FoundationSSC monocular control')
-    bottom.plot(x,single,'^-',color='#009E73',markersize=3.5,linewidth=.95,label='V-JEPA 2.1 + FiLM-DPT + VoxDet')
-    bottom.errorbar(x,mu,yerr=sd,fmt='o-',color='#D55E00',markersize=3.8,linewidth=1.1,
-                    capsize=2,label='DINOv3 + MVSFormer++ + VoxDet (mean ± sample SD)')
+    with (DATA / 'table3_classwise_iou.csv').open() as stream:
+        variants = list(csv.DictReader(stream))
+    styles = [
+        ('#CC79A7', 'D', '--'),
+        ('#0072B2', 's', '-'),
+        ('#009E73', '^', '-'),
+        ('#E69F00', 'v', '-.'),
+        ('#D55E00', 'o', '-'),
+    ]
+    class_order = output['class_names'][1:]
+    for row, (color, marker, linestyle) in zip(variants, styles):
+        values = np.array([np.nan if row[name] == 'N/A' else float(row[name])
+                           for name in class_order])[order]
+        values[~present] = np.nan
+        bottom.plot(x, values, marker=marker, linestyle=linestyle, color=color,
+                    markersize=2.4, linewidth=.75, label=row['method'])
     for j,index in enumerate(order):
         if g[index] == 0:
             bottom.axvspan(j-.4,j+.4,color='#EEEEEE',zorder=-1)
             bottom.text(j,3,'N/A',ha='center',va='bottom',fontsize=8,rotation=90)
-    bottom.set_ylabel('Per-class IoU (%)',fontsize=9)
+    bottom.set_ylabel('Per-class IoU (%)',fontsize=7)
     bottom.set_ylim(-1.5,51);bottom.set_xlim(-.6,20.6)
-    bottom.set_title('(b) Completion methods on the standard occupied taxonomy',fontsize=9,loc='left')
-    bottom.set_xticks(x, names, rotation=60,ha='right',fontsize=8)
-    bottom.legend(loc='upper right',fontsize=8,frameon=False,handlelength=2)
+    bottom.set_title('(b) Semantic completion',fontsize=7.5,loc='left')
+    bottom.set_xticks(x, names, rotation=65,ha='right',fontsize=5.7)
+    bottom.legend(loc='upper right',fontsize=3.8,frameon=False,handlelength=1.25,
+                  labelspacing=.25,borderaxespad=.25)
     for ax in (top,bottom):
-        ax.tick_params(axis='y',labelsize=8)
+        ax.tick_params(axis='y',labelsize=6)
         ax.grid(axis='y',alpha=.25,linewidth=.5)
         ax.spines[['top','right']].set_visible(False)
-    fig.subplots_adjust(left=.095,right=.985,top=.94,bottom=.24,hspace=.32)
-    fig.savefig(FIG/'long_tail.pdf',metadata={'Title':'Test support and class-wise semantic occupancy','Author':''})
-    fig.savefig(FIG/'long_tail.png',dpi=220)
+    fig.subplots_adjust(left=.15,right=.985,top=.89,bottom=.245,hspace=.3)
+    fig.savefig(FIG/'long_tail.pdf',bbox_inches='tight',pad_inches=.02,
+                metadata={'Title':'OccuFly class distribution and class-wise semantic occupancy','Author':''})
+    fig.savefig(FIG/'long_tail.png',dpi=220,bbox_inches='tight',pad_inches=.02)
+    plt.close(fig)
+
+def draw_table3_heatmap():
+    with (DATA / 'table3_classwise_iou.csv').open() as stream:
+        rows = list(csv.DictReader(stream))
+    if len(rows) != 5:
+        raise ValueError('Table 3 heatmap must contain exactly five non-reference methods')
+    classes = list(rows[0].keys())[1:]
+    values = np.array([[np.nan if row[name] == 'N/A' else float(row[name])
+                        for name in classes] for row in rows])
+    expected_fixed21 = np.array([1.1774, 2.9870, 3.691132511833303,
+                                 4.294452964306612, 4.802439257300768])
+    observed_fixed21 = np.nan_to_num(values).mean(axis=1)
+    if not np.allclose(observed_fixed21, expected_fixed21, rtol=0, atol=5e-5):
+        raise ValueError('Per-class rows do not reproduce the Table 3 fixed-21 means')
+    labels = ['1', '2', '3', '4', '5']
+    fig, ax = plt.subplots(figsize=(3.5, 2.55))
+    cmap = plt.colormaps['YlGnBu'].copy()
+    cmap.set_bad('#dedede')
+    image = ax.imshow(np.ma.masked_invalid(values), aspect='auto', cmap=cmap,
+                      norm=PowerNorm(.35, vmin=0, vmax=45))
+    for i in range(values.shape[0]):
+        for j in range(values.shape[1]):
+            value = values[i, j]
+            if np.isnan(value):
+                text, color = 'NA', '#192d45'
+            else:
+                text = f'{value:.2f}'
+                color = 'white' if value > 8 else '#192d45'
+            ax.text(j, i, text, ha='center', va='center', fontsize=3.25, color=color)
+    ax.set_xticks(range(len(classes)), classes, rotation=60, ha='right', fontsize=4.7)
+    ax.set_yticks(range(len(labels)), labels, fontsize=6.5)
+    ax.set_ylabel('Table 3 method ID', fontsize=6.2)
+    ax.tick_params(length=1.5, pad=1)
+    ax.set_title('OccuFly test per-class IoU (%)', fontsize=7.5, weight='bold', pad=4)
+    colorbar = fig.colorbar(image, ax=ax, fraction=.032, pad=.015)
+    colorbar.set_label('IoU (%), nonlinear', fontsize=5.5)
+    colorbar.ax.tick_params(labelsize=4.8)
+    fig.subplots_adjust(left=.105, right=.94, top=.89, bottom=.35)
+    fig.savefig(FIG / 'table3_per_class_iou_matrix.pdf',
+                bbox_inches='tight', pad_inches=0,
+                metadata={'Title': 'Table 3 per-class IoU matrix', 'Author': ''})
+    fig.savefig(FIG / 'table3_per_class_iou_matrix.png', dpi=240,
+                bbox_inches='tight', pad_inches=0)
     plt.close(fig)
 
 def draw_architecture():
@@ -182,5 +237,6 @@ if __name__ == '__main__':
     FIG.mkdir(parents=True,exist_ok=True)
     output, baseline, mono = audit_runs()
     draw_long_tail(output,baseline,mono)
+    draw_table3_heatmap()
     draw_architecture()
     print(json.dumps(output['summary_percent'],indent=2))

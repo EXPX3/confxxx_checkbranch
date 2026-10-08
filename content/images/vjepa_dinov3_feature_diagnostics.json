@@ -1,0 +1,63 @@
+{
+  "output": "/datatank/giridhar.vb/repos/ws_jepa_occufly_test/confxxx_checkbranch_ieeercc2027/content/images/vjepa_dinov3_feature_diagnostics.png",
+  "scene": "scene_08",
+  "altitude_m": 50,
+  "frame": "000091",
+  "vjepa_checkpoint": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/01_shared_film_dpt_rgb_occufly_rerun_fullsweep copy/lr_8e_4__wd_1e_4/dpt_film_best.pt",
+  "dinov3_checkpoint": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/02_dinov3_vith16plus_film_dpt_occufly_parity_seed0_20260829/dpt_film_best.pt",
+  "feature_rms_per_backbone_scale": {
+    "V-JEPA 2.1": [
+      1.712780475616455,
+      1.8964015245437622
+    ],
+    "DINOv3": [
+      0.1338161826133728,
+      0.1977936327457428
+    ]
+  },
+  "feature_rms_definition": "sqrt(mean_channels(feature**2)); displayed per backbone because raw activation magnitude is architecture-dependent",
+  "depth_shared_scale_m": [
+    0.001,
+    80.0
+  ],
+  "absolute_error_shared_scale_m": [
+    0.0,
+    7.746671676635742
+  ],
+  "absolute_error_99pct_m": {
+    "V-JEPA 2.1": 7.305696487426758,
+    "DINOv3": 7.746671676635742
+  },
+  "single_frame_metrics": {
+    "V-JEPA 2.1": {
+      "rmse_m": 2.6674559116363525,
+      "mae_m": 2.2576146125793457,
+      "silog": 4.403790831565857,
+      "absrel": 0.04570385813713074,
+      "delta1": 0.999944806098938,
+      "valid_pixels": 126751
+    },
+    "DINOv3": {
+      "rmse_m": 2.484058380126953,
+      "mae_m": 2.013202667236328,
+      "silog": 4.7866057604551315,
+      "absrel": 0.04077897593379021,
+      "delta1": 0.9987692832946777,
+      "valid_pixels": 126751
+    }
+  },
+  "full_test_rmse_m": {
+    "V-JEPA 2.1": 4.770194679629572,
+    "DINOv3": 4.35818022785939
+  },
+  "official_forward_max_abs_difference": {
+    "V-JEPA 2.1": 0.0,
+    "DINOv3": 0.0
+  },
+  "pca_interpretation": {
+    "level0": "higher-resolution DPT branch derived from the earliest selected backbone level",
+    "level3": "coarsest DPT branch derived from the deepest selected backbone level",
+    "comparison_limit": "each PCA is independently fitted; colors are not comparable across panels"
+  },
+  "layout": "single IEEE column; logical 3x5 image grid with two narrow vertical label rails"
+}

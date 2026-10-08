@@ -3,8 +3,8 @@
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{architecture.pdf}
-\caption{Study architecture. Top: frozen image representations feed trainable depth heads; FiLM supplies altitude and intrinsics. Bottom: the final SSC treatment uses trainable DINOv3 DPT context, frozen native five-view MVSFormer++ geometry, frozen lifting/fusion, and a trainable VoxDet decoder. Blue denotes frozen modules, orange trainable modules, and gray inputs/outputs. The geometry posterior is projected onto the lifting depth grid; its dense expectation is a diagnostic rather than a replacement for the distribution.}
+\includegraphics[width=\textwidth]{foundation_ssc_instance_pipeline.png}
+\caption{Foundation-model pipeline for instance-aware semantic scene completion (SSC). Monocular or multi-view OccuFly RGB observations are encoded by V-JEPA~2.1 or DINOv3 foundation features. Context and geometry adapters feed hybrid-view 3D lifting and axis-aware fusion, followed by spatial decoupling into semantic instance aggregation and 4D offset regression branches. Semantic class labels and instance offsets provide the respective supervision signals.}
 \label{fig:architecture}
 \end{figure*}
 
@@ -23,6 +23,13 @@ where $\mathcal S_t$ contains source views. The monocular path uses only the tar
 The V-JEPA~2.1 ViT-Gigantic image encoder takes $384\times384$ inputs with patch size 16. It exposes $24\times24$ maps with 1664 channels. The four-level decoder reads zero-indexed blocks $\{11,23,37,47\}$; the last-layer probe reads block 47 alone. DINOv3 ViT-H+/16 uses the same target resolution and patch grid, with 1280-channel maps from blocks $\{7,15,23,31\}$. These levels roughly match relative transformer depth, but the feature widths and backbone capacities differ. No additional projection is introduced solely to make the backbones appear identical.
 
 Let $F_t^{(l)}=E^{(l)}(I_t)$ denote the selected frozen map. Encoder parameters receive no task gradients. Each head learns how to read the fixed feature channels, including its input projection when the source width changes. This is important for interpreting linear probes: their results measure accessibility through the stated readout, not the total geometric information that any conceivable downstream model could recover. Freezing also does not eliminate the encoder's inference cost; it reduces trainable parameters and stabilizes the representation during task optimization.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{vjepa_dinov3_feature_diagnostics.png}
+\caption{Matched feature and depth diagnostics for V-JEPA~2.1 and DINOv3 on OccuFly scene~08 at 50~m (frame 000091). The final frozen maps are block~47 for V-JEPA and block~31 for DINOv3. DPT level~0 is the higher-resolution branch derived from the earliest selected backbone level and is architecturally positioned to retain finer spatial variation. Level~3 is the coarsest branch derived from the deepest selected level and has the largest effective context. These are architectural roles, not semantic interpretations of PCA colors. Each PCA is fitted independently and supports only within-panel inspection; colors are not comparable across models or levels. Ground truth and predictions share a 0--80~m scale, and the error maps share a 0--7.75~m scale (the larger model-wise 99th percentile). Feature RMS shows within-backbone activation magnitude using independently normalized low-to-high scales. On this frame, DINOv3 reduces RMSE from 2.667 to 2.484~m and MAE from 2.258 to 2.013~m, whereas V-JEPA has lower SILog (4.404 versus 4.787). The reproducible V-JEPA checkpoint visualized here obtains 4.770~m full-test RMSE and is one of the three runs summarized by the 4.907~m mean in Table~\ref{tab:mde}; the DINOv3 checkpoint obtains 4.358~m.}
+\label{fig:backbone_feature_diagnostics}
+\end{figure}
 
 \subsection{Depth Heads and Metric Readout}
 \subsubsection{Linear and four-level decoding}
