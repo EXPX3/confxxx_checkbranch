@@ -63,6 +63,13 @@ A multilayer perceptron embeds $m_t$ into 128 dimensions. At each DPT level, cha
 The affine projections start near zero so the initial path remains close to the unconditioned decoder. Metadata thus modulates the interpretation of visual features while leaving the frozen encoder untouched. Camera conditioning enters only methods named FiLM-DPT; it is not silently supplied to the linear probe.
 
 \subsection{Temporal Aggregation and Pose-Aware Diagnostic}
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{dtavideo/dta_raft_exact.pdf}
+\caption{Flow-aligned DTA diagnostic for the four-frame V-JEPA~2.1 clip. The raw tubelet PCA maps precede alignment; feature change is their channel-wise $\ell_2$ difference, normalized at the 99th percentile. RAFT flow and validity align each tubelet before DTA, whose blue/red preference favors tubelet 0/1. Raw, aligned, and DTA maps share one PCA basis; the predicted depth uses a 0--80~m scale.}
+\label{fig:dta_raft_compact}
+\end{figure*}
+
 Video mode uses a four-frame clip with offsets $[-1,0,0,+1]$. The duplicated target yields an even length compatible with tubelet size two. Frame offsets are defined by sequence index, because measured capture timestamps are not available in the audited preprocessing records. The frozen video encoder returns two temporal tubelet positions at each spatial patch location.
 
 A video linear adapter folds the tubelet dimension into channels. Dense Temporal Attention (DTA) instead learns a temporal readout separately at each spatial cell and each selected encoder level. With temporal tokens $G_{l,\tau}(u)$, the adapter has the form
@@ -71,6 +78,13 @@ A video linear adapter folds the tubelet dimension into channels. Dense Temporal
 \label{eq:dta}
 \end{equation}
 where $\mu_l$ is temporal mean pooling, $A_l$ is learned-query attention, and the residual gate starts near mean pooling. The attention module uses a 512-dimensional adapter with eight heads. Its output has the same two-dimensional spatial form as an image feature map and can feed FiLM-DPT.
+
+The implemented flow-aligned diagnostic addresses the same-cell assumption explicitly. Frozen RAFT \cite{teed2020raft} predicts target-to-frame flow $F_{t\rightarrow j}$ and reverse flow for every RGB frame. Out-of-view samples and forward--backward-inconsistent matches are invalidated \cite{meister2018unflow}. Because one V-JEPA token spans two frames, the two valid frame flows are averaged to obtain tubelet flow $\bar F_\tau$. For target coordinate $u$, source-tubelet features are then sampled as
+\begin{equation}
+\widetilde G_{l,\tau}(u)=G_{l,\tau}\!\left(u+\bar F_\tau(u)\right),
+\label{eq:raft_warp}
+\end{equation}
+using bilinear backward sampling with \texttt{align\_corners=False}. The aligned DTA masks invalid tubelets in attention and replaces $\mu_l$ in Eq.~\eqref{eq:dta} by a validity-weighted mean. The aligned ST-LP control instead zeroes invalid samples before temporal concatenation, preserving a linear readout. RAFT, V-JEPA, and the warp are frozen or deterministic; only the downstream temporal adapter and depth head learn.
 
 Local temporal attention does not itself align the scene as the camera moves. A feature at the same patch coordinate in two views may correspond to different physical surfaces. The pose-aware diagnostic therefore retains target/source identity and forms a depth-indexed matching volume. For homogeneous target pixel $u$ and hypothesized camera-axis depth $d_k$,
 \begin{equation}

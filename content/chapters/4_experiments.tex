@@ -57,7 +57,7 @@ All three-run statistics use an arithmetic mean and sample standard deviation wi
 t_c=\frac{J_c(g_c+p_c)}{1+J_c}.
 \label{eq:reconstruct}
 \end{equation}
-Recovered values must be integer-consistent and cannot exceed either support. The empty-class marginal additionally determines binary occupied counts, allowing SC IoU, precision, recall, and mIoU to be independently recomputed. Every reconstructed metric agrees with its saved record to numerical precision. The audit preserves exact per-run values, source identities, and selected epochs in repository evidence rather than expanding the body with an exhaustive seed table.
+Recovered values must be integer-consistent and cannot exceed either support. The empty-class marginal additionally determines binary occupied counts, allowing SC IoU, precision, recall, and mIoU to be independently recomputed. Every reconstructed metric agrees with its saved record to numerical precision. The MDE altitude audit uses a non-padding distributed sampler: each of the 3,842 test UIDs is evaluated once, avoiding the six duplicated 30-m frames introduced when a conventional eight-rank sampler padded the test set. The audit preserves exact per-run values, source identities, and selected epochs in repository evidence rather than expanding the body with an exhaustive seed table.
 
 This procedure verifies sufficient counts, not a new inference run or the identity of every multiview target. Historical control records lack the retained marginals needed for a compatible semantic rescore, so we retain their SC IoU but omit their unverifiable semantic score. The class-support figure orders categories by audited test support because training and validation voxel histograms are unavailable; it is a test-distribution diagnostic, not an estimate of the training exposure of each category.
 
@@ -81,12 +81,12 @@ ID & Method & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & Abs
 2 & Linear Probe Video DTA & 0.701 & 0.958 & 0.995 & 0.191 & 7.055 & 5.928 & 0.207\\
 3 & Video DTA-FiLM-MVS & 0.768 & 0.930 & 0.987 & 0.175 & 6.406 & 4.811 & 0.211\\
 4 & DPT & 0.747 & 0.970 & 0.997 & 0.162 & 6.730 & 5.411 & 0.200\\
-5 & FiLM-DPT-RGB (3-seed mean) & 0.810 & 0.966 & 0.997 & 0.137 & 4.907 & 3.582 & 0.171\\
+5 & FiLM-DPT-RGB (3-seed mean) & 0.810 & 0.966 & 0.997 & 0.137 & 4.910 & 3.584 & 0.171\\
 6 & MVSFormer++/VJ-G & 0.797 & 0.896 & 0.955 & 0.176 & 6.390 & 4.465 & 0.172\\
 \midrule
 \multicolumn{9}{l}{\textit{DINOv3 backbone}}\\
 7 & Linear Probe & 0.782 & \cellcolor{bestvalue!45}$\mathbf{0.980}$ & \underline{0.998} & 0.156 & 6.097 & 5.066 & 0.186\\
-8 & FiLM-DPT-RGB & \cellcolor{bestvalue!45}$\mathbf{0.848}$ & 0.968 & \underline{0.998} & \cellcolor{bestvalue!45}$\mathbf{0.121}$ & \cellcolor{bestvalue!45}$\mathbf{4.358}$ & \cellcolor{bestvalue!45}$\mathbf{3.209}$ & 0.161\\
+8 & FiLM-DPT-RGB & \cellcolor{bestvalue!45}$\mathbf{0.847}$ & 0.968 & \underline{0.998} & \cellcolor{bestvalue!45}$\mathbf{0.121}$ & \cellcolor{bestvalue!45}$\mathbf{4.362}$ & \cellcolor{bestvalue!45}$\mathbf{3.213}$ & 0.161\\
 9 & MVSFormer++/D3-H+ & 0.828 & 0.938 & 0.982 & 0.136 & \underline{4.611} & \underline{3.314} & \underline{0.130}\\
 \midrule
 \multicolumn{9}{l}{\textit{References}}\\
@@ -97,9 +97,9 @@ ID & Method & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & Abs
 }
 \end{table}
 
-Table~\ref{tab:mde} shows that decoder and conditioning choices materially affect the geometry recovered from foundation-model features. For V-JEPA~2.1, DPT reduces RMSE from 7.808~m for the RGB linear probe to 6.730~m, while FiLM-DPT-RGB averages 4.907~m RMSE and improves $\delta_1$ from 0.651 to 0.810. The video and multiview configurations do not surpass the strongest RGB FiLM-DPT result under the reported protocols.
+Table~\ref{tab:mde} shows that decoder and conditioning choices materially affect the geometry recovered from foundation-model features. For V-JEPA~2.1, DPT reduces RMSE from 7.808~m for the RGB linear probe to 6.730~m, while FiLM-DPT-RGB averages 4.910~m RMSE and improves $\delta_1$ from 0.651 to 0.810. The video and multiview configurations do not surpass the strongest RGB FiLM-DPT result under the reported protocols.
 
-For DINOv3, FiLM-DPT reduces RMSE from 6.097 to 4.358~m relative to the linear probe and improves $\delta_1$ from 0.782 to 0.848. Both backbone families therefore benefit from a more capable metric readout. This ordering does not establish a general backbone ranking because model capacities, representation widths, input contracts, and training procedures differ.
+For DINOv3, FiLM-DPT reduces RMSE from 6.097 to 4.362~m relative to the linear probe and improves $\delta_1$ from 0.782 to 0.847. Both backbone families therefore benefit from a more capable metric readout. This ordering does not establish a general backbone ranking because model capacities, representation widths, input contracts, and training procedures differ.
 
 DepthAnything2--OccuFly supplies a published benchmark reference at 4.844~m RMSE. DINOv3 FiLM-DPT has lower RMSE and AbsRel and higher $\delta_1$, whereas the published reference has lower SILog (0.112 versus 0.161). It is not a frozen-feature-head ablation because its model and training differ; the strongest configuration therefore depends on the metric.
 
@@ -123,7 +123,7 @@ DepthAnything2--OccuFly supplies a published benchmark reference at 4.844~m RMSE
     Intrinsics FiLM
       & $.711{\pm}.015$ & $.182{\pm}.004$ & $7.115{\pm}.243$ & $.216{\pm}.007$ \\
     Alt.+intr. FiLM
-      & \cellcolor{bestvalue!45}$\mathbf{.810{\pm}.006}$ & \cellcolor{bestvalue!45}$\mathbf{.137{\pm}.005}$ & \cellcolor{bestvalue!45}$\mathbf{4.907{\pm}.140}$ & \cellcolor{bestvalue!45}$\mathbf{.171{\pm}.005}$ \\
+      & \cellcolor{bestvalue!45}$\mathbf{.810{\pm}.006}$ & \cellcolor{bestvalue!45}$\mathbf{.137{\pm}.005}$ & \cellcolor{bestvalue!45}$\mathbf{4.910{\pm}.138}$ & \cellcolor{bestvalue!45}$\mathbf{.171{\pm}.005}$ \\
     \bottomrule
   \end{tabular}
   }
@@ -166,6 +166,34 @@ O2 & D3-FSSC-ctx-DPT-depth-GT & 42.01 & 8.40\\
 }
 \end{table}
 
+For the altitude comparison, FiLM and MVSF++ denote SSC variants 4 and 5 in Table~\ref{tab:ssc}. MDE-5 and MDE-8 are the V-JEPA~2.1 and DINOv3 FiLM-DPT-RGB variants in Table~\ref{tab:mde}. SSC and MDE-5 values are means of three validation-selected runs; MDE-8 uses its validation-selected run.
+\begin{table}[t]
+\centering
+\caption{Altitude-wise SSC and MDE on OccuFly. SSC scores are percentages and mIoU uses the fixed 21-class average; MDE errors are in metres except AbsRel and SILog. Bold marks the better paired result using unrounded values.}
+\label{tab:ssc-mde-altitude}
+\tiny
+\setlength{\tabcolsep}{0.9pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}clrr@{\hspace{1.2pt}}|@{\hspace{1.2pt}}lrrrrrrr@{}}
+\toprule
+Alt. & SSC method & IoU (\%)$\uparrow$ & mIoU (\%)$\uparrow$ & MDE & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & AbsRel$\downarrow$ & RMSE$\downarrow$ & MAE$\downarrow$ & SILog$\downarrow$\\
+\midrule
+30 & 4: FiLM & 43.13 & \textbf{5.41} & MDE-5 & .928 & .981 & .999 & .100 & 3.350 & 2.653 & .129\\
+   & 5: MVSF++ & \textbf{43.56} & 5.40 & MDE-8 & \textbf{.952} & \textbf{.986} & \textbf{.999} & \textbf{.074} & \textbf{2.683} & \textbf{1.901} & \textbf{.113}\\
+\midrule
+40 & 4: FiLM & 38.94 & 3.10 & MDE-5 & .736 & .932 & .994 & .172 & 5.233 & 3.730 & .197\\
+   & 5: MVSF++ & \textbf{41.10} & \textbf{3.46} & MDE-8 & \textbf{.745} & \textbf{.932} & \textbf{.995} & \textbf{.162} & \textbf{4.883} & \textbf{3.470} & \textbf{.194}\\
+\midrule
+50 & 4: FiLM & 54.69 & 4.92 & MDE-5 & .836 & .996 & 1.000 & .115 & 5.131 & 3.842 & .131\\
+   & 5: MVSF++ & \textbf{56.64} & \textbf{5.61} & MDE-8 & \textbf{.912} & \textbf{.999} & \textbf{1.000} & \textbf{.097} & \textbf{4.372} & \textbf{3.524} & \textbf{.121}\\
+\midrule
+All & 4: FiLM & 47.30 & 4.29 & MDE-5 & .810 & .966 & .997 & .137 & 4.910 & 3.584 & .171\\
+    & 5: MVSF++ & \textbf{49.33} & \textbf{4.80} & MDE-8 & \textbf{.847} & \textbf{.968} & \textbf{.998} & \textbf{.121} & \textbf{4.362} & \textbf{3.213} & \textbf{.161}\\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{table3_per_class_iou_matrix.pdf}
@@ -177,6 +205,8 @@ O2 & D3-FSSC-ctx-DPT-depth-GT & 42.01 & 8.40\\
 Table~\ref{tab:ssc} separates binary completion from fixed-21 semantic mIoU. The D3 monocular and multiview treatments improve both measures over the audited controls, but they differ in representation, geometry, decoding, losses, and optimization; the table therefore compares complete configurations rather than isolated components. The historical V-JEPA seed-42 search is shorter than the other monocular runs.
 
 The O1/O2 diagnostics use GT metric depth only at geometric lifting; context features and the remaining SSC pipeline are unchanged. Their 7.25\% and 8.40\% mIoU show that semantic performance remains limited even when lifting receives oracle geometry, indicating bottlenecks beyond depth estimation. These single-run oracle diagnostics are upper-bound analyses, not deployable configurations or candidates for the ranked comparison.
+
+Table~\ref{tab:ssc-mde-altitude} uses the same altitude partition for SSC and MDE. Both SSC treatments are weakest at 40~m and strongest at 50~m; MVSF++ improves the three-run mean SC IoU at every altitude, with its largest gain at 40~m. Most MDE-8 metrics are strongest at 30~m and weakest at 40~m, matching the altitude at which both SSC variants have their lowest completion scores. These are paired configuration-level observations, not an isolated causal effect of the depth branch.
 
 \begin{figure}[t]
 \centering
@@ -193,9 +223,9 @@ The O1/O2 diagnostics use GT metric depth only at geometric lifting; context fea
 \end{figure}
 
 \subsection{Repeated-Run Multiview Result}
-The final DINOv3--MVSFormer++--VoxDet treatment achieves $49.3273\pm1.1708\%$ SC IoU and $4.8024\pm0.3648\%$ mIoU. Means and sample standard deviations are computed from the exact saved per-run records; Table~\ref{tab:ssc} rounds them to two decimals.
+The final DINOv3--MVSFormer++--VoxDet treatment achieves $49.3278\pm1.1704\%$ SC IoU and $4.8025\pm0.3648\%$ mIoU. Means and sample standard deviations are computed from the exact saved per-run records; Table~\ref{tab:ssc} rounds them to two decimals.
 
-Per-run SC IoU is 48.0635\%, 49.5434\%, and 50.3749\%, and mIoU is 4.3814\%, 5.0040\%, and 5.0219\% for seeds 0, 1, and 2. Thus every tested initialization remains above the reported historical multiview control in the compatible binary SC measure. This establishes persistence of the observed direction across the three treatment runs. It does not establish paired statistical significance because the historical control has no repeated seeds under the same contract.
+Per-run SC IoU is 48.0645\%, 49.5437\%, and 50.3752\%, and mIoU is 4.3814\%, 5.0041\%, and 5.0220\% for seeds 0, 1, and 2. Thus every tested initialization remains above the reported historical multiview control in the compatible binary SC measure. This establishes persistence of the observed direction across the three treatment runs. It does not establish paired statistical significance because the historical control has no repeated seeds under the same contract.
 
 The mean SC difference from the historical control is 5.96 percentage points. A semantic difference is not reported because a compatible rescore of the historical control is unavailable. Relative to the repeated V-JEPA monocular mean, the multiview mean is higher in both SC IoU and mIoU, but representation, geometry, frozen-module choices, and optimization settings also differ. The evidence supports the behavior of the complete final treatment rather than a numerical estimate of an isolated multiview contribution.
 

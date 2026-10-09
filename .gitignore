@@ -50,6 +50,10 @@ latex.out/
 /appendix*.pdf
 /appendix*.synctex.gz
 
+## Python helper-script caches:
+__pycache__/
+*.py[cod]
+
 ## Auxiliary and intermediate files from other packages:
 # algorithms
 *.alg

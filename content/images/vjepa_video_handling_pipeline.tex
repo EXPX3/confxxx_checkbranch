@@ -1,0 +1,63 @@
+% Compact, implementation-faithful overview of the OccuFly V-JEPA video path.
+% Included from content/chapters/3_method.tex; requires tikz and the libraries
+% loaded in main.tex.
+\begin{tikzpicture}[
+  x=1cm,y=1cm,
+  >=Latex,
+  flow/.style={->,line width=0.75pt,draw=black!72},
+  auxflow/.style={->,line width=0.7pt,draw=orange!75!black},
+  box/.style={draw=black!65,rounded corners=2pt,align=center,
+              minimum height=1.18cm,inner sep=3.2pt,font=\scriptsize},
+  frozen/.style={box,fill=blue!9,draw=blue!55!black},
+  learned/.style={box,fill=bestvalue!32,draw=red!58!black},
+  operation/.style={box,fill=orange!11,draw=orange!70!black},
+  data/.style={box,fill=black!2},
+  note/.style={font=\scriptsize,align=center,text=black!78}
+]
+  \node[data,minimum width=3.6cm] (clip) at (2.0,3.25)
+    {target-centred clip\\[-1pt]
+     $[I_{t-1},I_t]\;|\;[I_t,I_{t+1}]$\\[-1pt]
+     offsets $[-1,0,0,+1]$};
+  \node[frozen,minimum width=2.8cm] (vjepa) at (6.35,3.25)
+    {frozen V-JEPA~2.1\\video mode\\$16{\times}16{\times}2$ tubelets};
+  \node[data,minimum width=3.25cm] (tokens) at (10.35,3.25)
+    {selected blocks $l$\\$G_l\!\in\!\mathbb{R}^{C\times2\times24\times24}$\\two tubelet positions};
+  \node[learned,minimum width=3.55cm] (readout) at (15.15,3.25)
+    {unaligned readout\\ST-LP: temporal concat\\DTA: query attention per $(l,u)$};
+  \node[learned,minimum width=2.9cm] (decoder) at (19.65,3.25)
+    {FiLM-DPT\\metadata $(h,K)$\\256-bin expectation};
+  \node[data,minimum width=1.0cm] (depth) at (22.55,3.25)
+    {$\hat D_t$};
+
+  \draw[flow] (clip) -- (vjepa);
+  \draw[flow] (vjepa) -- (tokens);
+  \draw[flow] (tokens) -- (readout);
+  \draw[flow] (readout) -- (decoder);
+  \draw[flow] (decoder) -- (depth);
+  \node[note,anchor=south] at (15.15,4.02) {same-cell baseline};
+
+  \node[frozen,minimum width=3.15cm] (raft) at (5.25,-0.05)
+    {frozen RAFT\\$t\!\rightarrow\!j$ and $j\!\rightarrow\!t$\\flow for every RGB frame};
+  \node[operation,minimum width=3.35cm] (valid) at (9.75,-0.05)
+    {border + forward/backward\\consistency mask\\validity-weighted pair mean};
+  \node[operation,minimum width=3.75cm] (warp) at (14.65,-0.05)
+    {target-coordinate sampling\\$\widetilde G_{l,\tau}(u)=G_{l,\tau}(u+\bar F_\tau(u))$\\bilinear \texttt{grid\_sample}};
+  \node[learned,minimum width=3.0cm] (masked) at (19.15,-0.05)
+    {masked DTA\\valid tubelets only\\mean-residual gate};
+
+  \draw[auxflow] (clip.south) |- (raft.west);
+  \draw[auxflow] (raft) -- (valid);
+  \draw[auxflow] (valid) -- (warp);
+  \draw[auxflow] (tokens.south) -- ++(0,-1.05) -| (warp.north);
+  \draw[auxflow] (warp) -- (masked);
+  \draw[auxflow] (masked.east) -| (decoder.south);
+  \node[note,anchor=south,text=orange!65!black] at (14.65,0.72)
+    {RAFT-aligned diagnostic (post-encoding)};
+
+  \node[frozen,minimum width=0.45cm,minimum height=0.25cm,inner sep=0pt] (lf) at (0.35,-1.45) {};
+  \node[note,anchor=west] at (0.7,-1.45) {frozen};
+  \node[learned,minimum width=0.45cm,minimum height=0.25cm,inner sep=0pt] (ll) at (2.35,-1.45) {};
+  \node[note,anchor=west] at (2.7,-1.45) {learned};
+  \node[operation,minimum width=0.45cm,minimum height=0.25cm,inner sep=0pt] (lo) at (4.65,-1.45) {};
+  \node[note,anchor=west] at (5.0,-1.45) {deterministic alignment};
+\end{tikzpicture}

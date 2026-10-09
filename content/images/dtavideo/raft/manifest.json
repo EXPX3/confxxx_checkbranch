@@ -1,0 +1,44 @@
+{
+  "checkpoint": "/datatank/giridhar.vb/repos/ws_jepa_occufly_test/experiments_wacv27/outputs/mde_video/vjepa21video_spatial_alignment_grid_sample/real_dta__clip4__seed0__lr3e_4__wd1e_4/dta_dptfilm_best.pt",
+  "reference": {
+    "scene": "scene_08",
+    "height_m": 50,
+    "frame_id": "000091"
+  },
+  "attention_scale": "fixed [-1, 1] for all exported attention maps",
+  "depth_scale_m": [
+    0.001,
+    80.0
+  ],
+  "validity_scale": "[0, 1] feature-grid confidence enlarged with nearest-neighbor sampling",
+  "flow_scale": "shared torchvision flow_to_image normalization across both tubelet fields",
+  "attention_examples": [
+    {
+      "scene": "scene_08",
+      "height_m": 50,
+      "frame_id": "000091",
+      "kind": "reference_pipeline",
+      "attention_mean": 0.03990146517753601,
+      "attention_min": -0.9943928718566895,
+      "attention_max": 0.9992114305496216
+    },
+    {
+      "scene": "scene_09",
+      "height_m": 40,
+      "frame_id": "000708",
+      "kind": "attention_variation",
+      "attention_mean": 0.1922018826007843,
+      "attention_min": -0.7616398334503174,
+      "attention_max": 0.9997355937957764
+    },
+    {
+      "scene": "scene_09",
+      "height_m": 50,
+      "frame_id": "000652",
+      "kind": "attention_variation",
+      "attention_mean": -0.0017026993446052074,
+      "attention_min": -0.9997393488883972,
+      "attention_max": 0.7625262141227722
+    }
+  ]
+}
