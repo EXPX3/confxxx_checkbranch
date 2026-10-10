@@ -21,6 +21,7 @@ UIDS = [
     "scene_08_40_000245",
     "scene_09_30_000233",
 ]
+PRESENTATION_ZOOM = {"scene_09_30_000233": 1.15}
 
 
 def content_crop(gt: Image.Image, o5: Image.Image) -> Image.Image:
@@ -70,23 +71,33 @@ def main() -> None:
         root = args.panel_root / uid
         panel = content_crop(Image.open(root / "gt.png"), Image.open(root / "o5.png"))
         panel.thumbnail((column_width, row_height), Image.Resampling.LANCZOS)
+        zoom = PRESENTATION_ZOOM.get(uid, 1.0)
+        if zoom != 1.0:
+            panel = panel.resize(
+                (round(panel.width * zoom), round(panel.height * zoom)),
+                Image.Resampling.LANCZOS,
+            )
         x = left + (column_width - panel.width) // 2
         y = row_top + (row_height - panel.height) // 2
         canvas.alpha_composite(panel, (x, y))
 
     font_path = Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
     font = ImageFont.truetype(str(font_path), 50)
-    label = Image.new("RGBA", (120, 180), (255, 255, 255, 0))
-    draw = ImageDraw.Draw(label)
-    box = draw.textbbox((0, 0), "O5", font=font)
-    draw.text(
-        ((label.width - (box[2] - box[0])) / 2, (label.height - (box[3] - box[1])) / 2 - box[1]),
-        "O5",
-        fill="black",
-        font=font,
+    padding = 4
+    box = font.getbbox("O5")
+    label = Image.new(
+        "RGBA",
+        (box[2] - box[0] + 2 * padding, box[3] - box[1] + 2 * padding),
+        (255, 255, 255, 0),
     )
+    draw = ImageDraw.Draw(label)
+    draw.text((padding - box[0], padding - box[1]), "O5", fill="black", font=font)
     label = label.rotate(90, expand=True, resample=Image.Resampling.BICUBIC)
-    canvas.alpha_composite(label, (10, row_top + (row_height - label.height) // 2))
+    label_center_x = 24.5
+    canvas.alpha_composite(
+        label,
+        (round(label_center_x - label.width / 2), row_top + (row_height - label.height) // 2),
+    )
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     canvas.save(args.output, dpi=(600, 600))
