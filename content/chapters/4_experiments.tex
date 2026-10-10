@@ -1,3 +1,5 @@
+% !TeX root = ../../main.tex
+
 \section{Experimental Setup}
 \label{sec:setup}
 
@@ -67,34 +69,33 @@ This procedure verifies sufficient counts, not a new inference run or the identi
 \subsection{Representation and Decoder Effects on MDE}
 \begin{table}[t]
 \centering
-\caption{Depth-estimation performance on the OccuFly test set across progressively enhanced MDE configurations. MDE IDs identify the variants visualized in Fig.~\ref{fig:mde_ssc_qualitative}. Best values are shown in bold and second-best values are underlined. A dash denotes an unavailable metric.}
+\caption{Depth-estimation performance on the OccuFly test set across progressively enhanced MDE configurations. Best values are shown in bold and second-best values are underlined.}
 \label{tab:mde}
-\small
-\resizebox{\columnwidth}{!}{%
-\setlength{\tabcolsep}{3.5pt}%
-\begin{tabular}{clrrrrrrr}
+\scriptsize
+\setlength{\tabcolsep}{0.45pt}
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\columnwidth}{@{}c>{\raggedright\arraybackslash}Xccccccc@{}}
 \toprule
-MDE ID & Method & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & AbsRel$\downarrow$ & RMSE$\downarrow$ & MAE$\downarrow$ & SILog$\downarrow$\\
+\makebox[0pt][l]{MDE-ID} & \hspace{30pt}Method & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & \shortstack{AbsRel\\$\downarrow$} & \shortstack{RMSE\\(m)$\downarrow$} & \shortstack{MAE\\(m)$\downarrow$} & \shortstack{SILog\\$\downarrow$}\\
 \midrule
 \multicolumn{9}{l}{\textit{V-JEPA 2.1 backbone}}\\
-MDE-1 & Linear Probe RGB & 0.651 & 0.958 & 0.996 & 0.189 & 7.808 & 6.457 & 0.226\\
-MDE-2 & Linear Probe Video DTA & 0.701 & 0.958 & 0.995 & 0.191 & 7.055 & 5.928 & 0.207\\
-MDE-3 & Video DTA-FiLM-MVS & 0.768 & 0.930 & 0.987 & 0.175 & 6.406 & 4.811 & 0.211\\
-MDE-4 & DPT & 0.747 & 0.970 & 0.997 & 0.162 & 6.730 & 5.411 & 0.200\\
-MDE-5 & FiLM-DPT-RGB (3-seed mean) & 0.810 & 0.966 & 0.997 & 0.137 & 4.910 & 3.584 & 0.171\\
-MDE-6 & MVSFormer++/VJ-G & 0.797 & 0.896 & 0.955 & 0.176 & 6.390 & 4.465 & 0.172\\
+1 & Linear Probe RGB & 0.651 & 0.958 & 0.996 & 0.189 & 7.808 & 6.457 & 0.226\\
+2 & Linear Probe Video DTA & 0.701 & 0.958 & 0.995 & 0.191 & 7.055 & 5.928 & 0.207\\
+3 & Video DTA-FiLM-MVS & 0.768 & 0.930 & 0.987 & 0.175 & 6.406 & 4.811 & 0.211\\
+4 & DPT & 0.747 & 0.970 & 0.997 & 0.162 & 6.730 & 5.411 & 0.200\\
+5 & FiLM-DPT-RGB & 0.810 & 0.966 & 0.997 & 0.137 & 4.910 & 3.584 & 0.171\\
+6 & MVSF++/VJ-G & 0.797 & 0.896 & 0.955 & 0.176 & 6.390 & 4.465 & 0.172\\
 \midrule
 \multicolumn{9}{l}{\textit{DINOv3 backbone}}\\
-MDE-7 & Linear Probe & 0.782 & \cellcolor{bestvalue!45}$\mathbf{0.980}$ & \underline{0.998} & 0.156 & 6.097 & 5.066 & 0.186\\
-MDE-8 & FiLM-DPT-RGB & \cellcolor{bestvalue!45}$\mathbf{0.847}$ & 0.968 & \underline{0.998} & \cellcolor{bestvalue!45}$\mathbf{0.121}$ & \cellcolor{bestvalue!45}$\mathbf{4.362}$ & \cellcolor{bestvalue!45}$\mathbf{3.213}$ & 0.161\\
-MDE-9 & MVSFormer++/D3-H+ & 0.828 & 0.938 & 0.982 & 0.136 & \underline{4.611} & \underline{3.314} & \underline{0.130}\\
+7 & Linear Probe & 0.782 & \cellcolor{bestvalue!45}$\mathbf{0.980}$ & \underline{0.998} & 0.156 & 6.097 & 5.066 & 0.186\\
+8 & FiLM-DPT-RGB & \cellcolor{bestvalue!45}$\mathbf{0.847}$ & 0.968 & \underline{0.998} & \cellcolor{bestvalue!45}$\mathbf{0.121}$ & \cellcolor{bestvalue!45}$\mathbf{4.362}$ & \cellcolor{bestvalue!45}$\mathbf{3.213}$ & 0.161\\
+9 & MVSF++/D3-H+ & 0.828 & 0.938 & 0.982 & 0.136 & \underline{4.611} & \underline{3.314} & \underline{0.130}\\
 \midrule
 \multicolumn{9}{l}{\textit{References}}\\
-MDE-10 & MVSFormer++/D2-B & 0.748 & 0.838 & 0.930 & 0.231 & 7.657 & 5.605 & 0.195\\
-MDE-11 & DepthAnything2--OccuFly \cite{gross2026occufly} & \underline{0.834} & \underline{0.976} & \cellcolor{bestvalue!45}$\mathbf{0.999}$ & \underline{0.134} & 4.844 & 4.193 & \cellcolor{bestvalue!45}$\mathbf{0.112}$\\
+10 & MVSF++/D2-B & 0.748 & 0.838 & 0.930 & 0.231 & 7.657 & 5.605 & 0.195\\
+11 & DA2--OccuFly \cite{gross2026occufly} & \underline{0.834} & \underline{0.976} & \cellcolor{bestvalue!45}$\mathbf{0.999}$ & \underline{0.134} & 4.844 & 4.193 & \cellcolor{bestvalue!45}$\mathbf{0.112}$\\
 \bottomrule
-\end{tabular}
-}
+\end{tabularx}
 \end{table}
 
 Table~\ref{tab:mde} shows that decoder and conditioning choices materially affect the geometry recovered from foundation-model features. For V-JEPA~2.1, DPT reduces RMSE from 7.808~m for the RGB linear probe to 6.730~m, while FiLM-DPT-RGB averages 4.910~m RMSE and improves $\delta_1$ from 0.651 to 0.810. The video and multiview configurations do not surpass the strongest RGB FiLM-DPT result under the reported protocols.
@@ -114,7 +115,7 @@ DepthAnything2--OccuFly supplies a published benchmark reference at 4.844~m RMSE
   \resizebox{\columnwidth}{!}{%
   \begin{tabular}{@{}lcccc@{}}
     \toprule
-    Conditioning & $\delta_1\uparrow$ & AbsRel$\downarrow$ & RMSE$\downarrow$ & SILog$\downarrow$ \\
+    Conditioning & $\delta_1\uparrow$ & AbsRel$\downarrow$ & RMSE (m)$\downarrow$ & SILog$\downarrow$ \\
     \midrule
     DPT
       & $.728{\pm}.034$ & $.174{\pm}.006$ & $6.709{\pm}.385$ & $.202{\pm}.010$ \\
@@ -136,84 +137,82 @@ The available evidence consequently supports a restrained conclusion about time:
 \subsection{From Monocular Geometry to SSC}
 \begin{table}[t]
 \centering
-\caption{OccuFly SSC on the full test set (\%, higher is better). Best deployable values are shown in bold and second-best values are underlined. Repeated D3 rows report mean $\pm$ sample SD over three runs. O5 is a privileged, single-seed SSC-5 diagnostic trained and tested with GT metric depth (GT/GT): GT conditions the DPT-derived 2D context adapter and supplies geometry to LSS lifting, proposal generation, and VoxFormer \cite{chen2025foundationssc,li2023voxformer}; semantic outputs remain predicted. O5 is excluded from deployable ranking.}
+\caption{SSC Variants and their performance on the OccuFly test set. Best deployable values are shown in bold and second-best values are underlined. O5 is a privileged, SSC-5 diagnostic trained and tested with GT metric depth (GT/GT): GT conditions the DPT-derived 2D context adapter and supplies geometry to LSS lifting, proposal generation, and VoxFormer \cite{chen2025foundationssc,li2023voxformer};}
 \label{tab:ssc}
-\tiny
-\setlength{\tabcolsep}{1.5pt}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}clrr@{}}
+\footnotesize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabularx}{\columnwidth}{@{}c>{\raggedright\arraybackslash}Xcc@{}}
 \toprule
-SSC ID & Method & SC IoU (\%) $\uparrow$ & mIoU (\%) $\uparrow$\\
+SSC-ID & Method & \shortstack{SC IoU\\(\%) $\uparrow$} & \shortstack{mIoU\\(\%) $\uparrow$}\\
 \midrule
 \multicolumn{4}{@{}l}{\textit{OccuFly-reported baseline}}\\
-SSC-0 & DISC-instance-scene-ctx-R50-depth-DA2 \cite{gross2026occufly,liu2025disc} & 29.52 & 2.04\\
+SSC0 & DISC-instance-scene-ctx-R50-depth-DA2 \cite{gross2026occufly,liu2025disc} & 29.52 & 2.04\\
 \midrule
 \multicolumn{4}{@{}l}{\textit{Audited local monocular controls}}\\
-SSC-1 & CGF-ctx-EfficientNet-B7-depth-DA2 & 9.93 & 1.18\\
-SSC-2 & VJ-FSSC-ctx-DPT-depth-FiLM\_DPT & 34.42 & 2.99\\
-SSC-3 & VJ-FSSC-ctx-DPT-depth-FiLM\_DPT-VoxDet & $44.24\pm1.35$ & $3.69\pm0.24$\\
-SSC-4 & D3-FSSC-ctx-DPT-depth-FiLM\_DPT-VoxDet & $\underline{47.30\pm0.50}$ & $\underline{4.29\pm0.41}$\\
+SSC1 & CGF-ctx-EfficientNet-B7-depth-DA2 & 9.93 & 1.18\\
+SSC2 & VJ-FSSC-ctx-DPT-depth-FiLM\_DPT & 34.42 & 2.99\\
+SSC3 & VJ-FSSC-ctx-DPT-depth-FiLM\_DPT-VoxDet & $44.24\pm1.35$ & $3.69\pm0.24$\\
+SSC4 & D3-FSSC-ctx-DPT-depth-FiLM\_DPT-VoxDet & $\underline{47.30\pm0.50}$ & $\underline{4.29\pm0.41}$\\
 \midrule
 \multicolumn{4}{@{}l}{\textit{Calibrated multiview treatments}}\\
-\shortstack[c]{SSC-5\\\phantom{SSC-5}\\\phantom{SSC-5}} & \shortstack[l]{D3-FSSC-\\ctx-DPT[MVSF++-depth-conditioned]-\\depth-MVSF++-VoxDet} & \cellcolor{bestvalue!45}$\mathbf{49.33\pm1.17}$ & \cellcolor{bestvalue!45}$\mathbf{4.80\pm0.36}$\\
+\shortstack[c]{SSC5\\\phantom{SSC5}\\\phantom{SSC5}} & \shortstack[l]{D3-FSSC-ctx-DPT-\\{}[MVSF++-depth-conditioned]-\\depth-MVSF++-VoxDet} & \cellcolor{bestvalue!45}$\mathbf{49.33\pm1.17}$ & \cellcolor{bestvalue!45}$\mathbf{4.80\pm0.36}$\\
 \midrule
 \multicolumn{4}{@{}l}{\textit{SSC-5 GT/GT full-adaptation oracle diagnostic}}\\
-O5 & D3-FSSC-ctx-DPT[GT-depth-conditioned]-depth-GT-VoxDet (GT/GT) & \cellcolor{yellow!35}$\mathbf{54.66}$ & \cellcolor{yellow!35}$\mathbf{8.33}$\\
+\shortstack[c]{O5\\\phantom{O5}\\\phantom{O5}} & \shortstack[l]{D3-FSSC-ctx-DPT-\\{}[GT-depth-conditioned]-\\depth-GT-VoxDet (GT/GT)} & \cellcolor{yellow!35}$\mathbf{54.66}$ & \cellcolor{yellow!35}$\mathbf{8.33}$\\
 \midrule
 \multicolumn{4}{@{}l}{\textit{Published OccuFly references}}\\
 -- & Symphonies \cite{gross2026occufly,jiang2024symphonies} & 13.68 & 0.58\\
 \bottomrule
-\end{tabular}
-}
+\end{tabularx}
 \end{table}
 
 For the altitude comparison, SSC-4 and SSC-5 denote the FiLM and MVSF++ variants in Table~\ref{tab:ssc}. O5 is the SSC-5 GT/GT full-adaptation oracle diagnostic. MDE-5 and MDE-8 are the V-JEPA~2.1 and DINOv3 FiLM-DPT-RGB variants in Table~\ref{tab:mde}. SSC-4, SSC-5, and MDE-5 values are means of three validation-selected runs; MDE-8 and O5 use their respective validation-selected single runs.
 \begin{table}[t]
 \centering
-\caption{Altitude-wise SSC and MDE on OccuFly. SSC scores are percentages and mIoU uses the fixed 21-class average; MDE errors are in metres except AbsRel and SILog. Bold marks the better deployable paired result using unrounded values; yellow bold cells report the single-seed O5 GT/GT oracle diagnostic.}
+\caption{Altitude-wise SSC and MDE on OccuFly.}
 \label{tab:ssc-mde-altitude}
-\tiny
-\setlength{\tabcolsep}{0.9pt}
-\resizebox{\columnwidth}{!}{%
+\scriptsize
+\setlength{\tabcolsep}{0.55pt}
+\renewcommand{\arraystretch}{1.05}
 \begin{tabular}{@{}clrr@{\hspace{1.2pt}}|@{\hspace{1.2pt}}lrrrrrrr@{}}
 \toprule
-Alt. & SSC method & IoU (\%)$\uparrow$ & mIoU (\%)$\uparrow$ & MDE & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & AbsRel$\downarrow$ & RMSE$\downarrow$ & MAE$\downarrow$ & SILog$\downarrow$\\
+Alt. & SSC & \shortstack{IoU\\(\%)$\uparrow$} & \shortstack{mIoU\\(\%)$\uparrow$} & MDE-ID & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & \shortstack{AbsRel\\$\downarrow$} & \shortstack{RMSE\\(m)$\downarrow$} & \shortstack{MAE\\(m)$\downarrow$} & \shortstack{SILog\\$\downarrow$}\\
 \midrule
-30 & SSC-0 & 26.88 & 2.23 & & & & & & & & \\
-   & SSC-4 & 43.13 & \textbf{5.41} & MDE-5 & .928 & .981 & .999 & .100 & 3.350 & 2.653 & .129\\
-   & SSC-5 & \textbf{43.56} & 5.40 & MDE-8 & \textbf{.952} & \textbf{.986} & \textbf{.999} & \textbf{.074} & \textbf{2.683} & \textbf{1.901} & \textbf{.113}\\
+30 & SSC0 & 26.88 & 2.23 & & & & & & & & \\
+   & SSC4 & 43.13 & \textbf{5.41} & MDE5 & .928 & .981 & .999 & .100 & 3.350 & 2.653 & .129\\
+   & SSC5 & \textbf{43.56} & 5.40 & MDE8 & \textbf{.952} & \textbf{.986} & \textbf{.999} & \textbf{.074} & \textbf{2.683} & \textbf{1.901} & \textbf{.113}\\
    & O5 & \cellcolor{yellow!35}$\mathbf{55.26}$ & \cellcolor{yellow!35}$\mathbf{8.39}$ & & & & & & & & \\
 \midrule
-40 & SSC-0 & 27.85 & 1.77 & & & & & & & & \\
-   & SSC-4 & 38.94 & 3.10 & MDE-5 & .736 & .932 & .994 & .172 & 5.233 & 3.730 & .197\\
-   & SSC-5 & \textbf{41.10} & \textbf{3.46} & MDE-8 & \textbf{.745} & \textbf{.932} & \textbf{.995} & \textbf{.162} & \textbf{4.883} & \textbf{3.470} & \textbf{.194}\\
+40 & SSC0 & 27.85 & 1.77 & & & & & & & & \\
+   & SSC4 & 38.94 & 3.10 & MDE5 & .736 & .932 & .994 & .172 & 5.233 & 3.730 & .197\\
+   & SSC5 & \textbf{41.10} & \textbf{3.46} & MDE8 & \textbf{.745} & \textbf{.932} & \textbf{.995} & \textbf{.162} & \textbf{4.883} & \textbf{3.470} & \textbf{.194}\\
    & O5 & \cellcolor{yellow!35}$\mathbf{47.48}$ & \cellcolor{yellow!35}$\mathbf{4.61}$ & & & & & & & & \\
 \midrule
-50 & SSC-0 & 31.10 & 2.20 & & & & & & & & \\
-   & SSC-4 & 54.69 & 4.92 & MDE-5 & .836 & .996 & 1.000 & .115 & 5.131 & 3.842 & .131\\
-   & SSC-5 & \textbf{56.64} & \textbf{5.61} & MDE-8 & \textbf{.912} & \textbf{.999} & \textbf{1.000} & \textbf{.097} & \textbf{4.372} & \textbf{3.524} & \textbf{.121}\\
+50 & SSC0 & 31.10 & 2.20 & & & & & & & & \\
+   & SSC4 & 54.69 & 4.92 & MDE5 & .836 & .996 & 1.000 & .115 & 5.131 & 3.842 & .131\\
+   & SSC5 & \textbf{56.64} & \textbf{5.61} & MDE8 & \textbf{.912} & \textbf{.999} & \textbf{1.000} & \textbf{.097} & \textbf{4.372} & \textbf{3.524} & \textbf{.121}\\
    & O5 & \cellcolor{yellow!35}$\mathbf{60.38}$ & \cellcolor{yellow!35}$\mathbf{11.49}$ & & & & & & & & \\
 \midrule
-All & SSC-0 & 29.52 & 2.04 & & & & & & & & \\
-    & SSC-4 & 47.30 & 4.29 & MDE-5 & .810 & .966 & .997 & .137 & 4.910 & 3.584 & .171\\
-    & SSC-5 & \textbf{49.33} & \textbf{4.80} & MDE-8 & \textbf{.847} & \textbf{.968} & \textbf{.998} & \textbf{.121} & \textbf{4.362} & \textbf{3.213} & \textbf{.161}\\
+All & SSC0 & 29.52 & 2.04 & & & & & & & & \\
+    & SSC4 & 47.30 & 4.29 & MDE5 & .810 & .966 & .997 & .137 & 4.910 & 3.584 & .171\\
+    & SSC5 & \textbf{49.33} & \textbf{4.80} & MDE8 & \textbf{.847} & \textbf{.968} & \textbf{.998} & \textbf{.121} & \textbf{4.362} & \textbf{3.213} & \textbf{.161}\\
     & O5 & \cellcolor{yellow!35}$\mathbf{54.66}$ & \cellcolor{yellow!35}$\mathbf{8.33}$ & & & & & & & & \\
 \bottomrule
 \end{tabular}
-}
 \end{table}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{table3_per_class_iou_matrix.pdf}
 \vspace{-1.0em}
-\caption{Per-class IoU for SSC-0--SSC-5 and O5 in Table~\ref{tab:ssc}. Repeated deployable treatments use their three-run per-class means; O5 is the single-seed GT/GT diagnostic. Gray NA cells denote classes absent from the test ground truth.}
+\caption{Per-class IoU for SSC variants and Oracle for SSC5 in Table~\ref{tab:ssc}. Gray NA cells denote classes absent from the test ground truth.}
 \label{fig:table3_per_class_iou}
 \end{figure}
 
-Table~\ref{tab:ssc} separates binary completion from fixed-21 semantic mIoU. The D3 monocular and multiview treatments improve both measures over the audited controls, but they differ in representation, geometry, decoding, losses, and optimization; the table therefore compares complete configurations rather than isolated components. The historical V-JEPA seed-42 search is shorter than the other monocular runs.
+Table~\ref{tab:ssc} separates binary completion from semantic mIoU. The D3 monocular and multiview treatments improve both measures over the audited controls, but they differ in representation, geometry, decoding, losses, and optimization; the table therefore compares complete configurations rather than isolated components. The historical V-JEPA seed-42 search is shorter than the other monocular runs.
 
-O5 retains SSC-5's frozen DINOv3 backbone, DPT-derived visual context, hybrid view transformer, and VoxDet decoder, but bypasses MVSFormer++ and uses mask-aware GT metric depth throughout training, validation, and test. A GT-derived Gaussian depth posterior drives LSS lifting, while GT depth also conditions the 2D context adapter, proposal generation, and VoxFormer. The downstream modules are adapted by training; no GT semantic labels enter inference. The validation-selected seed-0 checkpoint obtains 54.66\% SC IoU and 8.33\% fixed-21 mIoU on the 3,842-image test set. This is a privileged, non-deployable oracle diagnostic rather than a ranked method or a three-seed estimate.
+O5 retains SSC-5's frozen DINOv3 backbone, DPT-derived visual context, hybrid view transformer, and VoxDet decoder, but bypasses MVSFormer++ and uses mask-aware GT metric depth throughout training, validation, and test. A GT-derived Gaussian depth posterior drives LSS lifting, while GT depth also conditions the 2D context adapter, proposal generation, and VoxFormer. The downstream modules are adapted by training; no GT semantic labels enter inference. The validation-selected seed-0 checkpoint obtains 54.66\% SC IoU and 8.33\% mIoU on the 3,842-image test set. This is a privileged, non-deployable oracle diagnostic rather than a ranked method or a three-seed estimate.
 
 Table~\ref{tab:ssc-mde-altitude} uses the same altitude partition for SSC and MDE. Both deployable SSC treatments are weakest at 40~m and strongest at 50~m; MVSF++ improves the three-run mean SC IoU at every altitude, with its largest gain at 40~m. The single-seed O5 diagnostic exceeds the deployable SSC-5 mean in both SSC metrics at every altitude, but this comparison is descriptive rather than a matched repeated-run estimate. Most MDE-8 metrics are strongest at 30~m and weakest at 40~m, matching the altitude at which all three SSC rows have their lowest completion scores. These are configuration-level observations, not an isolated causal effect of the depth branch.
 
@@ -245,7 +244,7 @@ Three repetitions quantify sensitivity within this training contract; they do no
 \centering
 \includegraphics[width=\columnwidth]{long_tail.pdf}
 \vspace{-1.1em}
-\caption{Class distribution based on voxel count in the OccuFly dataset and per-class SSC IoU for SSC-0--SSC-5 and the single-seed O5 GT/GT diagnostic. Classes follow the same descending-frequency order in both panels. Ground-truth-absent categories are marked N/A.}
+\caption{Class distribution based on voxel count in the OccuFly dataset and per-class SSC IoU. Classes follow the same descending-frequency order in both panels. Ground-truth-absent categories are marked N/A.}
 \label{fig:longtail}
 \end{figure}
 

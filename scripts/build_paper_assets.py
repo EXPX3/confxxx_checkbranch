@@ -129,6 +129,9 @@ def draw_long_tail(output, baseline, mono):
             top.text(j,500,'0',ha='center',va='bottom',fontsize=8)
     top.text(.99,.93,f'Occupied total: {int(g.sum()):,}',transform=top.transAxes,
              ha='right',va='top',fontsize=6.5)
+    unoccupied = int(output['runs'][0]['gt_support'][0])
+    top.text(.99,.86,f'Unoccupied total: {unoccupied:,}',transform=top.transAxes,
+             ha='right',va='top',fontsize=6.5)
     present = g[order] > 0
     with (DATA / 'table3_classwise_iou.csv').open() as stream:
         variants = list(csv.DictReader(stream))
