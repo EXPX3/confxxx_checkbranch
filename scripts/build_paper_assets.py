@@ -22,6 +22,17 @@ def check_close(actual, expected):
     if not math.isclose(actual, expected, rel_tol=1e-10, abs_tol=1e-10):
         raise ValueError(f'Metric mismatch: {actual} != {expected}')
 
+def load_ssc0_disc(class_order, present):
+    """Load the rounded DISC all-altitude class IoUs from OccuFly Table 11."""
+    with (DATA / 'occufly_table11_disc_classwise.csv').open() as stream:
+        rows = list(csv.DictReader(stream))
+    by_class = {row['class']: float(row['iou_percent']) for row in rows}
+    if set(by_class) != set(class_order):
+        raise ValueError('SSC-0 class names do not match the canonical taxonomy')
+    values = np.array([by_class[name] for name in class_order], dtype=float)
+    values[~present] = np.nan
+    return values
+
 def audit_runs():
     runs = []
     names = None
@@ -122,6 +133,7 @@ def draw_long_tail(output, baseline, mono):
     with (DATA / 'table3_classwise_iou.csv').open() as stream:
         variants = list(csv.DictReader(stream))
     styles = [
+        ('#000000', 'x', '-'),
         ('#CC79A7', 'D', '--'),
         ('#0072B2', 's', '-'),
         ('#009E73', '^', '-'),
@@ -131,7 +143,7 @@ def draw_long_tail(output, baseline, mono):
     ]
     labels = ['SSC-1', 'SSC-2', 'SSC-3', 'SSC-4', 'SSC-5']
     class_order = output['class_names'][1:]
-    series = []
+    series = [('SSC-0', load_ssc0_disc(class_order, present))]
     for label, row in zip(labels, variants):
         values = np.array([np.nan if row[name] == 'N/A' else float(row[name])
                            for name in class_order])[order]
@@ -183,6 +195,7 @@ def draw_table3_heatmap(output):
         raise ValueError('Table 3 class columns do not match the canonical taxonomy order')
     values = np.array([[np.nan if row[name] == 'N/A' else float(row[name])
                         for name in classes] for row in rows])
+    ssc0_values = load_ssc0_disc(classes, np.array(output['runs'][0]['gt_support'])[1:] > 0)
     oracle = json.loads((DATA / 'o5_gtgt_seed0_classwise.json').read_text())
     oracle_support = np.array(oracle['per_class_gt_support'], dtype=np.int64)
     if not np.array_equal(oracle_support, np.array(output['runs'][0]['gt_support'])):
@@ -192,14 +205,14 @@ def draw_table3_heatmap(output):
     if len(oracle_values) != 21:
         raise ValueError('O5 heatmap row must contain 21 semantic class IoUs')
     oracle_values[oracle_support[1:] == 0] = np.nan
-    values = np.vstack([values, oracle_values])
+    values = np.vstack([ssc0_values, values, oracle_values])
     expected_fixed21 = np.array([1.1774, 2.9870, 3.691132511833303,
                                  4.294452964306612, 4.802439257300768,
                                  8.332685416019398])
-    observed_fixed21 = np.nan_to_num(values).mean(axis=1)
+    observed_fixed21 = np.nan_to_num(values[1:]).mean(axis=1)
     if not np.allclose(observed_fixed21, expected_fixed21, rtol=0, atol=5e-5):
         raise ValueError('Per-class rows do not reproduce the Table 3 fixed-21 means')
-    labels = ['SSC-1', 'SSC-2', 'SSC-3', 'SSC-4', 'SSC-5', 'O5']
+    labels = ['SSC-0', 'SSC-1', 'SSC-2', 'SSC-3', 'SSC-4', 'SSC-5', 'O5']
     fig, ax = plt.subplots(figsize=(3.5, 2.75))
     cmap = plt.colormaps['YlGnBu'].copy()
     cmap.set_bad('#dedede')

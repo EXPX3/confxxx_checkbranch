@@ -83,33 +83,56 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset-root", type=Path, required=True)
     parser.add_argument("--voxel-root", type=Path, required=True)
+    parser.add_argument(
+        "--disc-panels-dir", type=Path,
+        help="Optional directory containing disc_1.png through disc_5.png.",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
     rgb = {uid: load_rgb(args.dataset_root, uid) for uid in UIDS}
     voxels = load_voxels(args.voxel_root)
+    disc = None
+    if args.disc_panels_dir is not None:
+        disc = {
+            uid: Image.open(args.disc_panels_dir / f"disc_{index}.png").convert("RGBA")
+            for index, uid in enumerate(UIDS, start=1)
+        }
 
-    fig = plt.figure(figsize=(3.5, 3.0), facecolor="white")
+    row_count = 7 if disc is not None else 6
+    fig = plt.figure(figsize=(3.5, 3.45 if disc is not None else 3.0), facecolor="white")
     grid = fig.add_gridspec(
-        6, 5,
-        height_ratios=(1.0, 0.72, 0.72, 0.72, 0.72, 0.72),
+        row_count, 5,
+        height_ratios=(1.0,) + (0.72,) * (row_count - 1),
         hspace=-0.105,
         wspace=0.006,
     )
-    axes = np.asarray([[fig.add_subplot(grid[row, col]) for col in range(5)] for row in range(6)])
+    axes = np.asarray([[fig.add_subplot(grid[row, col]) for col in range(5)] for row in range(row_count)])
     for ax in axes.ravel():
         ax.axis("off")
 
     for col, uid in enumerate(UIDS):
         axes[0, col].imshow(rgb[uid])
-        for row, (variant, _) in enumerate(VOXEL_ROWS, start=1):
+        row_offset = 1
+        axes[row_offset, col].imshow(voxels[(uid, "gt")])
+        row_offset += 1
+        if disc is not None:
+            axes[row_offset, col].imshow(disc[uid])
+            row_offset += 1
+        for variant, _ in VOXEL_ROWS[1:]:
+            row = row_offset
             axes[row, col].imshow(voxels[(uid, variant)])
+            row_offset += 1
 
     fig.subplots_adjust(left=0.043, right=0.997, bottom=0.004, top=0.996)
-    for row, label in enumerate(("RGB", "GT", "SSC 1", "SSC 2", "SSC 5", "O5")):
+    labels = ["RGB", "GT"]
+    if disc is not None:
+        labels.append("SSC-0")
+    labels.extend(("SSC 1", "SSC 2", "SSC 5", "O5"))
+    for row, label in enumerate(labels):
         box = axes[row, 0].get_position()
         fig.text(
-            0.014,
+            0.026 if "\n" in label else 0.014,
             0.5 * (box.y0 + box.y1),
             label,
             rotation=90,

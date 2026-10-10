@@ -145,6 +145,9 @@ The available evidence consequently supports a restrained conclusion about time:
 \toprule
 SSC ID & Method & SC IoU (\%) $\uparrow$ & mIoU (\%) $\uparrow$\\
 \midrule
+\multicolumn{4}{@{}l}{\textit{OccuFly-reported baseline}}\\
+SSC-0 & DISC-instance-scene-ctx-R50-depth-DA2 \cite{gross2026occufly,liu2025disc} & 29.52 & 2.04\\
+\midrule
 \multicolumn{4}{@{}l}{\textit{Audited local monocular controls}}\\
 SSC-1 & CGF-ctx-EfficientNet-B7-depth-DA2 & 9.93 & 1.18\\
 SSC-2 & VJ-FSSC-ctx-DPT-depth-FiLM\_DPT & 34.42 & 2.99\\
@@ -159,7 +162,6 @@ O5 & D3-FSSC-ctx-DPT[GT-depth-conditioned]-depth-GT-VoxDet (GT/GT) & \cellcolor{
 \midrule
 \multicolumn{4}{@{}l}{\textit{Published OccuFly references}}\\
 -- & Symphonies \cite{gross2026occufly,jiang2024symphonies} & 13.68 & 0.58\\
--- & DISC \cite{gross2026occufly,liu2025disc} & 29.52 & 2.04\\
 \bottomrule
 \end{tabular}
 }
@@ -177,19 +179,23 @@ For the altitude comparison, SSC-4 and SSC-5 denote the FiLM and MVSF++ variants
 \toprule
 Alt. & SSC method & IoU (\%)$\uparrow$ & mIoU (\%)$\uparrow$ & MDE & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & AbsRel$\downarrow$ & RMSE$\downarrow$ & MAE$\downarrow$ & SILog$\downarrow$\\
 \midrule
-30 & SSC-4 & 43.13 & \textbf{5.41} & MDE-5 & .928 & .981 & .999 & .100 & 3.350 & 2.653 & .129\\
+30 & SSC-0 & 26.88 & 2.23 & & & & & & & & \\
+   & SSC-4 & 43.13 & \textbf{5.41} & MDE-5 & .928 & .981 & .999 & .100 & 3.350 & 2.653 & .129\\
    & SSC-5 & \textbf{43.56} & 5.40 & MDE-8 & \textbf{.952} & \textbf{.986} & \textbf{.999} & \textbf{.074} & \textbf{2.683} & \textbf{1.901} & \textbf{.113}\\
    & O5 & \cellcolor{yellow!35}$\mathbf{55.26}$ & \cellcolor{yellow!35}$\mathbf{8.39}$ & & & & & & & & \\
 \midrule
-40 & SSC-4 & 38.94 & 3.10 & MDE-5 & .736 & .932 & .994 & .172 & 5.233 & 3.730 & .197\\
+40 & SSC-0 & 27.85 & 1.77 & & & & & & & & \\
+   & SSC-4 & 38.94 & 3.10 & MDE-5 & .736 & .932 & .994 & .172 & 5.233 & 3.730 & .197\\
    & SSC-5 & \textbf{41.10} & \textbf{3.46} & MDE-8 & \textbf{.745} & \textbf{.932} & \textbf{.995} & \textbf{.162} & \textbf{4.883} & \textbf{3.470} & \textbf{.194}\\
    & O5 & \cellcolor{yellow!35}$\mathbf{47.48}$ & \cellcolor{yellow!35}$\mathbf{4.61}$ & & & & & & & & \\
 \midrule
-50 & SSC-4 & 54.69 & 4.92 & MDE-5 & .836 & .996 & 1.000 & .115 & 5.131 & 3.842 & .131\\
+50 & SSC-0 & 31.10 & 2.20 & & & & & & & & \\
+   & SSC-4 & 54.69 & 4.92 & MDE-5 & .836 & .996 & 1.000 & .115 & 5.131 & 3.842 & .131\\
    & SSC-5 & \textbf{56.64} & \textbf{5.61} & MDE-8 & \textbf{.912} & \textbf{.999} & \textbf{1.000} & \textbf{.097} & \textbf{4.372} & \textbf{3.524} & \textbf{.121}\\
    & O5 & \cellcolor{yellow!35}$\mathbf{60.38}$ & \cellcolor{yellow!35}$\mathbf{11.49}$ & & & & & & & & \\
 \midrule
-All & SSC-4 & 47.30 & 4.29 & MDE-5 & .810 & .966 & .997 & .137 & 4.910 & 3.584 & .171\\
+All & SSC-0 & 29.52 & 2.04 & & & & & & & & \\
+    & SSC-4 & 47.30 & 4.29 & MDE-5 & .810 & .966 & .997 & .137 & 4.910 & 3.584 & .171\\
     & SSC-5 & \textbf{49.33} & \textbf{4.80} & MDE-8 & \textbf{.847} & \textbf{.968} & \textbf{.998} & \textbf{.121} & \textbf{4.362} & \textbf{3.213} & \textbf{.161}\\
     & O5 & \cellcolor{yellow!35}$\mathbf{54.66}$ & \cellcolor{yellow!35}$\mathbf{8.33}$ & & & & & & & & \\
 \bottomrule
@@ -201,7 +207,7 @@ All & SSC-4 & 47.30 & 4.29 & MDE-5 & .810 & .966 & .997 & .137 & 4.910 & 3.584 &
 \centering
 \includegraphics[width=\columnwidth]{table3_per_class_iou_matrix.pdf}
 \vspace{-1.0em}
-\caption{Per-class IoU for SSC-1--SSC-5 and O5 in Table~\ref{tab:ssc}. Repeated deployable treatments use their three-run per-class means; O5 is the single-seed GT/GT diagnostic. Gray NA cells denote classes absent from the test ground truth.}
+\caption{Per-class IoU for SSC-0--SSC-5 and O5 in Table~\ref{tab:ssc}. Repeated deployable treatments use their three-run per-class means; O5 is the single-seed GT/GT diagnostic. Gray NA cells denote classes absent from the test ground truth.}
 \label{fig:table3_per_class_iou}
 \end{figure}
 
@@ -220,8 +226,8 @@ Table~\ref{tab:ssc-mde-altitude} uses the same altitude partition for SSC and MD
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{occufly_fig4_multiscene_ssc125.png}
-\caption{OccuFly multiscene qualitative SSC comparison. Rows show RGB, GT, SSC-1, SSC-2, SSC-5, and its GT-depth-input oracle O5 from Table~\ref{tab:ssc}.}
+\includegraphics[width=\columnwidth]{occufly_fig6_multiscene_with_disc.png}
+\caption{OccuFly multiscene qualitative SSC comparison. Rows show RGB, GT, SSC-0, SSC-1, SSC-2, SSC-5, and its GT-depth-input oracle O5 from Table~\ref{tab:ssc}.}
 \label{fig:ssc_multiscene_qualitative}
 \end{figure}
 
@@ -239,11 +245,11 @@ Three repetitions quantify sensitivity within this training contract; they do no
 \centering
 \includegraphics[width=\columnwidth]{long_tail.pdf}
 \vspace{-1.1em}
-\caption{Class distribution based on voxel count in the OccuFly dataset and per-class SSC IoU for SSC-1--SSC-5 and the single-seed O5 GT/GT diagnostic. Classes follow the same descending-frequency order in both panels. Ground-truth-absent categories are marked N/A.}
+\caption{Class distribution based on voxel count in the OccuFly dataset and per-class SSC IoU for SSC-0--SSC-5 and the single-seed O5 GT/GT diagnostic. Classes follow the same descending-frequency order in both panels. Ground-truth-absent categories are marked N/A.}
 \label{fig:longtail}
 \end{figure}
 
-Figure~\ref{fig:longtail} combines audited test ground-truth support with per-class scores for SSC-1--SSC-5 and O5. Empty accounts for 85.14\% of valid test voxels, and building accounts for 86.21\% of occupied support. These are test-distribution quantities; the training-loss weighting is derived from training counts and should not be interpreted through the same percentage. The large building share explains why occupied-space recovery and a class-balanced semantic macro score can tell different stories.
+Figure~\ref{fig:longtail} combines audited test ground-truth support with per-class scores for SSC-0--SSC-5 and O5. Empty accounts for 85.14\% of valid test voxels, and building accounts for 86.21\% of occupied support. These are test-distribution quantities; the training-loss weighting is derived from training counts and should not be interpreted through the same percentage. The large building share explains why occupied-space recovery and a class-balanced semantic macro score can tell different stories.
 
 For the final treatment, building reaches $46.13\pm1.60\%$ class IoU, tree $11.11\pm0.86\%$, vehicle $9.07\pm0.60\%$, parking lot $7.07\pm0.48\%$, and grass $6.63\pm0.77\%$. Road and walkway reach $5.34\pm1.07\%$ and $4.16\pm0.75\%$. The ordering shows that useful recognition extends beyond the dominant building class, but most categories remain far below its performance. The variability bars are across training runs, not uncertainty intervals for individual voxels.
 

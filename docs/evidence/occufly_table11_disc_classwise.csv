@@ -1,0 +1,22 @@
+class,iou_percent
+road,1.08
+walkway,0.53
+dirt,0.17
+gravel,0.18
+rock,0.01
+grass,2.32
+vegetation,1.33
+tree,0.77
+ground obstacle,0.90
+person,0.00
+bicycle,0.01
+vehicle,4.67
+water,0.00
+building,25.48
+roof,1.30
+cable,0.00
+cable tower,0.00
+parking lot,0.00
+construction,0.00
+crane,0.00
+truck,0.00

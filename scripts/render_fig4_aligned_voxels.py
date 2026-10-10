@@ -28,6 +28,11 @@ COLORS = {
     35:(255,255,128), 36:(128,128,64),
 }
 
+# Scene 08 / 30 m / frame 000299 needs a scene-specific camera transform so
+# the building lies at the same lower-right image location as the RGB panel.
+CAMERA_POSITION = np.asarray([103.0, -179.0, 47.0], dtype=np.float32)
+FLIP_CAMERA_Y = False
+
 
 def unpack_mask(path: Path) -> np.ndarray:
     return np.unpackbits(np.fromfile(path, dtype=np.uint8))[:np.prod(GRID)].reshape(GRID).astype(bool)
@@ -45,10 +50,9 @@ def visible_surface(occupied: np.ndarray) -> np.ndarray:
 
 
 def camera_projection(points: np.ndarray, width: int, height: int):
-    # Oblique aerial inspection camera used consistently for every panel.
-    # Calibrated against all five published Figure 4 GT crops: azimuth -60°,
-    # elevation 20° around the common grid center.
-    position = np.asarray([103.0, -179.0, 47.0], dtype=np.float32)
+    # Default oblique aerial inspection camera, calibrated against the
+    # published Figure 4 crops.  main() applies the one scene-specific override.
+    position = CAMERA_POSITION
     target = np.asarray([0.0, 0.0, -28.0], dtype=np.float32)
     world_up = np.asarray([0.0, 0.0, 1.0], dtype=np.float32)
     forward = target - position
@@ -75,9 +79,8 @@ def world_points(indices: np.ndarray) -> np.ndarray:
         (indices.astype(np.float32) + 0.5) * VOXEL_M
         + np.asarray([-48.0, -32.0, 0.0], dtype=np.float32)
     )
-    return np.stack(
-        [camera_xyz[:, 0], camera_xyz[:, 1], -camera_xyz[:, 2]], axis=1
-    )
+    world_y = -camera_xyz[:, 1] if FLIP_CAMERA_Y else camera_xyz[:, 1]
+    return np.stack([camera_xyz[:, 0], world_y, -camera_xyz[:, 2]], axis=1)
 
 
 def draw_frustum(draw: ImageDraw.ImageDraw, width: int, height: int):
@@ -153,6 +156,7 @@ def load_prediction(path: Path, kind: str) -> np.ndarray:
 
 
 def main():
+    global CAMERA_POSITION, FLIP_CAMERA_Y
     parser = argparse.ArgumentParser()
     parser.add_argument("--workspace", type=Path, required=True)
     parser.add_argument("--dataset-root", type=Path, required=True)
@@ -175,6 +179,12 @@ def main():
         "scene_08_40_000245", "scene_09_30_000233",
     ]
     for uid in uids:
+        FLIP_CAMERA_Y = uid == "scene_08_30_000299"
+        CAMERA_POSITION = np.asarray(
+            [179.0, -103.0, 47.0] if uid == "scene_08_30_000299"
+            else [103.0, -179.0, 47.0],
+            dtype=np.float32,
+        )
         scene, altitude, frame = uid[:8], uid[9:11], uid[-6:]
         gt_dir = args.dataset_root / scene / altitude / "ground_truth" / frame
         gt = np.fromfile(gt_dir / f"{frame}.label", dtype=np.uint8).reshape(GRID)
