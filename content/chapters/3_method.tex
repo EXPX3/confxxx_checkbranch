@@ -8,7 +8,7 @@
 \label{fig:architecture}
 \end{figure*}
 
-We evaluate foundation model features for two aerial 3D tasks: metric depth estimation and semantic scene completion (SSC). For this study we selected V-JEPA~2.1 and DINOv3 representations as candidates for these tasks on the OccuFly dataset.
+We evaluate foundation model features  for two aerial 3D tasks: metric depth estimation and semantic scene completion (SSC). For this study we selected V-JEPA~2.1 and DINOv3 representations as candidates for these tasks on the OccuFly dataset. The framework is organized as a controlled sequence of probes and decoders.
 
 \subsection{Tasks and Information Pathways}
 Each target observation has image $I_t$, intrinsics $K_t$, altitude $h_t$, and pose $T_t^{w\rightarrow c}$. Supervised training additionally uses depth $D_t$, its validity mask $M_t$, and semantic voxel labels $Y_t$. MDE predicts camera-axis depth $\hat D_t$ in meters. SSC predicts a categorical label $\hat Y_t(v)$ for each voxel $v$, with label zero representing empty space and labels 1--21 representing occupied semantic categories. Ground-truth (GT) depth and semantic labels supply supervision.
