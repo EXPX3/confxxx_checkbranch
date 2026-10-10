@@ -42,7 +42,8 @@
     "ssc1": "/datatank/giridhar.vb/repos/ws_jepa_occufly_test/CGFormer/logs/ssc/cgformer/dav2prior_train/tensorboard/version_0/checkpoints/best.ckpt",
     "ssc2": "/datatank/giridhar.vb/repos/ws_jepa_occufly_test/experiments_wacv27/outputs/results/ssc/fssc_rgb_context_dpt_depth_film_dpt_reproduction_fixed_20260826/ssc_epoch_009.pt",
     "ssc4": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/v5v2dinov3_seed43_20261006/best_val_miou.pt",
-    "ssc5": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/07b_dinov3_mvsformerpp_voxdet_v5v2_seed2_replication_20261006/best_val_miou.pt"
+    "ssc5": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/07b_dinov3_mvsformerpp_voxdet_v5v2_seed2_replication_20261006/best_val_miou.pt",
+    "o5": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/08_ssc5_gtgt_full_adaptation_seed0_dev_20261009/best_val_fixed21_miou.pt"
   },
   "ssc2": {
     "status": "rendered",
@@ -52,6 +53,18 @@
     "reported_sc_iou_percent": 34.42029733520126,
     "reported_fixed_21_miou_percent": 2.9870438712427365,
     "label_space": "37 raw-ID-indexed OccuFly channels"
+  },
+  "o5": {
+    "status": "rendered",
+    "method": "SSC-5 GT-depth-input oracle with full downstream adaptation",
+    "oracle_contract": "ssc5_gtgt_full_adaptation_v1",
+    "selected_epoch": 14,
+    "checkpoint_sha256": "7095b4822100d1a73ad7fd04e1d313da6ea9732d0afc4ed3280860eae80d9210",
+    "evaluated_sample_count": 5,
+    "sample_uid_manifest_sha256": "362a263bf23ed5bea839330ef6315ff7abdd437757a6878ace549c9a01971989",
+    "prediction_root": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/08_ssc5_gtgt_full_adaptation_seed0_dev_20261009/qualitative_fig6_five/predictions",
+    "evaluation_audit": "/datatank/giridhar.vb/data/checkpoints/my_checkpoints/08_ssc5_gtgt_full_adaptation_seed0_dev_20261009/qualitative_fig6_five/evaluation/test_metrics.json",
+    "label_space": "22 contiguous train IDs converted to public OccuFly raw IDs for rendering"
   },
   "d3_film_dpt_depth_source": "Dense depth exported by the strictly loaded D3 FiLM-DPT module during the selected SSC4 inference; no non-strict or substitute model was used.",
   "voxel_rendering": {

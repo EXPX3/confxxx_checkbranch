@@ -22,7 +22,13 @@ UIDS = [
     "scene_09_30_000233",
 ]
 
-VOXEL_ROWS = [("gt", "GT"), ("ssc1", "SSC 1"), ("ssc2", "SSC 2"), ("ssc5", "SSC 5")]
+VOXEL_ROWS = [
+    ("gt", "GT"),
+    ("ssc1", "SSC 1"),
+    ("ssc2", "SSC 2"),
+    ("ssc5", "SSC 5"),
+    ("o5", "O5"),
+]
 
 
 def load_rgb(dataset_root: Path, uid: str) -> Image.Image:
@@ -83,14 +89,14 @@ def main() -> None:
     rgb = {uid: load_rgb(args.dataset_root, uid) for uid in UIDS}
     voxels = load_voxels(args.voxel_root)
 
-    fig = plt.figure(figsize=(3.5, 2.55), facecolor="white")
+    fig = plt.figure(figsize=(3.5, 3.0), facecolor="white")
     grid = fig.add_gridspec(
-        5, 5,
-        height_ratios=(1.0, 0.72, 0.72, 0.72, 0.72),
+        6, 5,
+        height_ratios=(1.0, 0.72, 0.72, 0.72, 0.72, 0.72),
         hspace=-0.105,
         wspace=0.006,
     )
-    axes = np.asarray([[fig.add_subplot(grid[row, col]) for col in range(5)] for row in range(5)])
+    axes = np.asarray([[fig.add_subplot(grid[row, col]) for col in range(5)] for row in range(6)])
     for ax in axes.ravel():
         ax.axis("off")
 
@@ -100,7 +106,7 @@ def main() -> None:
             axes[row, col].imshow(voxels[(uid, variant)])
 
     fig.subplots_adjust(left=0.043, right=0.997, bottom=0.004, top=0.996)
-    for row, label in enumerate(("RGB", "GT", "SSC 1", "SSC 2", "SSC 5")):
+    for row, label in enumerate(("RGB", "GT", "SSC 1", "SSC 2", "SSC 5", "O5")):
         box = axes[row, 0].get_position()
         fig.text(
             0.014,

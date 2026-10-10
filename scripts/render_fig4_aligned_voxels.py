@@ -157,7 +157,19 @@ def main():
     parser.add_argument("--workspace", type=Path, required=True)
     parser.add_argument("--dataset-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--o5-prediction-root",
+        type=Path,
+        help="Directory containing the five canonical O5 prediction NPZ files.",
+    )
+    parser.add_argument(
+        "--only-o5",
+        action="store_true",
+        help="Render only GT and O5; useful when the archived SSC panels are unavailable.",
+    )
     args = parser.parse_args()
+    if args.only_o5 and args.o5_prediction_root is None:
+        parser.error("--only-o5 requires --o5-prediction-root")
     uids = [
         "scene_08_30_000299", "scene_09_40_000267", "scene_09_30_000145",
         "scene_08_40_000245", "scene_09_30_000233",
@@ -170,11 +182,17 @@ def main():
         valid = ~invalid
         # Figure 4 shows the occupied grid, not only the supplied observation
         # surface mask.  ``render`` extracts its visible exterior itself.
-        p1 = args.workspace / "raw" / "ssc1" / "sequences" / f"{scene}_{altitude}" / "predictions" / f"{frame}.label"
-        grids = [("gt", gt), ("ssc1", load_prediction(p1, "ssc1"))]
-        for variant in ("ssc2", "ssc4", "ssc5"):
-            path = args.workspace / "raw" / variant / f"{uid}.npz"
-            grids.append((variant, load_prediction(path, variant)))
+        if args.only_o5:
+            grids = [("gt", gt)]
+        else:
+            p1 = args.workspace / "raw" / "ssc1" / "sequences" / f"{scene}_{altitude}" / "predictions" / f"{frame}.label"
+            grids = [("gt", gt), ("ssc1", load_prediction(p1, "ssc1"))]
+            for variant in ("ssc2", "ssc4", "ssc5"):
+                path = args.workspace / "raw" / variant / f"{uid}.npz"
+                grids.append((variant, load_prediction(path, variant)))
+        if args.o5_prediction_root is not None:
+            path = args.o5_prediction_root / f"{uid}.npz"
+            grids.append(("o5", load_prediction(path, "o5")))
         projected, scale, source_center, target_center = common_viewport(
             [(labels, valid) for _, labels in grids], 489, 343
         )
