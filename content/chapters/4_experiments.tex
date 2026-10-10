@@ -74,24 +74,24 @@ This procedure verifies sufficient counts, not a new inference run or the identi
 \setlength{\tabcolsep}{3.5pt}%
 \begin{tabular}{clrrrrrrr}
 \toprule
-ID & Method & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & AbsRel$\downarrow$ & RMSE$\downarrow$ & MAE$\downarrow$ & SILog$\downarrow$\\
+MDE ID & Method & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & AbsRel$\downarrow$ & RMSE$\downarrow$ & MAE$\downarrow$ & SILog$\downarrow$\\
 \midrule
 \multicolumn{9}{l}{\textit{V-JEPA 2.1 backbone}}\\
-1 & Linear Probe RGB & 0.651 & 0.958 & 0.996 & 0.189 & 7.808 & 6.457 & 0.226\\
-2 & Linear Probe Video DTA & 0.701 & 0.958 & 0.995 & 0.191 & 7.055 & 5.928 & 0.207\\
-3 & Video DTA-FiLM-MVS & 0.768 & 0.930 & 0.987 & 0.175 & 6.406 & 4.811 & 0.211\\
-4 & DPT & 0.747 & 0.970 & 0.997 & 0.162 & 6.730 & 5.411 & 0.200\\
-5 & FiLM-DPT-RGB (3-seed mean) & 0.810 & 0.966 & 0.997 & 0.137 & 4.910 & 3.584 & 0.171\\
-6 & MVSFormer++/VJ-G & 0.797 & 0.896 & 0.955 & 0.176 & 6.390 & 4.465 & 0.172\\
+MDE-1 & Linear Probe RGB & 0.651 & 0.958 & 0.996 & 0.189 & 7.808 & 6.457 & 0.226\\
+MDE-2 & Linear Probe Video DTA & 0.701 & 0.958 & 0.995 & 0.191 & 7.055 & 5.928 & 0.207\\
+MDE-3 & Video DTA-FiLM-MVS & 0.768 & 0.930 & 0.987 & 0.175 & 6.406 & 4.811 & 0.211\\
+MDE-4 & DPT & 0.747 & 0.970 & 0.997 & 0.162 & 6.730 & 5.411 & 0.200\\
+MDE-5 & FiLM-DPT-RGB (3-seed mean) & 0.810 & 0.966 & 0.997 & 0.137 & 4.910 & 3.584 & 0.171\\
+MDE-6 & MVSFormer++/VJ-G & 0.797 & 0.896 & 0.955 & 0.176 & 6.390 & 4.465 & 0.172\\
 \midrule
 \multicolumn{9}{l}{\textit{DINOv3 backbone}}\\
-7 & Linear Probe & 0.782 & \cellcolor{bestvalue!45}$\mathbf{0.980}$ & \underline{0.998} & 0.156 & 6.097 & 5.066 & 0.186\\
-8 & FiLM-DPT-RGB & \cellcolor{bestvalue!45}$\mathbf{0.847}$ & 0.968 & \underline{0.998} & \cellcolor{bestvalue!45}$\mathbf{0.121}$ & \cellcolor{bestvalue!45}$\mathbf{4.362}$ & \cellcolor{bestvalue!45}$\mathbf{3.213}$ & 0.161\\
-9 & MVSFormer++/D3-H+ & 0.828 & 0.938 & 0.982 & 0.136 & \underline{4.611} & \underline{3.314} & \underline{0.130}\\
+MDE-7 & Linear Probe & 0.782 & \cellcolor{bestvalue!45}$\mathbf{0.980}$ & \underline{0.998} & 0.156 & 6.097 & 5.066 & 0.186\\
+MDE-8 & FiLM-DPT-RGB & \cellcolor{bestvalue!45}$\mathbf{0.847}$ & 0.968 & \underline{0.998} & \cellcolor{bestvalue!45}$\mathbf{0.121}$ & \cellcolor{bestvalue!45}$\mathbf{4.362}$ & \cellcolor{bestvalue!45}$\mathbf{3.213}$ & 0.161\\
+MDE-9 & MVSFormer++/D3-H+ & 0.828 & 0.938 & 0.982 & 0.136 & \underline{4.611} & \underline{3.314} & \underline{0.130}\\
 \midrule
 \multicolumn{9}{l}{\textit{References}}\\
-10 & MVSFormer++/D2-B & 0.748 & 0.838 & 0.930 & 0.231 & 7.657 & 5.605 & 0.195\\
-11 & DepthAnything2--OccuFly \cite{gross2026occufly} & \underline{0.834} & \underline{0.976} & \cellcolor{bestvalue!45}$\mathbf{0.999}$ & \underline{0.134} & 4.844 & 4.193 & \cellcolor{bestvalue!45}$\mathbf{0.112}$\\
+MDE-10 & MVSFormer++/D2-B & 0.748 & 0.838 & 0.930 & 0.231 & 7.657 & 5.605 & 0.195\\
+MDE-11 & DepthAnything2--OccuFly \cite{gross2026occufly} & \underline{0.834} & \underline{0.976} & \cellcolor{bestvalue!45}$\mathbf{0.999}$ & \underline{0.134} & 4.844 & 4.193 & \cellcolor{bestvalue!45}$\mathbf{0.112}$\\
 \bottomrule
 \end{tabular}
 }
@@ -143,19 +143,19 @@ The available evidence consequently supports a restrained conclusion about time:
 \resizebox{\columnwidth}{!}{%
 \begin{tabular}{@{}clrr@{}}
 \toprule
-ID & Method & SC IoU (\%) $\uparrow$ & mIoU (\%) $\uparrow$\\
+SSC ID & Method & SC IoU (\%) $\uparrow$ & mIoU (\%) $\uparrow$\\
 \midrule
 \multicolumn{4}{@{}l}{\textit{Audited local monocular controls}}\\
-1 & CGF-ctx-EfficientNet-B7-depth-DA2 & 9.93 & 1.18\\
-2 & VJ-FSSC-ctx-DPT-depth-FiLM\_DPT & 34.42 & 2.99\\
-3 & VJ-FSSC-ctx-DPT-depth-FiLM\_DPT-VoxDet & $44.24\pm1.35$ & $3.69\pm0.24$\\
-4 & D3-FSSC-ctx-DPT-depth-FiLM\_DPT-VoxDet & $\underline{47.30\pm0.50}$ & $\underline{4.29\pm0.41}$\\
+SSC-1 & CGF-ctx-EfficientNet-B7-depth-DA2 & 9.93 & 1.18\\
+SSC-2 & VJ-FSSC-ctx-DPT-depth-FiLM\_DPT & 34.42 & 2.99\\
+SSC-3 & VJ-FSSC-ctx-DPT-depth-FiLM\_DPT-VoxDet & $44.24\pm1.35$ & $3.69\pm0.24$\\
+SSC-4 & D3-FSSC-ctx-DPT-depth-FiLM\_DPT-VoxDet & $\underline{47.30\pm0.50}$ & $\underline{4.29\pm0.41}$\\
 \midrule
 \multicolumn{4}{@{}l}{\textit{Calibrated multiview treatments}}\\
-\shortstack[c]{5\\\phantom{5}\\\phantom{5}} & \shortstack[l]{D3-FSSC-\\ctx-DPT[MVSF++-depth-conditioned]-\\depth-MVSF++-VoxDet} & \cellcolor{bestvalue!45}$\mathbf{49.33\pm1.17}$ & \cellcolor{bestvalue!45}$\mathbf{4.80\pm0.36}$\\
+\shortstack[c]{SSC-5\\\phantom{SSC-5}\\\phantom{SSC-5}} & \shortstack[l]{D3-FSSC-\\ctx-DPT[MVSF++-depth-conditioned]-\\depth-MVSF++-VoxDet} & \cellcolor{bestvalue!45}$\mathbf{49.33\pm1.17}$ & \cellcolor{bestvalue!45}$\mathbf{4.80\pm0.36}$\\
 \midrule
 \multicolumn{4}{@{}l}{\textit{SSC-5 GT/GT full-adaptation oracle diagnostic}}\\
-O5 & D3-FSSC-ctx-DPT[GT-depth-conditioned]-depth-GT-VoxDet (GT/GT) & \cellcolor{yellow!35}\textbf{54.66} & \cellcolor{yellow!35}\textbf{8.33}\\
+O5 & D3-FSSC-ctx-DPT[GT-depth-conditioned]-depth-GT-VoxDet (GT/GT) & \cellcolor{yellow!35}$\mathbf{54.66}$ & \cellcolor{yellow!35}$\mathbf{8.33}$\\
 \midrule
 \multicolumn{4}{@{}l}{\textit{Published OccuFly references}}\\
 -- & Symphonies \cite{gross2026occufly,jiang2024symphonies} & 13.68 & 0.58\\
@@ -165,7 +165,7 @@ O5 & D3-FSSC-ctx-DPT[GT-depth-conditioned]-depth-GT-VoxDet (GT/GT) & \cellcolor{
 }
 \end{table}
 
-For the altitude comparison, FiLM and MVSF++ denote SSC variants 4 and 5 in Table~\ref{tab:ssc}. MDE-5 and MDE-8 are the V-JEPA~2.1 and DINOv3 FiLM-DPT-RGB variants in Table~\ref{tab:mde}. SSC and MDE-5 values are means of three validation-selected runs; MDE-8 uses its validation-selected run.
+For the altitude comparison, SSC-4 and SSC-5 denote the FiLM and MVSF++ variants in Table~\ref{tab:ssc}. MDE-5 and MDE-8 are the V-JEPA~2.1 and DINOv3 FiLM-DPT-RGB variants in Table~\ref{tab:mde}. SSC and MDE-5 values are means of three validation-selected runs; MDE-8 uses its validation-selected run.
 \begin{table}[t]
 \centering
 \caption{Altitude-wise SSC and MDE on OccuFly. SSC scores are percentages and mIoU uses the fixed 21-class average; MDE errors are in metres except AbsRel and SILog. Bold marks the better paired result using unrounded values.}
@@ -177,17 +177,17 @@ For the altitude comparison, FiLM and MVSF++ denote SSC variants 4 and 5 in Tabl
 \toprule
 Alt. & SSC method & IoU (\%)$\uparrow$ & mIoU (\%)$\uparrow$ & MDE & $\delta_1\uparrow$ & $\delta_2\uparrow$ & $\delta_3\uparrow$ & AbsRel$\downarrow$ & RMSE$\downarrow$ & MAE$\downarrow$ & SILog$\downarrow$\\
 \midrule
-30 & 4: FiLM & 43.13 & \textbf{5.41} & MDE-5 & .928 & .981 & .999 & .100 & 3.350 & 2.653 & .129\\
-   & 5: MVSF++ & \textbf{43.56} & 5.40 & MDE-8 & \textbf{.952} & \textbf{.986} & \textbf{.999} & \textbf{.074} & \textbf{2.683} & \textbf{1.901} & \textbf{.113}\\
+30 & SSC-4 & 43.13 & \textbf{5.41} & MDE-5 & .928 & .981 & .999 & .100 & 3.350 & 2.653 & .129\\
+   & SSC-5 & \textbf{43.56} & 5.40 & MDE-8 & \textbf{.952} & \textbf{.986} & \textbf{.999} & \textbf{.074} & \textbf{2.683} & \textbf{1.901} & \textbf{.113}\\
 \midrule
-40 & 4: FiLM & 38.94 & 3.10 & MDE-5 & .736 & .932 & .994 & .172 & 5.233 & 3.730 & .197\\
-   & 5: MVSF++ & \textbf{41.10} & \textbf{3.46} & MDE-8 & \textbf{.745} & \textbf{.932} & \textbf{.995} & \textbf{.162} & \textbf{4.883} & \textbf{3.470} & \textbf{.194}\\
+40 & SSC-4 & 38.94 & 3.10 & MDE-5 & .736 & .932 & .994 & .172 & 5.233 & 3.730 & .197\\
+   & SSC-5 & \textbf{41.10} & \textbf{3.46} & MDE-8 & \textbf{.745} & \textbf{.932} & \textbf{.995} & \textbf{.162} & \textbf{4.883} & \textbf{3.470} & \textbf{.194}\\
 \midrule
-50 & 4: FiLM & 54.69 & 4.92 & MDE-5 & .836 & .996 & 1.000 & .115 & 5.131 & 3.842 & .131\\
-   & 5: MVSF++ & \textbf{56.64} & \textbf{5.61} & MDE-8 & \textbf{.912} & \textbf{.999} & \textbf{1.000} & \textbf{.097} & \textbf{4.372} & \textbf{3.524} & \textbf{.121}\\
+50 & SSC-4 & 54.69 & 4.92 & MDE-5 & .836 & .996 & 1.000 & .115 & 5.131 & 3.842 & .131\\
+   & SSC-5 & \textbf{56.64} & \textbf{5.61} & MDE-8 & \textbf{.912} & \textbf{.999} & \textbf{1.000} & \textbf{.097} & \textbf{4.372} & \textbf{3.524} & \textbf{.121}\\
 \midrule
-All & 4: FiLM & 47.30 & 4.29 & MDE-5 & .810 & .966 & .997 & .137 & 4.910 & 3.584 & .171\\
-    & 5: MVSF++ & \textbf{49.33} & \textbf{4.80} & MDE-8 & \textbf{.847} & \textbf{.968} & \textbf{.998} & \textbf{.121} & \textbf{4.362} & \textbf{3.213} & \textbf{.161}\\
+All & SSC-4 & 47.30 & 4.29 & MDE-5 & .810 & .966 & .997 & .137 & 4.910 & 3.584 & .171\\
+    & SSC-5 & \textbf{49.33} & \textbf{4.80} & MDE-8 & \textbf{.847} & \textbf{.968} & \textbf{.998} & \textbf{.121} & \textbf{4.362} & \textbf{3.213} & \textbf{.161}\\
 \bottomrule
 \end{tabular}
 }
@@ -197,7 +197,7 @@ All & 4: FiLM & 47.30 & 4.29 & MDE-5 & .810 & .966 & .997 & .137 & 4.910 & 3.584
 \centering
 \includegraphics[width=\columnwidth]{table3_per_class_iou_matrix.pdf}
 \vspace{-1.0em}
-\caption{Per-class IoU for methods 1--5 in Table~\ref{tab:ssc}. Repeated treatments use their three-run per-class means; gray NA cells denote classes absent from the test ground truth.}
+\caption{Per-class IoU for SSC-1--SSC-5 in Table~\ref{tab:ssc}. Repeated treatments use their three-run per-class means; gray NA cells denote classes absent from the test ground truth.}
 \label{fig:table3_per_class_iou}
 \end{figure}
 
@@ -217,7 +217,7 @@ Table~\ref{tab:ssc-mde-altitude} uses the same altitude partition for SSC and MD
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{occufly_fig4_multiscene_ssc125.png}
-\caption{OccuFly multiscene qualitative SSC comparison. Rows show RGB, GT, and methods 1, 2, and 5 from Table~\ref{tab:ssc}.}
+\caption{OccuFly multiscene qualitative SSC comparison. Rows show RGB, GT, SSC-1, SSC-2, and SSC-5 from Table~\ref{tab:ssc}.}
 \label{fig:ssc_multiscene_qualitative}
 \end{figure}
 
