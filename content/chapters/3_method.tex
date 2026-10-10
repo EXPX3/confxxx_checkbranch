@@ -66,7 +66,7 @@ The affine projections start near zero so the initial path remains close to the 
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=\textwidth]{dtavideo/dta_raft_exact.pdf}
-\caption{Flow-aligned DTA diagnostic for the four-frame V-JEPA~2.1 clip. The raw tubelet PCA maps precede alignment; feature change is their channel-wise $\ell_2$ difference, normalized at the 99th percentile. RAFT flow and validity align each tubelet before DTA, whose blue/red preference favors tubelet 0/1. Raw, aligned, and DTA maps share one PCA basis; the predicted depth uses a 0--80~m scale.}
+\caption{Flow-aligned DTA diagnostic for the four-frame V-JEPA~2.1 clip. The raw tubelet PCA maps precede alignment; feature change is their channel-wise $\ell_2$ difference, normalized at the 99th percentile. RAFT flow and validity backward-warp the past and future tubelets into target coordinates before DTA, whose blue/red preference favors tubelet 0/1. Raw, aligned, and DTA maps share one PCA basis; the predicted depth uses a 0--80~m scale.}
 \label{fig:dta_raft_compact}
 \end{figure*}
 
