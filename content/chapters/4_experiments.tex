@@ -165,10 +165,10 @@ O5 & D3-FSSC-ctx-DPT[GT-depth-conditioned]-depth-GT-VoxDet (GT/GT) & \cellcolor{
 }
 \end{table}
 
-For the altitude comparison, SSC-4 and SSC-5 denote the FiLM and MVSF++ variants in Table~\ref{tab:ssc}. MDE-5 and MDE-8 are the V-JEPA~2.1 and DINOv3 FiLM-DPT-RGB variants in Table~\ref{tab:mde}. SSC and MDE-5 values are means of three validation-selected runs; MDE-8 uses its validation-selected run.
+For the altitude comparison, SSC-4 and SSC-5 denote the FiLM and MVSF++ variants in Table~\ref{tab:ssc}. O5 is the SSC-5 GT/GT full-adaptation oracle diagnostic. MDE-5 and MDE-8 are the V-JEPA~2.1 and DINOv3 FiLM-DPT-RGB variants in Table~\ref{tab:mde}. SSC-4, SSC-5, and MDE-5 values are means of three validation-selected runs; MDE-8 and O5 use their respective validation-selected single runs.
 \begin{table}[t]
 \centering
-\caption{Altitude-wise SSC and MDE on OccuFly. SSC scores are percentages and mIoU uses the fixed 21-class average; MDE errors are in metres except AbsRel and SILog. Bold marks the better paired result using unrounded values.}
+\caption{Altitude-wise SSC and MDE on OccuFly. SSC scores are percentages and mIoU uses the fixed 21-class average; MDE errors are in metres except AbsRel and SILog. Bold marks the better deployable paired result using unrounded values; yellow bold cells report the single-seed O5 GT/GT oracle diagnostic.}
 \label{tab:ssc-mde-altitude}
 \tiny
 \setlength{\tabcolsep}{0.9pt}
@@ -179,15 +179,19 @@ Alt. & SSC method & IoU (\%)$\uparrow$ & mIoU (\%)$\uparrow$ & MDE & $\delta_1\u
 \midrule
 30 & SSC-4 & 43.13 & \textbf{5.41} & MDE-5 & .928 & .981 & .999 & .100 & 3.350 & 2.653 & .129\\
    & SSC-5 & \textbf{43.56} & 5.40 & MDE-8 & \textbf{.952} & \textbf{.986} & \textbf{.999} & \textbf{.074} & \textbf{2.683} & \textbf{1.901} & \textbf{.113}\\
+   & O5 (GT/GT) & \cellcolor{yellow!35}$\mathbf{55.26}$ & \cellcolor{yellow!35}$\mathbf{8.39}$ & -- & -- & -- & -- & -- & -- & -- & --\\
 \midrule
 40 & SSC-4 & 38.94 & 3.10 & MDE-5 & .736 & .932 & .994 & .172 & 5.233 & 3.730 & .197\\
    & SSC-5 & \textbf{41.10} & \textbf{3.46} & MDE-8 & \textbf{.745} & \textbf{.932} & \textbf{.995} & \textbf{.162} & \textbf{4.883} & \textbf{3.470} & \textbf{.194}\\
+   & O5 (GT/GT) & \cellcolor{yellow!35}$\mathbf{47.48}$ & \cellcolor{yellow!35}$\mathbf{4.61}$ & -- & -- & -- & -- & -- & -- & -- & --\\
 \midrule
 50 & SSC-4 & 54.69 & 4.92 & MDE-5 & .836 & .996 & 1.000 & .115 & 5.131 & 3.842 & .131\\
    & SSC-5 & \textbf{56.64} & \textbf{5.61} & MDE-8 & \textbf{.912} & \textbf{.999} & \textbf{1.000} & \textbf{.097} & \textbf{4.372} & \textbf{3.524} & \textbf{.121}\\
+   & O5 (GT/GT) & \cellcolor{yellow!35}$\mathbf{60.38}$ & \cellcolor{yellow!35}$\mathbf{11.49}$ & -- & -- & -- & -- & -- & -- & -- & --\\
 \midrule
 All & SSC-4 & 47.30 & 4.29 & MDE-5 & .810 & .966 & .997 & .137 & 4.910 & 3.584 & .171\\
     & SSC-5 & \textbf{49.33} & \textbf{4.80} & MDE-8 & \textbf{.847} & \textbf{.968} & \textbf{.998} & \textbf{.121} & \textbf{4.362} & \textbf{3.213} & \textbf{.161}\\
+    & O5 (GT/GT) & \cellcolor{yellow!35}$\mathbf{54.66}$ & \cellcolor{yellow!35}$\mathbf{8.33}$ & -- & -- & -- & -- & -- & -- & -- & --\\
 \bottomrule
 \end{tabular}
 }
@@ -205,7 +209,7 @@ Table~\ref{tab:ssc} separates binary completion from fixed-21 semantic mIoU. The
 
 O5 retains SSC-5's frozen DINOv3 backbone, DPT-derived visual context, hybrid view transformer, and VoxDet decoder, but bypasses MVSFormer++ and uses mask-aware GT metric depth throughout training, validation, and test. A GT-derived Gaussian depth posterior drives LSS lifting, while GT depth also conditions the 2D context adapter, proposal generation, and VoxFormer. The downstream modules are adapted by training; no GT semantic labels enter inference. The validation-selected seed-0 checkpoint obtains 54.66\% SC IoU and 8.33\% fixed-21 mIoU on the 3,842-image test set. This is a privileged, non-deployable oracle diagnostic rather than a ranked method or a three-seed estimate.
 
-Table~\ref{tab:ssc-mde-altitude} uses the same altitude partition for SSC and MDE. Both SSC treatments are weakest at 40~m and strongest at 50~m; MVSF++ improves the three-run mean SC IoU at every altitude, with its largest gain at 40~m. Most MDE-8 metrics are strongest at 30~m and weakest at 40~m, matching the altitude at which both SSC variants have their lowest completion scores. These are paired configuration-level observations, not an isolated causal effect of the depth branch.
+Table~\ref{tab:ssc-mde-altitude} uses the same altitude partition for SSC and MDE. Both deployable SSC treatments are weakest at 40~m and strongest at 50~m; MVSF++ improves the three-run mean SC IoU at every altitude, with its largest gain at 40~m. The single-seed O5 diagnostic exceeds the deployable SSC-5 mean in both SSC metrics at every altitude, but this comparison is descriptive rather than a matched repeated-run estimate. Most MDE-8 metrics are strongest at 30~m and weakest at 40~m, matching the altitude at which all three SSC rows have their lowest completion scores. These are configuration-level observations, not an isolated causal effect of the depth branch.
 
 \begin{figure}[t]
 \centering
