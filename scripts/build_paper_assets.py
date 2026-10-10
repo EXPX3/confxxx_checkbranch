@@ -5,7 +5,9 @@ import argparse
 import csv
 import json
 import math
+import os
 import numpy as np
+os.environ.setdefault('SOURCE_DATE_EPOCH', '1791590400')
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -171,25 +173,38 @@ def draw_long_tail(output, baseline, mono):
     fig.savefig(FIG/'long_tail.png',dpi=220,bbox_inches='tight',pad_inches=.02)
     plt.close(fig)
 
-def draw_table3_heatmap():
+def draw_table3_heatmap(output):
     with (DATA / 'table3_classwise_iou.csv').open() as stream:
         rows = list(csv.DictReader(stream))
     if len(rows) != 5:
         raise ValueError('Table 3 heatmap must contain exactly five non-reference methods')
     classes = list(rows[0].keys())[1:]
+    if classes != output['class_names'][1:]:
+        raise ValueError('Table 3 class columns do not match the canonical taxonomy order')
     values = np.array([[np.nan if row[name] == 'N/A' else float(row[name])
                         for name in classes] for row in rows])
+    oracle = json.loads((DATA / 'o5_gtgt_seed0_classwise.json').read_text())
+    oracle_support = np.array(oracle['per_class_gt_support'], dtype=np.int64)
+    if not np.array_equal(oracle_support, np.array(output['runs'][0]['gt_support'])):
+        raise ValueError('O5 and Table 3 heatmap methods have different GT support')
+    oracle_values = np.array([np.nan if value is None else 100 * float(value)
+                              for value in oracle['per_class_iou'][1:]])
+    if len(oracle_values) != 21:
+        raise ValueError('O5 heatmap row must contain 21 semantic class IoUs')
+    oracle_values[oracle_support[1:] == 0] = np.nan
+    values = np.vstack([values, oracle_values])
     expected_fixed21 = np.array([1.1774, 2.9870, 3.691132511833303,
-                                 4.294452964306612, 4.802439257300768])
+                                 4.294452964306612, 4.802439257300768,
+                                 8.332685416019398])
     observed_fixed21 = np.nan_to_num(values).mean(axis=1)
     if not np.allclose(observed_fixed21, expected_fixed21, rtol=0, atol=5e-5):
         raise ValueError('Per-class rows do not reproduce the Table 3 fixed-21 means')
-    labels = ['SSC-1', 'SSC-2', 'SSC-3', 'SSC-4', 'SSC-5']
-    fig, ax = plt.subplots(figsize=(3.5, 2.55))
+    labels = ['SSC-1', 'SSC-2', 'SSC-3', 'SSC-4', 'SSC-5', 'O5']
+    fig, ax = plt.subplots(figsize=(3.5, 2.75))
     cmap = plt.colormaps['YlGnBu'].copy()
     cmap.set_bad('#dedede')
     image = ax.imshow(np.ma.masked_invalid(values), aspect='auto', cmap=cmap,
-                      norm=PowerNorm(.35, vmin=0, vmax=45))
+                      norm=PowerNorm(.35, vmin=0, vmax=55))
     for i in range(values.shape[0]):
         for j in range(values.shape[1]):
             value = values[i, j]
@@ -198,7 +213,7 @@ def draw_table3_heatmap():
             else:
                 text = f'{value:.2f}'
                 color = 'white' if value > 8 else '#192d45'
-            ax.text(j, i, text, ha='center', va='center', fontsize=3.25, color=color)
+            ax.text(j, i, text, ha='center', va='center', fontsize=2.9, color=color)
     ax.set_xticks(range(len(classes)), classes, rotation=60, ha='right', fontsize=4.7)
     ax.set_yticks(range(len(labels)), labels, fontsize=6.5)
     ax.set_ylabel('Table 3 SSC ID', fontsize=6.2)
@@ -255,6 +270,6 @@ if __name__ == '__main__':
     FIG.mkdir(parents=True,exist_ok=True)
     output, baseline, mono = audit_runs()
     draw_long_tail(output,baseline,mono)
-    draw_table3_heatmap()
+    draw_table3_heatmap(output)
     draw_architecture()
     print(json.dumps(output['summary_percent'],indent=2))
