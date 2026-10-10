@@ -239,11 +239,11 @@ Three repetitions quantify sensitivity within this training contract; they do no
 \centering
 \includegraphics[width=\columnwidth]{long_tail.pdf}
 \vspace{-1.1em}
-\caption{Class distribution based on voxel count in the OccuFly dataset and per-class SSC IoU. Classes follow the same descending-frequency order in both panels. Ground-truth-absent categories are marked N/A.}
+\caption{Class distribution based on voxel count in the OccuFly dataset and per-class SSC IoU for SSC-1--SSC-5 and the single-seed O5 GT/GT diagnostic. Classes follow the same descending-frequency order in both panels. Ground-truth-absent categories are marked N/A.}
 \label{fig:longtail}
 \end{figure}
 
-Figure~\ref{fig:longtail} combines audited test ground-truth support with per-class scores. Empty accounts for 85.14\% of valid test voxels, and building accounts for 86.21\% of occupied support. These are test-distribution quantities; the training-loss weighting is derived from training counts and should not be interpreted through the same percentage. The large building share explains why occupied-space recovery and a class-balanced semantic macro score can tell different stories.
+Figure~\ref{fig:longtail} combines audited test ground-truth support with per-class scores for SSC-1--SSC-5 and O5. Empty accounts for 85.14\% of valid test voxels, and building accounts for 86.21\% of occupied support. These are test-distribution quantities; the training-loss weighting is derived from training counts and should not be interpreted through the same percentage. The large building share explains why occupied-space recovery and a class-balanced semantic macro score can tell different stories.
 
 For the final treatment, building reaches $46.13\pm1.60\%$ class IoU, tree $11.11\pm0.86\%$, vehicle $9.07\pm0.60\%$, parking lot $7.07\pm0.48\%$, and grass $6.63\pm0.77\%$. Road and walkway reach $5.34\pm1.07\%$ and $4.16\pm0.75\%$. The ordering shows that useful recognition extends beyond the dominant building class, but most categories remain far below its performance. The variability bars are across training runs, not uncertainty intervals for individual voxels.
 

@@ -125,23 +125,41 @@ def draw_long_tail(output, baseline, mono):
         ('#009E73', '^', '-'),
         ('#E69F00', 'v', '-.'),
         ('#D55E00', 'o', '-'),
+        ('#6A3D9A', 'P', ':'),
     ]
+    labels = ['SSC-1', 'SSC-2', 'SSC-3', 'SSC-4', 'SSC-5']
     class_order = output['class_names'][1:]
-    for row, (color, marker, linestyle) in zip(variants, styles):
+    series = []
+    for label, row in zip(labels, variants):
         values = np.array([np.nan if row[name] == 'N/A' else float(row[name])
                            for name in class_order])[order]
         values[~present] = np.nan
+        series.append((label, values))
+    oracle = json.loads((DATA / 'o5_gtgt_seed0_classwise.json').read_text())
+    oracle_support = np.array(oracle['per_class_gt_support'], dtype=np.int64)
+    if not np.array_equal(oracle_support, np.array(output['runs'][0]['gt_support'])):
+        raise ValueError('O5 and plotted SSC methods have different GT support')
+    oracle_iou = np.array([np.nan if value is None else 100 * float(value)
+                           for value in oracle['per_class_iou']])
+    if len(oracle_iou) != 22:
+        raise ValueError('O5 class-IoU vector must contain empty plus 21 semantic classes')
+    oracle_fixed21 = float(np.nan_to_num(oracle_iou[1:]).mean())
+    check_close(oracle_fixed21, 100 * oracle['ssc_miou_all_21_zero_filled'])
+    oracle_values = oracle_iou[1:][order]
+    oracle_values[~present] = np.nan
+    series.append(('O5', oracle_values))
+    for (label, values), (color, marker, linestyle) in zip(series, styles):
         bottom.plot(x, values, marker=marker, linestyle=linestyle, color=color,
-                    markersize=2.4, linewidth=.75, label=row['method'])
+                    markersize=2.4, linewidth=.75, label=label)
     for j,index in enumerate(order):
         if g[index] == 0:
             bottom.axvspan(j-.4,j+.4,color='#EEEEEE',zorder=-1)
             bottom.text(j,3,'N/A',ha='center',va='bottom',fontsize=8,rotation=90)
     bottom.set_ylabel('Per-class IoU (%)',fontsize=7)
-    bottom.set_ylim(-1.5,51);bottom.set_xlim(-.6,20.6)
+    bottom.set_ylim(-1.5,57);bottom.set_xlim(-.6,20.6)
     bottom.set_title('(b) Semantic completion',fontsize=7.5,loc='left')
     bottom.set_xticks(x, names, rotation=65,ha='right',fontsize=5.7)
-    bottom.legend(loc='upper right',fontsize=3.8,frameon=False,handlelength=1.25,
+    bottom.legend(loc='upper right',fontsize=4.4,frameon=False,handlelength=1.25,
                   labelspacing=.25,borderaxespad=.25)
     for ax in (top,bottom):
         ax.tick_params(axis='y',labelsize=6)
@@ -166,7 +184,7 @@ def draw_table3_heatmap():
     observed_fixed21 = np.nan_to_num(values).mean(axis=1)
     if not np.allclose(observed_fixed21, expected_fixed21, rtol=0, atol=5e-5):
         raise ValueError('Per-class rows do not reproduce the Table 3 fixed-21 means')
-    labels = ['1', '2', '3', '4', '5']
+    labels = ['SSC-1', 'SSC-2', 'SSC-3', 'SSC-4', 'SSC-5']
     fig, ax = plt.subplots(figsize=(3.5, 2.55))
     cmap = plt.colormaps['YlGnBu'].copy()
     cmap.set_bad('#dedede')
@@ -183,7 +201,7 @@ def draw_table3_heatmap():
             ax.text(j, i, text, ha='center', va='center', fontsize=3.25, color=color)
     ax.set_xticks(range(len(classes)), classes, rotation=60, ha='right', fontsize=4.7)
     ax.set_yticks(range(len(labels)), labels, fontsize=6.5)
-    ax.set_ylabel('Table 3 method ID', fontsize=6.2)
+    ax.set_ylabel('Table 3 SSC ID', fontsize=6.2)
     ax.tick_params(length=1.5, pad=1)
     ax.set_title('OccuFly test per-class IoU (%)', fontsize=7.5, weight='bold', pad=4)
     colorbar = fig.colorbar(image, ax=ax, fraction=.032, pad=.015)

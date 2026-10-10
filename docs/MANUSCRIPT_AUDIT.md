@@ -65,6 +65,13 @@ The source report paths are:
 | 1 | `reports/voxdet_foundationssc_comparison_20261005/data/07b_seed1_test_artifact_snapshot.json` |
 | 2 | `reports/voxdet_foundationssc_comparison_20261005/data/07b_seed2_test_artifact_snapshot.json` |
 
+The O5 line in Fig. 7(b) is generated from
+`docs/evidence/o5_gtgt_seed0_classwise.json`, a compact copy of the canonical
+seed-0 GT/GT test record. It preserves the source-record, checkpoint, and test-UID
+manifest hashes. The asset builder requires its 22-class GT-support vector to
+match the deployable rows exactly and independently reproduces its 8.3327\%
+fixed-21 mIoU before plotting the 21 semantic class IoUs.
+
 `scripts/build_paper_assets.py` reconstructs integer semantic TP counts from
 full-precision per-class IoU and GT/prediction marginals. The empty-class counts
 also determine binary occupied TP/FP/FN. It checks each saved metric, identical
