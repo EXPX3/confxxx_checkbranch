@@ -136,7 +136,7 @@ The available evidence consequently supports a restrained conclusion about time:
 \subsection{From Monocular Geometry to SSC}
 \begin{table}[t]
 \centering
-\caption{OccuFly SSC on the full test set (\%, higher is better). Best deployable values are shown in bold and second-best values are underlined. Repeated D3 rows report mean $\pm$ sample SD over three runs. Oracle rows replace estimated metric depth with GT depth only during geometric lifting and are excluded from ranking.}
+\caption{OccuFly SSC on the full test set (\%, higher is better). Best deployable values are shown in bold and second-best values are underlined. Repeated D3 rows report mean $\pm$ sample SD over three runs. O5 is a privileged, single-seed SSC-5 diagnostic trained and tested with GT metric depth (GT/GT): GT conditions the DPT-derived 2D context adapter and supplies geometry to LSS lifting, proposal generation, and VoxFormer \cite{chen2025foundationssc,li2023voxformer}; semantic outputs remain predicted. O5 is excluded from deployable ranking.}
 \label{tab:ssc}
 \tiny
 \setlength{\tabcolsep}{1.5pt}
@@ -154,9 +154,8 @@ ID & Method & SC IoU $\uparrow$ & mIoU $\uparrow$\\
 \multicolumn{4}{@{}l}{\textit{Calibrated multiview treatments}}\\
 5 & D3-FSSC-ctx-DPT-depth-MVSF++-VoxDet & \cellcolor{bestvalue!45}$\mathbf{49.33\pm1.17}$ & \cellcolor{bestvalue!45}$\mathbf{4.80\pm0.36}$\\
 \midrule
-\multicolumn{4}{@{}l}{\textit{GT-depth lifting oracle diagnostics}}\\
-O1 & VJ-FSSC-ctx-DPT-depth-GT & 49.40 & 7.25\\
-O2 & D3-FSSC-ctx-DPT-depth-GT & 42.01 & 8.40\\
+\multicolumn{4}{@{}l}{\textit{SSC-5 GT/GT full-adaptation oracle diagnostic}}\\
+O5 & D3-FSSC-ctx-(DPT+GT)-depth-GT-VoxDet (GT/GT) & 54.66 & 8.33\\
 \midrule
 \multicolumn{4}{@{}l}{\textit{Published OccuFly references}}\\
 -- & Symphonies \cite{gross2026occufly,jiang2024symphonies} & 13.68 & 0.58\\
@@ -204,7 +203,7 @@ All & 4: FiLM & 47.30 & 4.29 & MDE-5 & .810 & .966 & .997 & .137 & 4.910 & 3.584
 
 Table~\ref{tab:ssc} separates binary completion from fixed-21 semantic mIoU. The D3 monocular and multiview treatments improve both measures over the audited controls, but they differ in representation, geometry, decoding, losses, and optimization; the table therefore compares complete configurations rather than isolated components. The historical V-JEPA seed-42 search is shorter than the other monocular runs.
 
-The O1/O2 diagnostics use GT metric depth only at geometric lifting; context features and the remaining SSC pipeline are unchanged. Their 7.25\% and 8.40\% mIoU show that semantic performance remains limited even when lifting receives oracle geometry, indicating bottlenecks beyond depth estimation. These single-run oracle diagnostics are upper-bound analyses, not deployable configurations or candidates for the ranked comparison.
+O5 retains SSC-5's frozen DINOv3 backbone, DPT-derived visual context, hybrid view transformer, and VoxDet decoder, but bypasses MVSFormer++ and uses mask-aware GT metric depth throughout training, validation, and test. A GT-derived Gaussian depth posterior drives LSS lifting, while GT depth also conditions the 2D context adapter, proposal generation, and VoxFormer. The downstream modules are adapted by training; no GT semantic labels enter inference. The validation-selected seed-0 checkpoint obtains 54.66\% SC IoU and 8.33\% fixed-21 mIoU on the 3,842-image test set. This is a privileged, non-deployable oracle diagnostic rather than a ranked method or a three-seed estimate.
 
 Table~\ref{tab:ssc-mde-altitude} uses the same altitude partition for SSC and MDE. Both SSC treatments are weakest at 40~m and strongest at 50~m; MVSF++ improves the three-run mean SC IoU at every altitude, with its largest gain at 40~m. Most MDE-8 metrics are strongest at 30~m and weakest at 40~m, matching the altitude at which both SSC variants have their lowest completion scores. These are paired configuration-level observations, not an isolated causal effect of the depth branch.
 
