@@ -135,49 +135,19 @@ where $w_k(z)$ is the linear interpolation weight for center $b_k$. Hypotheses o
 The context image is derived from the same target crop as the MVS input, with its intrinsics scaled to the corresponding resolution. This keeps the context features and projected depth posterior spatially aligned. Expected depth and photometric confidence are retained only as diagnostics; SSC lifting uses the complete projected distribution $P_k(u)$.
 
 \subsection{Probability-Aware Lifting and Voxel Fusion}
-The semantic context head consumes the target's frozen image features and produces a trainable DPT context map $C_t(u)$. For each image coordinate and lifting depth center, a camera ray maps context to a three-dimensional location. Schematically, the lift--splat contribution to voxel $v$ is
+The trainable DPT context head produces $C_t(u)$. The projected depth posterior weights its lift--splat contribution to voxel $v$:
 \begin{equation}
 V(v)=\sum_{u,k}\mathbf1[\nu(x_{t,k}(u))=v]P_k(u)C_t(u),
 \label{eq:lift}
 \end{equation}
-where $x_{t,k}(u)=b_kK_t^{-1}u$ and $\nu$ assigns a position to the configured voxel grid. Equation~\eqref{eq:lift} describes probability-weighted accumulation; the implemented hybrid view transformer additionally combines this dense pathway with proposal-guided voxel features and axis-aware fusion from the retained FoundationSSC modules.
-
-The fused representation has 128 channels at $96\times64\times64$, corresponding to a reduced grid before full-resolution prediction. In the final multiview treatment, the retained view transformer and fusion pathway are frozen. Context and VoxDet decoding are trained while geometry and the lifting modules remain fixed. Context trains through the dense lift--splat and fusion path. Inputs to the frozen sparse voxel-attention branch are detached, preserving its forward features without backpropagating through that branch.
+where $x_{t,k}(u)=b_kK_t^{-1}u$ and $\nu$ maps a 3D point to the voxel grid. The retained hybrid view transformer combines this dense volume with proposal-guided voxel features and axis-aware fusion. Its output has 128 channels at $96\times64\times64$. In SSC-5, MVSFormer++, the view transformer, and fusion are frozen; the context head and VoxDet decoder are trained. Sparse-branch inputs are detached, while the dense lifting path carries gradients to the context head.
 
 \subsection{VoxDet Decoding and VoxNT Targets}
-VoxDet processes the fused volume with a shared three-dimensional encoder and task-specific branches. One branch predicts semantic features and logits, while another predicts six nonnegative directional offsets. Predicted offsets guide sampling and aggregation of semantic features along the voxel axes before final classification \cite{li2025voxdet}. The scored output remains a semantic occupancy grid. Directional predictions do not establish instance detection accuracy, and no instance average precision is claimed.
+The local decoder retains VoxDet's shared three-stage 3D encoder, separate spatially decoupled semantic/regression streams, and task-decoupled predictor \cite{li2025voxdet}. The regression head predicts six directional distances at every 3D voxel; together, channel and spatial dimensions form the paper's ``4D offset field.'' The forward direction in Fig.~\ref{fig:architecture} is regression features $\rightarrow$ regression head $\rightarrow$ offset field $\rightarrow$ semantic aggregation. VoxNT-derived offsets supervise this field only during training. Each target is the same-label run length in both directions along each axis, normalized by the full-grid length. These are axial semantic-boundary offsets, not Euclidean distances or instance boxes; touching objects of the same class can remain inseparable.
 
-VoxNT generates supervision from semantic labels without learning additional parameters. For a voxel coordinate $i$ along an axis, the inclusive positive-direction run length is
-\begin{equation}
-r_+(i)=1+\mathbf1[Y(i)=Y(i+1)]r_+(i+1),
-\label{eq:run}
-\end{equation}
-with terminal run length one. Applying the recurrence in both directions along three axes yields six targets. Each is normalized by its corresponding full-grid axis length. This is an axial same-label run, not Euclidean distance to the nearest object boundary or a connected-component box. A gap or class change ends the run, while touching same-label objects can remain indistinguishable.
-
-Our implemented supervision enlarges predicted reduced-grid offsets to the full target grid and uses class-balanced Smooth-L1 loss with transition parameter 0.1. Eligible categories are tree, ground obstacle, person, bicycle, vehicle, building, cable, construction, crane, and truck. Losses are averaged within each present eligible class and then across those classes, reducing domination by large regions. All categories still receive semantic occupancy supervision. Target normalization uses the full-grid axis lengths before any resolution change.
-
-Feature sampling uses the center-aligned coordinate
-\begin{equation}
-g(i;L)=2\frac{i+1/2}{L}-1
-\label{eq:sample}
-\end{equation}
-for an axis of length $L$. This keeps voxel-center indexing consistent with the sampler's alignment convention. Tensor storage order is respected when coordinates are passed to the three-dimensional sampler. The treatment combines correct target scaling, consistent sampling, full-resolution supervision, and a long-tail objective; the available completed comparisons cannot assign its overall gain to one of these corrections alone.
-
-Ground-truth VoxNT targets are used only during training. At inference, offsets are predicted from features, and no semantic target tensor is supplied. The phrase instance-aware describes the intended structural aggregation, with the semantic-label limitation above; it should not be read as verified separation of every physical instance.
+Reduced-grid predictions are enlarged to the full grid and supervised by class-balanced Smooth-L1 loss (transition 0.1) for tree, ground obstacle, person, bicycle, vehicle, building, cable, construction, crane, and truck. The loss is averaged per present class, while every category receives semantic supervision. GT offsets are training-only; inference predicts them from features. Accordingly, ``instance-aware'' describes structural aggregation, not measured instance detection.
 
 \subsection{Occupancy and Long-Tail Semantic Objective}
-Let $\ell_c(v)$ be the 22-class logit vector. Binary occupancy is trained from the stable occupied-versus-empty logit
-\begin{equation}
-\ell_{\rm occ}(v)=\log\sum_{c=1}^{21}\exp\ell_c(v)-\ell_0(v).
-\end{equation}
-A weighted binary cross-entropy (BCE) term supervises every valid voxel. Its positive weight is $\min(25,n_0/\sum_{c>0}n_c)$ from training counts. Conditional semantic focal cross-entropy is computed only at ground-truth occupied voxels, with focal exponent two. Semantic weights use square-root inverse training frequency, clipped to $[0.25,8]$ and then normalized to mean one over represented occupied classes. Empty voxels consequently supervise occupancy without overwhelming conditional category recognition.
+From the 22 semantic logits, an occupied-versus-empty logit is formed by log-sum-exp over the 21 occupied classes relative to empty. Weighted BCE supervises occupancy at every valid voxel. Focal cross-entropy (exponent two) and macro soft Dice supervise occupied semantics; square-root inverse-frequency class weights are clipped to $[0.25,8]$ and normalized. Thus empty voxels train occupancy without dominating semantic recognition. The main loss weights BCE, focal, and Dice by $1$, $1$, and $0.5$; the auxiliary head uses $0.25$, $0.25$, and $0.10$, and full-resolution VoxNT has weight one.
 
-A macro soft Dice term averages over semantic classes present in each batch. The main objective is
-\begin{equation}
-\mathcal L_{\rm main}=\mathcal L_{\rm occ}
-+\mathcal L_{\rm focal}+0.5\mathcal L_{\rm Dice}.
-\label{eq:mainloss}
-\end{equation}
-The auxiliary head uses corresponding weights $0.25$, $0.25$, and $0.10$, and full-resolution VoxNT has weight one. These weights are implementation settings rather than conclusions of a hyperparameter ablation.
-
-The monocular VoxDet treatment additionally uses a metric-depth teacher term with weight 0.1 and a weak scheduled SSC-to-depth gradient. That gradient is zero in epoch zero, ramps over three epochs, and is capped at 0.1. Its purpose is to let the voxel decoder stabilize before limited adaptation of the pretrained depth head. The frozen multiview treatment has no depth loss and no such gradient schedule: its provider is run without gradients. All semantic, geometric, and offset masks exclude ignored labels. The distinction between these gradient paths is part of the method definition and limits direct architectural attribution from the final scores.
+The monocular VoxDet variants also use a metric-depth teacher loss of 0.1. Their SSC-to-depth gradient is zero in epoch~0, ramps for three epochs, and is capped at 0.1. SSC-5 instead keeps its multiview geometry provider gradient-free and uses no depth loss. All losses exclude ignored labels; these distinct gradient paths prevent attribution of complete-configuration differences to one component alone.

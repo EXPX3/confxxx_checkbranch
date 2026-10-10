@@ -4,64 +4,19 @@
 \label{sec:setup}
 
 \subsection{Dataset, Splits, and Spatial Resolution}
-We use the standard OccuFly scene partition: scenes 01--05 for training, 06--07 for validation, and 08--09 for testing, with flight heights 30, 40, and 50~m \cite{gross2026occufly}. The standard image-depth population contains 14,804 training, 1,965 validation, and 3,842 test targets. Scenes are disjoint across partitions, while nearby observations within a sequence can be correlated. We report frame-level test counts to identify the evaluated population, without treating every frame as an independent environment.
+We use the OccuFly scene split: 01--05 for training, 06--07 for validation, and 08--09 for testing, at 30, 40, and 50~m \cite{gross2026occufly}. It contains 14,804/1,965/3,842 depth targets. RGB is resized to $384\times384$; valid camera-axis depth is finite and within $[0.001,80]$~m. The temporal diagnostic excludes sequence boundaries and evaluates 3,830 targets, so it is not ranked as a full-test monocular result.
 
-Target RGB is resized to $384\times384$. Valid depth is finite, positive, and within $[0.001,80]$~m; resizing respects the depth validity mask. The depth convention is camera optical-axis distance, and camera-to-world records are inverted when world-to-camera transforms are required. Temporal methods use frame-index neighborhoods. The completed pose-aware video depth diagnostic excludes sequence-boundary targets and evaluates 3,830 frames, so its score is separated from full-test single-frame results.
-
-SSC labels occupy a $192\times128\times128$ grid in width--height--depth order, with 0.5~m voxels over $x\in[-48,48]$~m, $y\in[-32,32]$~m, and $z\in[0,64]$~m. The standard label space contains empty plus 21 occupied categories; label 255 is ignored. We keep that label space throughout. The three multiview artifacts contain the same 22-class ground-truth support vector and 5,306,159,104 valid evaluated voxels as the canonical count bundle. These matching totals establish aggregate-support consistency, but the saved multiview artifacts do not include evaluated-sample counts or ordered test-manifest hashes. We therefore do not claim exact target-identity equivalence from those artifacts alone.
+SSC uses a $192\times128\times128$ grid with 0.5-m voxels over $[-48,48]\times[-32,32]\times[0,64]$~m. Labels comprise empty, 21 occupied classes, and ignored label 255. All reported SSC artifacts match the canonical 22-class ground-truth support and valid-voxel total; because the multiview records lack ordered manifest hashes, we claim aggregate consistency rather than exact target-identity equivalence.
 
 \subsection{Training and Checkpoint Selection}
-Frozen-backbone depth experiments optimize the named prediction head with AdamW and valid-pixel depth supervision. The matched image comparison targets seed zero, input resolution $384^2$, batch size one per device, a 20-epoch search budget, and validation RMSE for checkpoint selection. The head uses a scale-sensitive depth readout trained with the retained masked depth objective. Feature levels are matched by relative encoder depth. The two backbone families nevertheless expose different feature widths, so their head input layers contain different numbers of parameters.
+MDE trains only the named head with AdamW and masked valid-depth supervision; single-run image comparisons use seed~0, 20 epochs, and validation RMSE selection. Table~\ref{tab:mde} retains audited test records; unavailable metrics remain blank, and unfinished controls are excluded.
 
-The connected configuration notes contain discrepancies between some historical folder labels and serialized learning rates or distributed world sizes. We do not infer an exact run setting from a directory name. Corrected MDE numbers are retained with their manuscript/table provenance, and the DINOv3 depth record is additionally supported by its strict archived checkpoint contract. Primary metric files for the remaining image-depth rows are unavailable in the connected branches. Accordingly, their values are identified as retained records rather than newly recomputed pixel-level results. SFP and unfinished temporal controls are excluded from numerical ranking.
+Monocular VoxDet uses AdamW with main/depth learning rates $2\times10^{-4}/10^{-6}$ and seeds 42--44. The final multiview model trains context and VoxDet at $10^{-4}$ while DINOv3, MVSFormer++, and view fusion remain frozen. Its three 20-epoch runs use seeds 0--2, one-epoch warm-up, cosine decay, weight decay $10^{-4}$, gradient clipping at five, and global batch eight on eight H100 GPUs. Checkpoints are validation-selected without test feedback. The historical V-JEPA seed-42 record ends at epoch~8; consequently, cross-configuration differences are descriptive rather than equal-budget factorial effects.
 
-The monocular VoxDet treatments use AdamW with main learning rate $2\times10^{-4}$, depth learning rate $10^{-6}$, main weight decay $10^{-4}$, and zero depth weight decay. A one-epoch warm-up precedes cosine decay to 5\% of the initial learning rate, and gradient norm clipping is five. We retain seeds 42, 43, and 44 for each representation. V-JEPA~2.1 selects epochs 2, 13, and 12; DINOv3 selects epochs 9, 6, and 5. The seed-43/44 histories all contain 20 epochs. The historical V-JEPA seed-42 history contains only epochs 0--8, whereas DINOv3 seed 42 contains 20 epochs. We therefore report the retained three-run distributions and paired descriptive differences, but do not present them as a fully equal-budget three-pair backbone experiment.
+\subsection{Metrics and Audit}
+Depth metrics are accumulated over valid pixels. $\delta_q$ is the fraction within a multiplicative factor $1.25^q$ (strict to tolerant); AbsRel measures relative error, MAE typical metric error, and RMSE emphasizes large metric errors. SILog is the spread of log-depth residuals after removing their mean, hence it penalizes spatially varying multiplicative error but discounts one global log-scale offset. For SSC, SC IoU merges all occupied classes and measures geometry; precision/recall separate false occupancy from missed occupancy. Semantic mIoU is the fixed macro average over 21 occupied classes, so every class has equal weight; empty and ignored voxels are excluded and an absent class contributes zero. Figures use N/A only to distinguish absent support from zero true positives.
 
-The final multiview treatment trains context and VoxDet modules at learning rate $10^{-4}$ with weight decay $10^{-4}$, the same one-epoch warm-up and cosine floor, and gradient norm clipping five. The DINOv3 encoder, native MVS provider, and view transformer remain frozen. Batch size one on eight distributed ranks gives a global batch of eight. The three runs use seeds 0, 1, and 2 with model and sampler seeds aligned within each run. They share the same geometry checkpoint, input construction, optimizer, loss weights, training budget, and checkpoint rule.
-
-Checkpoint selection follows the validation criterion retained in each original training contract; exact criteria are documented in the provenance audit. No test metric participates in selection. The three final runs select epochs 13, 12, and 11. All semantic results use the standard OccuFly mIoU protocol defined below; this reporting rule does not retrospectively change the historical training criterion.
-
-Experiments use eight NVIDIA H100 80~GB GPUs for the reported distributed SSC runs. This describes offline training resources; no inference latency, energy, or embedded-hardware measurement is available. A frozen large encoder and a five-view geometry provider still need execution at inference. We therefore make no onboard real-time claim.
-
-\subsection{Depth Metrics and Evaluation Population}
-For the set $\Omega_D$ of valid depth pixels, we report
-\begin{align}
-\mathrm{RMSE}&=\sqrt{\frac{1}{|\Omega_D|}\sum_{u\in\Omega_D}(\hat D(u)-D(u))^2},\\
-\mathrm{AbsRel}&=\frac{1}{|\Omega_D|}\sum_{u\in\Omega_D}\frac{|\hat D(u)-D(u)|}{D(u)}.
-\end{align}
-Mean absolute error (MAE) is the average absolute depth error in meters. For $d_u=\log \hat D(u)-\log D(u)$, $\mathrm{SILog}=\sqrt{\operatorname{mean}(d_u^2)-\operatorname{mean}(d_u)^2}$. The threshold accuracy $\delta_1$ is the fraction satisfying $\max(\hat D/D,D/\hat D)<1.25$. Lower RMSE, MAE, AbsRel, and SILog are better; higher $\delta_1$ is better. Errors are aggregated over valid pixels rather than averaged equally over frames with different valid support. Depth predictions are constrained to the configured evaluation range.
-
-The principal table reports the retained test metrics for each configuration. Published benchmark values remain labeled as references, and results with different input or evaluation contracts are not pooled. A dash denotes a metric that is not currently available; no validation metric is substituted for a missing test value.
-
-\subsection{Occupancy and Semantic Metrics}
-Binary SC collapses all occupied categories into one label. With occupied true positives $T$, false positives $F$, and false negatives $N$ over valid voxels,
-\begin{equation}
-\mathrm{SC\ IoU}=\frac{T}{T+F+N},\quad
-\mathrm{P}=\frac{T}{T+F},\quad
-\mathrm{R}=\frac{T}{T+N}.
-\label{eq:sc}
-\end{equation}
-Precision and recall are reported with IoU to distinguish additional occupied coverage from additional false occupied predictions. Empty space does not enter the occupied-class semantic macro average.
-
-For semantic class $c$, let $g_c$, $p_c$, and $t_c$ be ground-truth support, prediction support, and true positives. The standard occupied-class semantic score is
-\begin{equation}
-\mathrm{mIoU}=\frac1{21}\sum_{c=1}^{21}J_c^{(0)},\qquad
-J_c=\frac{t_c}{g_c+p_c-t_c}.
-\label{eq:miou}
-\end{equation}
-$J_c^{(0)}$ is zero when the semantic union is empty. A GT-absent class that is predicted also has zero IoU. Following the standard OccuFly protocol, mIoU uses the fixed 21 occupied classes; empty and ignored voxels are excluded from this semantic macro average. We report no alternative semantic average.
-
-In the class-wise figure, zero-ground-truth-support categories are N/A, distinguishing unmeasured recognition from represented classes with zero true positives. This display policy does not change their zero contribution to mIoU.
-
-\subsection{Statistical and Provenance Audit}
-All three-run statistics use an arithmetic mean and sample standard deviation with denominator $n-1$, where $n=3$. The monocular seed-43/44 artifacts record the test split, 3,842 evaluated samples, full confusion matrices, and validation-selected checkpoints; the V-JEPA seed-42 record comes from the audited canonical count bundle. For the multiview artifacts, we reconstruct semantic true positives from the saved full-precision IoUs and marginals:
-\begin{equation}
-t_c=\frac{J_c(g_c+p_c)}{1+J_c}.
-\label{eq:reconstruct}
-\end{equation}
-Recovered values must be integer-consistent and cannot exceed either support. The empty-class marginal additionally determines binary occupied counts, allowing SC IoU, precision, recall, and mIoU to be independently recomputed. Every reconstructed metric agrees with its saved record to numerical precision. The MDE altitude audit uses a non-padding distributed sampler: each of the 3,842 test UIDs is evaluated once, avoiding the six duplicated 30-m frames introduced when a conventional eight-rank sampler padded the test set. The audit preserves exact per-run values, source identities, and selected epochs in repository evidence rather than expanding the body with an exhaustive seed table.
-
-This procedure verifies sufficient counts, not a new inference run or the identity of every multiview target. Historical control records lack the retained marginals needed for a compatible semantic rescore, so we retain their SC IoU but omit their unverifiable semantic score. The class-support figure orders categories by audited test support because training and validation voxel histograms are unavailable; it is a test-distribution diagnostic, not an estimate of the training exposure of each category.
+Rows reported as mean$\pm$SD use three independent runs. MDE-5 is the three-run mean in Table~\ref{tab:film-aggregate}; the other local rows in Table~\ref{tab:mde} are single validation-selected runs, and MDE-11 is a published point estimate. SSC-3--SSC-5 are three-run means; SSC-1, SSC-2, and O5 are single runs, while external rows are published point estimates. Saved confusion marginals reproduce the SSC metrics. Altitude-wise MDE evaluates every one of the 3,842 UIDs once; class support denotes the test, not training, distribution.
 
 \section{Results}
 \label{sec:results}
@@ -98,11 +53,9 @@ This procedure verifies sufficient counts, not a new inference run or the identi
 \end{tabularx}
 \end{table}
 
-Table~\ref{tab:mde} shows that decoder and conditioning choices materially affect the geometry recovered from foundation-model features. For V-JEPA~2.1, DPT reduces RMSE from 7.808~m for the RGB linear probe to 6.730~m, while FiLM-DPT-RGB averages 4.910~m RMSE and improves $\delta_1$ from 0.651 to 0.810. The video and multiview configurations do not surpass the strongest RGB FiLM-DPT result under the reported protocols.
+Dense decoding and camera conditioning improve both backbones (Table~\ref{tab:mde}). Relative to their linear probes, FiLM-DPT reduces V-JEPA~2.1 RMSE from 7.808 to 4.910~m and DINOv3 RMSE from 6.097 to 4.362~m. The benefit of the heavier frozen DINOv3 model is prediction quality, not demonstrated efficiency: with a trained FiLM-DPT head it exceeds the fine-tuned DepthAnything2--OccuFly reference in RMSE, MAE, AbsRel, and $\delta_1$, but DepthAnything2 retains substantially lower SILog (0.112 vs. 0.161). The contracts and capacities differ, and no DepthAnything3--OccuFly result is available, so we do not claim general model superiority.
 
-For DINOv3, FiLM-DPT reduces RMSE from 6.097 to 4.362~m relative to the linear probe and improves $\delta_1$ from 0.782 to 0.847. Both backbone families therefore benefit from a more capable metric readout. This ordering does not establish a general backbone ranking because model capacities, representation widths, input contracts, and training procedures differ.
-
-DepthAnything2--OccuFly supplies a published benchmark reference at 4.844~m RMSE. DINOv3 FiLM-DPT has lower RMSE and AbsRel and higher $\delta_1$, whereas the published reference has lower SILog (0.112 versus 0.161). It is not a frozen-feature-head ablation because its model and training differ; the strongest configuration therefore depends on the metric.
+Lower SILog requires reducing spatial variation in multiplicative error, not merely correcting one global scale. Relevant controlled directions are a log-depth/SILog-aware objective, multiscale and boundary supervision, and validation selection that includes SILog while retaining metric-error constraints. Such changes require new validation-selected runs; the present test table cannot establish their effect. Figure~\ref{fig:backbone_feature_diagnostics} illustrates feature/readout structure but its independently fitted PCA colors are not quantitative evidence.
 
 \subsection{Camera Metadata and Temporal Geometry}
 \begin{table}[t]
@@ -130,9 +83,9 @@ DepthAnything2--OccuFly supplies a published benchmark reference at 4.844~m RMSE
   }
 \end{table}
 
-The completed temporal-attention FiLM-MVS diagnostic reaches 6.406~m RMSE on 3,830 context-valid frames. It combines video features, local temporal attention, pose-aware matching, and conditioning, so it cannot isolate temporal representation quality. Its reduced target population also prevents directly interpreting its difference from a full-test image row as a gain or loss from neighboring observations. A shared-target evaluation would be needed to quantify that effect.
+Altitude supplies an absolute scene-scale cue, while normalized intrinsics specify how pixels map to camera rays. Their joint FiLM modulation gives the strongest three-seed V-JEPA result (Table~\ref{tab:film-aggregate}); altitude alone helps, whereas intrinsics alone is below unconditioned DPT, so the evidence supports their learned combination rather than either metadata source universally.
 
-The available evidence consequently supports a restrained conclusion about time: the representation and geometry interfaces must preserve correspondence and declare their evaluation population. Unaligned temporal attention and calibrated MVS address different problems. The final SSC experiment uses a frozen native five-view provider, not the short-clip diagnostic in the depth table. Its completion result should therefore be explained by its own geometry posterior and downstream voxel treatment.
+MDE-3 uses two-source hypothesis warping and 3D convolution; Fig.~\ref{fig:dta_raft_compact} shows the preceding RAFT alignment. MVSFormer++ instead uses one target and four sources in a coarse-to-fine inverse-depth cascade with cross-view attention and transformer cost regularization \cite{cao2024mvsformerpp}. Under the retained matched single-run contract, D3-H+ improves MVSFormer++ RMSE from 6.390 to 4.611~m relative to VJ-G. Only the frozen backbone family is intentionally changed, but feature widths, pretraining, adapter parameters, and selected epochs differ. Compatibility of DINOv3 spatial features with correspondence is therefore a plausible explanation, not an identified cause; repeated runs and controlled feature adapters are needed.
 
 \subsection{From Monocular Geometry to SSC}
 \begin{table}[t]
@@ -167,7 +120,7 @@ SSC4 & D3-FSSC-ctx-DPT-depth-FiLM\_DPT-VoxDet & $\underline{47.30\pm0.50}$ & $\u
 \end{tabularx}
 \end{table}
 
-For the altitude comparison, SSC-4 and SSC-5 denote the FiLM and MVSF++ variants in Table~\ref{tab:ssc}. O5 is the SSC-5 GT/GT full-adaptation oracle diagnostic. MDE-5 and MDE-8 are the V-JEPA~2.1 and DINOv3 FiLM-DPT-RGB variants in Table~\ref{tab:mde}. SSC-4, SSC-5, and MDE-5 values are means of three validation-selected runs; MDE-8 and O5 use their respective validation-selected single runs.
+Table~\ref{tab:ssc-mde-altitude} uses the IDs above; SSC-4, SSC-5, and MDE-5 are three-run means, whereas MDE-8 and O5 are validation-selected single runs.
 \begin{table}[t]
 \centering
 \caption{Altitude-wise SSC and MDE on OccuFly.}
@@ -210,11 +163,11 @@ All & SSC0 & 29.52 & 2.04 & & & & & & & & \\
 \label{fig:table3_per_class_iou}
 \end{figure}
 
-Table~\ref{tab:ssc} separates binary completion from semantic mIoU. The D3 monocular and multiview treatments improve both measures over the audited controls, but they differ in representation, geometry, decoding, losses, and optimization; the table therefore compares complete configurations rather than isolated components. The historical V-JEPA seed-42 search is shorter than the other monocular runs.
+FoundationSSC contributes decoupled semantic/geometry pathways, complementary LSS--VoxFormer lifting, and axis-aware fusion; VoxDet contributes separate semantic/regression voxel streams and offset-guided semantic aggregation. Their combination is structurally complementary: the former constructs and fuses the 3D evidence, while the latter decodes it with boundary-aware aggregation. SSC-3--SSC-5 outperform the local controls in Table~\ref{tab:ssc}, but loss and optimization also change, so the results support the complete hybrids rather than a numerical contribution from either module alone.
 
-O5 retains SSC-5's frozen DINOv3 backbone, DPT-derived visual context, hybrid view transformer, and VoxDet decoder, but bypasses MVSFormer++ and uses mask-aware GT metric depth throughout training, validation, and test. A GT-derived Gaussian depth posterior drives LSS lifting, while GT depth also conditions the 2D context adapter, proposal generation, and VoxFormer. The downstream modules are adapted by training; no GT semantic labels enter inference. The validation-selected seed-0 checkpoint obtains 54.66\% SC IoU and 8.33\% mIoU on the 3,842-image test set. This is a privileged, non-deployable oracle diagnostic rather than a ranked method or a three-seed estimate.
+O5 replaces MVSFormer++ with mask-aware GT metric depth throughout training and inference. GT depth conditions the 2D context branch and supplies the Gaussian posterior for LSS lifting, proposals, and VoxFormer; GT semantics never enter inference. Its single validation-selected run reaches 54.66\%/8.33\% SC IoU/mIoU. This is an empirical privileged diagnostic, not a theoretical maximum: the large residual to 100\% shows limits in context, fusion, decoding, taxonomy, and long-tail supervision, while better deployable depth can only be expected to move toward---not necessarily reach---O5.
 
-Table~\ref{tab:ssc-mde-altitude} uses the same altitude partition for SSC and MDE. Both deployable SSC treatments are weakest at 40~m and strongest at 50~m; MVSF++ improves the three-run mean SC IoU at every altitude, with its largest gain at 40~m. The single-seed O5 diagnostic exceeds the deployable SSC-5 mean in both SSC metrics at every altitude, but this comparison is descriptive rather than a matched repeated-run estimate. Most MDE-8 metrics are strongest at 30~m and weakest at 40~m, matching the altitude at which all three SSC rows have their lowest completion scores. These are configuration-level observations, not an isolated causal effect of the depth branch.
+Altitude-wise results reinforce this distinction. MDE-8 and all SSC rows are weakest at 40~m, consistent with geometry contributing to completion. Yet MDE is strongest at 30~m while SSC-5 is strongest at 50~m, showing that depth alone does not determine SSC. O5 improves both SSC metrics at every altitude, but as a single run it provides headroom rather than a variance-controlled altitude effect.
 
 \begin{figure}[t]
 \centering
@@ -230,14 +183,10 @@ Table~\ref{tab:ssc-mde-altitude} uses the same altitude partition for SSC and MD
 \label{fig:ssc_multiscene_qualitative}
 \end{figure}
 
+Figure~\ref{fig:table3_per_class_iou} shows that gains are class-dependent rather than uniform. Figure~\ref{fig:mde_ssc_qualitative} aligns RGB, depth errors, GT voxels, and predictions for one target, while Fig.~\ref{fig:ssc_multiscene_qualitative} tests whether the qualitative ordering recurs across five scenes. O5 generally sharpens occupied structure but does not reproduce every semantic region. These examples explain typical errors; they do not replace the test-set metrics.
+
 \subsection{Repeated-Run Multiview Result}
-The final DINOv3--MVSFormer++--VoxDet treatment achieves $49.3278\pm1.1704\%$ SC IoU and $4.8025\pm0.3648\%$ mIoU. Means and sample standard deviations are computed from the exact saved per-run records; Table~\ref{tab:ssc} rounds them to two decimals.
-
-Per-run SC IoU is 48.0645\%, 49.5437\%, and 50.3752\%, and mIoU is 4.3814\%, 5.0041\%, and 5.0220\% for seeds 0, 1, and 2. Thus every tested initialization remains above the reported historical multiview control in the compatible binary SC measure. This establishes persistence of the observed direction across the three treatment runs. It does not establish paired statistical significance because the historical control has no repeated seeds under the same contract.
-
-The mean SC difference from the historical control is 5.96 percentage points. A semantic difference is not reported because a compatible rescore of the historical control is unavailable. Relative to the repeated V-JEPA monocular mean, the multiview mean is higher in both SC IoU and mIoU, but representation, geometry, frozen-module choices, and optimization settings also differ. The evidence supports the behavior of the complete final treatment rather than a numerical estimate of an isolated multiview contribution.
-
-Three repetitions quantify sensitivity within this training contract; they do not measure scene variability, annotation uncertainty, or transfer to another aerial dataset.
+SSC-5 obtains $49.3278\pm1.1704\%$ SC IoU and $4.8025\pm0.3648\%$ mIoU. All three seeds exceed the historical multiview control in compatible binary SC IoU, with a mean difference of 5.96 points. The control lacks matched seeds and compatible semantic marginals, so this establishes repeatability of the complete treatment, not paired significance or an isolated MVS effect.
 
 \subsection{Class Support, Absence, and Failure}
 \begin{figure}[t]
@@ -248,10 +197,4 @@ Three repetitions quantify sensitivity within this training contract; they do no
 \label{fig:longtail}
 \end{figure}
 
-Figure~\ref{fig:longtail} combines audited test ground-truth support with per-class scores for SSC-0--SSC-5 and O5. Empty accounts for 85.14\% of valid test voxels, and building accounts for 86.21\% of occupied support. These are test-distribution quantities; the training-loss weighting is derived from training counts and should not be interpreted through the same percentage. The large building share explains why occupied-space recovery and a class-balanced semantic macro score can tell different stories.
-
-For the final treatment, building reaches $46.13\pm1.60\%$ class IoU, tree $11.11\pm0.86\%$, vehicle $9.07\pm0.60\%$, parking lot $7.07\pm0.48\%$, and grass $6.63\pm0.77\%$. Road and walkway reach $5.34\pm1.07\%$ and $4.16\pm0.75\%$. The ordering shows that useful recognition extends beyond the dominant building class, but most categories remain far below its performance. The variability bars are across training runs, not uncertainty intervals for individual voxels.
-
-Person, bicycle, and cable have positive test support but zero IoU in all three final runs. Their recovered semantic true positives are zero, making them persistent observed failures under this evaluation. Water, cable tower, and crane have zero test ground-truth support. They are shown as N/A in the class analysis rather than presented as successful zero scores. They still contribute zero to the aggregate under the stated denominator policy.
-
-Low support is associated with several weak categories, but it is not a complete explanation. Appearance ambiguity, target visibility, annotation, voxel size, geometric placement, and class confusion can all influence IoU. The unavailable training histogram prevents a direct analysis of training exposure, and the test-support ordering must not be called a training-frequency ordering. The figure provides an honest diagnostic of measured support and recognition rather than a claim that frequency alone causes failure.
+Empty occupies 85.14\% of valid test voxels, and building 86.21\% of occupied support (Fig.~\ref{fig:longtail}). SSC-5 reaches $46.13\pm1.60\%$ building IoU but at most $11.11\pm0.86\%$ on the listed remaining classes. Person, bicycle, and cable have positive support yet zero true positives in all runs; water, cable tower, and crane have no test support and are marked N/A. This explains the gap between completion and macro semantics but does not identify frequency as the sole cause: visibility, geometry, voxel size, annotation, and confusion remain possible factors, and training-support histograms are unavailable.
